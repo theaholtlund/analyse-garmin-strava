@@ -1,17 +1,22 @@
 ﻿using System;
 using System.IO;
 using IntelligentCycling.ApiConnector;
+using DotNetEnv;
 
 class Program {
     static void Main(string[] args) {
+        Env.Load();
         string user = Environment.GetEnvironmentVariable("IC_USER");
         string pass = Environment.GetEnvironmentVariable("IC_PASS");
-        if (user == null || pass == null) {
-            Console.Error.WriteLine("ERROR: Set IC_USER and IC_PASS");
+        if (string.IsNullOrEmpty(user) || string.IsNullOrEmpty(pass)) {
+            Console.Error.WriteLine("Error: IC_USER or IC_PASS not defined.");
             return;
         }
+
         var client = new ICClient(user, pass);
-        var activities = client.GetNewActivities(); // henter nye aktiviteter
+        var activities = client.GetNewActivities();  // Get new activities
+
+        // Set output directory with default being "./activities"
         string outDir = args.Length > 0 ? args[0] : "./activities";
         Directory.CreateDirectory(outDir);
 
