@@ -1,0 +1,9 @@
+#!/usr/bin/env python3
+import os
+import time
+from watchdog.observers import Observer
+from watchdog.events import FileSystemEventHandler
+from garmin_uploader.cli import upload_file
+
+# Get output directory from environment or use default
+WATCH_DIR = os.getenv("IC_OUTDIR", os.path.expanduser("~/activities"))
