@@ -28,7 +28,6 @@ echo "IC_PASS=your_password" >> .env
 ### 3. C# Application
 
 ```bash
-cd ICDownload
 dotnet add package IntelligentCycling.ApiConnector --version 5.5.0
 dotnet publish -c Release -r win-x64 --self-contained=false
 vbnet
