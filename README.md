@@ -11,9 +11,21 @@ Project to automate the transfer of indoor cycling activities from Intelligent C
   - `GC_USER`, `GC_PASS` – for Garmin Connect login
   - (optional) `IC_OUTDIR` – output directory for downloaded activities (default: `./activities`)
 
-## Installation
+### 1. Clone the repo
 
-### 1. C# Application
+```bash
+git clone https://github.com/theaholtlund/activity-to-garmin.git
+cd activity-to-garmin/intelligent-cycling
+```
+
+### 2. Add the credentials to environment file
+
+```bash
+echo "IC_USER=your_email" >> .env
+echo "IC_PASS=your_password" >> .env
+```
+
+### 3. C# Application
 
 ```bash
 cd ICDownload
@@ -22,7 +34,7 @@ dotnet publish -c Release -r win-x64 --self-contained=false
 vbnet
 ```
 
-### 2. Python Script: Watch Folder and Upload to Garmin
+### 4. Python Script: Watch Folder and Upload to Garmin
 
 ```bash
 cd python-uploader
@@ -30,13 +42,13 @@ python3 -m venv venv
 source venv/bin/activate
 ```
 
-### 3. Intall the Requirements
+### 5. Intall the Requirements
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 4. Run the File
+### 6. Run the File
 
 ```bash
 python upload_watch.py
