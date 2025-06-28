@@ -20,3 +20,6 @@ if __name__ == "__main__":
     obs = Observer()
     obs.schedule(Handler(), WATCH_DIR, recursive=False)
     obs.start()
+    print(f"[WATCH] Watching directory: {WATCH_DIR}")
+    while True:
+        obs.join()
