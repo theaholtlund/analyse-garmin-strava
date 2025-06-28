@@ -14,3 +14,9 @@ class Handler(FileSystemEventHandler):
             print(f"[WATCH] New activity found: {event.src_path}")
             # Call gupload for automatic upload
             upload_file([event.src_path], configfile=os.path.expanduser("~/.guploadrc"), activity_type="indoor_cycling")
+
+if __name__ == "__main__":
+    os.makedirs(WATCH_DIR, exist_ok=True)
+    obs = Observer()
+    obs.schedule(Handler(), WATCH_DIR, recursive=False)
+    obs.start()
