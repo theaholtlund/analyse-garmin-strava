@@ -18,7 +18,7 @@ git clone https://github.com/theaholtlund/activity-to-garmin.git
 cd activity-to-garmin/intelligent-cycling
 ```
 
-### 2. Add the credentials to environment file
+### 2. Add credentials to environment file
 
 ```bash
 echo "IC_USER=your_email" >> .env
@@ -41,7 +41,7 @@ python3 -m venv venv
 source venv/bin/activate
 ```
 
-### 5. Intall the Requirements
+### 5. Install the Requirements
 
 ```bash
 pip install -r requirements.txt
