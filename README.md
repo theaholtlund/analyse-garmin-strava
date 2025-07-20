@@ -11,6 +11,8 @@ Work in progress. Project aiming to automate the transfer of indoor cycling acti
   - `GC_USER`, `GC_PASS` – for Garmin Connect login
   - (optional) `IC_OUTDIR` – output directory for downloaded activities (default: `./activities`)
 
+## Running the Code
+
 ### 1. Clone the repo
 
 ```bash
