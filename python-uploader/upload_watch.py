@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Import required libraries
 import os
 import time
 from watchdog.observers import Observer
@@ -8,6 +9,7 @@ from garmin_uploader.cli import upload_file
 # Get output directory from environment or use default
 WATCH_DIR = os.getenv("IC_OUTDIR", os.path.expanduser("~/activities"))
 
+# Define class for file system event
 class Handler(FileSystemEventHandler):
     def on_created(self, event):
         if event.src_path.lower().endswith((".fit", ".tcx", ".gpx")):
