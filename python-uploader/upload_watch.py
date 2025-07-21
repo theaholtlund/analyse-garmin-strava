@@ -21,5 +21,9 @@ if __name__ == "__main__":
     obs.schedule(Handler(), WATCH_DIR, recursive=False)
     obs.start()
     print(f"[WATCH] Watching directory: {WATCH_DIR}")
-    while True:
-        obs.join()
+    try:
+        while True:
+            time.sleep(1)
+    except KeyboardInterrupt:
+        obs.stop()
+    obs.join()
