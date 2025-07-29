@@ -1,35 +1,55 @@
-using System;
-using DotNetEnv;
-using IntelligentCycling.ApiConnector;
 using Garmin.Connect;
+using Garmin.Connect.Auth;
+using Garmin.Connect.Models;
+using System;
+using System.IO;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 
-class Program {
-    static async System.Threading.Tasks.Task Main(string[] args) {
-        Env.Load();
+class Program
+{
+    static async Task Main(string[] args)
+    {
+        // Load environment variables
+        DotNetEnv.Env.Load();
 
-        string icUser = Environment.GetEnvironmentVariable("IC_USER");
-        string icPass = Environment.GetEnvironmentVariable("IC_PASS");
-        string garminUser = Environment.GetEnvironmentVariable("GARMIN_USER");
-        string garminPass = Environment.GetEnvironmentVariable("GARMIN_PASS");
+        // Retrieve credentials from environment variables
+        string? gcUser = Environment.GetEnvironmentVariable("GARMIN_USER");
+        string? gcPass = Environment.GetEnvironmentVariable("GARMIN_PASS");
 
-        if(string.IsNullOrEmpty(icUser)||string.IsNullOrEmpty(icPass)
-           ||string.IsNullOrEmpty(garminUser)||string.IsNullOrEmpty(garminPass)) {
-            Console.Error.WriteLine("Set IC_USER/IC_PASS and GARMIN_USER/GARMIN_PASS in .env");
+        // Validate credentials
+        if (gcUser == null || gcPass == null)
+        {
+            Console.Error.WriteLine("ERROR: GARMIN_USER or GARMIN_PASS not set in .env");
             return;
         }
 
-        // Intelligent Cycling
-        var icClient = new ICClient(icUser, icPass);
-        var icActs = icClient.GetNewActivities();
-        if(icActs.Count > 0)
-            Console.WriteLine($"[IC] Found activity ID: {icActs[0].Id}");
-        else
-            Console.WriteLine("[IC] No new activities found");
+        // Initialise the HttpClient
+        var httpClient = new HttpClient();
 
-        // Garmin Connect
-        var authParams = new BasicAuthParameters(garminUser, garminPass);
-        var garminClient = new GarminConnectClient(new GarminConnectContext(new System.Net.Http.HttpClient(), authParams));
-        var profile = await garminClient.GetUserProfileAsync();
-        Console.WriteLine($"[Garmin] Connected as: {profile.DisplayName}");
+        // Authenticate and get the GarminConnectClient
+        var authParameters = new BasicAuthParameters(gcUser, gcPass);
+        var client = new GarminConnectClient(new GarminConnectContext(httpClient, authParameters));
+
+        // Retrieve new activities
+        int start = 0;
+        int limit = 100;
+        var activities = await client.GetActivities(start, limit, CancellationToken.None);
+
+        // Set output directory
+        string outDir = args.Length > 0 ? args[0] : "./activities";
+        Directory.CreateDirectory(outDir);
+
+        // Download activities
+        foreach (var act in activities)
+        {
+            string path = Path.Combine(outDir, $"{act.ActivityId}.fit");
+            if (!File.Exists(path))
+            {
+                client.DownloadActivity(act.ActivityId, path);
+                Console.WriteLine($"Downloaded: {path}");
+            }
+        }
     }
 }
