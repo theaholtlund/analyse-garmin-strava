@@ -23,8 +23,14 @@ IC_PASS = os.getenv("IC_PASS")
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# Configure Chrome options
+chrome_options = Options()
+chrome_options.add_argument("--start-maximized")
+chrome_options.add_argument("--disable-extensions")
+chrome_options.add_argument("--headless")  # Run in headless mode, no GUI
+
 # Initialise the Chrome web driver
-driver = webdriver.Chrome()
+driver = webdriver.Chrome(options=chrome_options)
 
 try:
     logger.info("Navigating to the login page")
