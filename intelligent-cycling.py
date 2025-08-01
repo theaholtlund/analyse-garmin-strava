@@ -5,12 +5,7 @@ import time
 from dotenv import load_dotenv
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.common.action_chains import ActionChains
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import TimeoutException, NoSuchElementException
 
 # Load environment variables
 load_dotenv()
@@ -56,10 +51,8 @@ try:
     logger.info("Waiting for the dashboard to load")
     driver.implicitly_wait(10)
 
-except TimeoutException as e:
+except time.TimeoutException as e:
     logger.error(f"Timeout occurred: {e}")
-except NoSuchElementException as e:
-    logger.error(f"Element not found: {e}")
 except Exception as e:
     logger.error(f"An unexpected error occurred: {e}")
 finally:
