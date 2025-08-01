@@ -1,0 +1,47 @@
+# Import required libraries
+import logging
+import os
+import time
+from dotenv import load_dotenv
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import TimeoutException, NoSuchElementException
+
+# Load environment variables
+load_dotenv()
+
+# Retrieve credentials from environment variables
+IC_USER = os.getenv("IC_USER")
+IC_PASS = os.getenv("IC_PASS")
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# Initialise the Chrome web driver
+driver = webdriver.Chrome()
+
+try:
+    logger.info("Navigating to the login page")
+    driver.get("https://login.intelligent-cycling.com/")
+
+    logger.info("Entering username")
+    driver.find_element(By.ID, "Email").send_keys(IC_USER)
+
+    logger.info("Entering password")
+    driver.find_element(By.ID, "Password").send_keys(IC_PASS)
+
+except TimeoutException as e:
+    logger.error(f"Timeout occurred: {e}")
+except NoSuchElementException as e:
+    logger.error(f"Element not found: {e}")
+except Exception as e:
+    logger.error(f"An unexpected error occurred: {e}")
+finally:
+    logger.info("Closing the browser.")
+    driver.quit()
