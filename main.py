@@ -1,0 +1,87 @@
+# Import required libraries
+import os
+import datetime
+import logging
+import pandas as pd
+import matplotlib.pyplot as plt
+from dotenv import load_dotenv
+from garminconnect import Garmin, GarminConnectAuthenticationError, GarminConnectConnectionError, GarminConnectTooManyRequestsError
+
+# Set up configuration
+load_dotenv()
+USER = os.getenv("GARMIN_USER")
+PASS = os.getenv("GARMIN_PASS")
+
+if not USER or not PASS:
+    raise RuntimeError("GARMIN_USER and GARMIN_PASS must be set in .env")
+
+# Set up logging for information
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+def fetch_data(start_date, end_date):
+    try:
+        api = Garmin(USER, PASS)
+        api.login()
+        logger.info("Authenticated as %s", USER)
+
+        acts = api.get_activities_by_date(start_date.isoformat(), end_date.isoformat())
+        df = pd.DataFrame(acts)
+        return api, df
+
+    except (GarminConnectAuthenticationError, GarminConnectConnectionError, GarminConnectTooManyRequestsError) as e:
+        logger.error("API error: %s", e)
+    except AssertionError:
+        logger.error("Token/cache error — run example.py first")
+    return None, pd.DataFrame()
+
+def process_and_plot(df):
+    if df.empty:
+        print("No activities found in date range")
+        return
+
+    df = df[['activityId', 'activityType', 'startTimeLocal', 'duration', 'averageHR']].copy()
+    df['activityType'] = df['activityType'].apply(lambda x: x.get('typeKey', 'unknown'))
+    df['startTimeLocal'] = pd.to_datetime(df['startTimeLocal'])
+    df['duration_hr'] = df['duration'] / 3600
+
+    counts = df['activityType'].value_counts()
+    counts_filtered = counts[counts >= 5]
+    counts_filtered['Other'] = counts[counts < 5].sum()
+
+    print("Activity counts in period:")
+    print(counts_filtered.to_string())
+
+    plt.figure(figsize=(6,6))
+    plt.pie(counts_filtered.values, labels=counts_filtered.index, autopct='%1.1f%%')
+    plt.title("Activity type distribution")
+    plt.tight_layout()
+    plt.show()
+
+    plt.figure(figsize=(10,5))
+    plt.plot(df['startTimeLocal'], df['duration_hr'], marker='o')
+    plt.xlabel("Date")
+    plt.ylabel("Duration (hr)")
+    plt.title("Activity durations over time")
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+    plt.show()
+
+    print("\nAverage heart rate per activity:")
+    print(df[['activityId','activityType','averageHR']].dropna().to_string(index=False))
+
+def main():
+    st = datetime.date(2023,1,1)
+    en = datetime.date(2023,9,30)
+    api, df = fetch_data(st, en)
+    process_and_plot(df)
+
+    if api:
+        today = datetime.date.today().isoformat()
+        sleep = api.get_sleep_data(today)
+        stats = api.get_stats(today)
+        print("\nSleep summary for", today, ":", sleep.get("dailySleepDTO", {}))
+        print("Stats for", today, ":", stats)
+
+if __name__ == "__main__":
+    main()
