@@ -71,8 +71,8 @@ def process_and_plot(df):
     print(df[['activityId','activityType','averageHR']].dropna().to_string(index=False))
 
 def main():
-    st = datetime.date(2023,1,1)
-    en = datetime.date(2023,9,30)
+    st = datetime.date(2024, 1, 1)
+    en = datetime.date(2025, 1, 15)
     api, df = fetch_data(st, en)
     process_and_plot(df)
 
