@@ -13,7 +13,7 @@ USER = os.getenv("GARMIN_USER")
 PASS = os.getenv("GARMIN_PASS")
 
 if not USER or not PASS:
-    raise RuntimeError("GARMIN_USER and GARMIN_PASS must be set in .env")
+    raise RuntimeError("Garmin user and password must be set as environment variables")
 
 # Set up logging for information
 logging.basicConfig(level=logging.INFO)
@@ -71,7 +71,7 @@ def process_and_plot(df):
     print(df[['activityId','activityType','averageHR']].dropna().to_string(index=False))
 
 def main():
-    st = datetime.date(2024, 1, 1)
+    st = datetime.date(2025, 1, 1)
     en = datetime.date(2025, 1, 15)
     api, df = fetch_data(st, en)
     process_and_plot(df)
