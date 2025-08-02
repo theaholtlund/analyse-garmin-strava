@@ -1,4 +1,8 @@
-# PoC: Intelligent Cycling to Garmin Connect
+# WIP: Garmin Connect and Intelligent Cycling
+
+Project working with Garmin Connect data, potentially importang activities from Intelligent Cycling (if I can find a way to make it work lol, tricky one). Still need to implement:
+
+- More elaborate secret management, use Azure? GitHub?
 
 ## Requirements
 
