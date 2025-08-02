@@ -24,7 +24,7 @@ pip install -r requirements.txt
 
 ## Configure Environment Variables:
 
-Create a .env file in the project root with the following content:
+Set the following environment variables, as they will be needed to run the project scripts:
 
 ```bash
 IC_USER="YOUR-IC-EMAIL"
