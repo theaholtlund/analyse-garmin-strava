@@ -1,6 +1,6 @@
-# WIP: Garmin Connect and Intelligent Cycling
+# Data Analysis and Manipulation for Garmin Connect
 
-Project working with Garmin Connect data, potentially importang activities from Intelligent Cycling (if I can find a way to make it work lol, tricky one). Still need to implement:
+Work in progress. Project working with Garmin Connect data in various ways, aiming to process, transform and analyse activities.
 
 - Make compomnent of Intelligent Cycling work, obviously?
 - More elaborate secret management, use Azure? GitHub?
