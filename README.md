@@ -48,17 +48,23 @@ STRAVA_REDIRECT_URI="http://localhost"
 Garmin Connect:
 
 ```bash
-python garmin-connect.py
+python garmin_connect.py
 ```
 
 Intelligent Cycling:
 
 ```bash
-python intelligent-cycling.py
+python intelligent_cycling.py
 ```
 
 Strava:
 
 ```bash
 python strava.py
+```
+
+Sync between Strava and Garmin:
+
+```bash
+python compare_strava_garmin.py
 ```
