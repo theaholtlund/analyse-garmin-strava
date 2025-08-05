@@ -1,6 +1,6 @@
-# Data Analysis and Manipulation for Garmin Connect
+# Data Analysis for Strava and Garmin Connect
 
-Work in progress. Project working with Garmin Connect data in various ways, aiming to process, transform and analyse activities.
+Work in progress. Project working with Strava and Garmin Connect data in various ways, aiming to analyse, process and transform activities.
 
 # Ideas for Later, Components to Implement:
 
@@ -14,6 +14,7 @@ Work in progress. Project working with Garmin Connect data in various ways, aimi
 
 - Python ≥ 3.10, as this is required by GarminConnect
 - ChromeDriver, which can be installed for example via Homebrew
+- Strava developer app, created at https://www.strava.com/settings/api
 
 ## Create a Virtual Environment
 
@@ -37,6 +38,9 @@ IC_USER="YOUR-IC-EMAIL"
 IC_PASS="YOUR-IC-PASSWORD"
 GARMIN_USER="YOUR-GC-EMAIL"
 GARMIN_PASS="YOUR-GC-PASSWORD"
+STRAVA_CLIENT_ID="YOUR-CLIENT-ID"
+STRAVA_CLIENT_SECRET="YOUR-CLIENT-SECRET"
+STRAVA_REDIRECT_URI="http://localhost"
 ```
 
 ## Run the Project Files
@@ -51,4 +55,10 @@ Intelligent Cycling:
 
 ```bash
 python intelligent-cycling.py
+```
+
+Strava:
+
+```bash
+python strava.py
 ```
