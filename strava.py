@@ -43,18 +43,18 @@ def authenticate():
     logger.info("Opening browser for Strava OAuth flow")
     webbrowser.open(url)
     code = input("Paste the code parameter from the URL after approve: ").strip()
-    resp = requests.post("https://www.strava.com/api/v3/oauth/token", data={
+    response = requests.post("https://www.strava.com/api/v3/oauth/token", data={
         "client_id": CLIENT_ID,
         "client_secret": CLIENT_SECRET,
         "code": code,
         "grant_type": "authorization_code"
     })
 
-    resp.raise_for_status()
-    tok = resp.json()
+    response.raise_for_status()
+    token = response.json()
 
-    save_tokens(tok)
-    return tok
+    save_tokens(token)
+    return token
 
 def load_tokens():
     if os.path.exists(TOKEN_PATH):
@@ -63,24 +63,24 @@ def load_tokens():
     return authenticate()
 
 def refresh_access(tok):
-    resp = requests.post("https://www.strava.com/api/v3/oauth/token", data={
+    response = requests.post("https://www.strava.com/api/v3/oauth/token", data={
         "client_id": CLIENT_ID,
         "client_secret": CLIENT_SECRET,
         "grant_type": "refresh_token",
         "refresh_token": tok["refresh_token"],
     })
-    resp.raise_for_status()
-    new = resp.json()
+    response.raise_for_status()
+    new = response.json()
     save_tokens(new)
     return new
 
 def get_latest_activities(days=ACTIVITY_DAYS_RANGE):
-    tok = load_tokens()
-    now_ts = datetime.datetime.now(datetime.timezone.utc).timestamp()
-    if tok["expires_at"] < now_ts:
-        tok = refresh_access(tok)
+    token = load_tokens()
+    current_timestamp = datetime.datetime.now(datetime.timezone.utc).timestamp()
+    if token["expires_at"] < current_timestamp:
+        token = refresh_access(token)
 
-    headers = {"Authorization": f"Bearer {tok['access_token']}"}
+    headers = {"Authorization": f"Bearer {token['access_token']}"}
 
     after = int((datetime.datetime.now() - datetime.timedelta(days=days)).timestamp())
 
@@ -94,10 +94,10 @@ def get_latest_activities(days=ACTIVITY_DAYS_RANGE):
             "page": page,
             "per_page": per_page
         }
-        r = requests.get("https://www.strava.com/api/v3/athlete/activities",
+        response = requests.get("https://www.strava.com/api/v3/athlete/activities",
                          headers=headers, params=params)
-        r.raise_for_status()
-        page_data = r.json()
+        response.raise_for_status()
+        page_data = response.json()
 
         if not page_data:
             break
@@ -112,15 +112,15 @@ def get_latest_activities(days=ACTIVITY_DAYS_RANGE):
     return pd.DataFrame(activities)
 
 def get_stream(activity_id, types=("heartrate", "cadence", "distance", "time")):
-    tok = load_tokens()
-    headers = {"Authorization": f"Bearer {tok['access_token']}"}
-    r = requests.get(
+    token = load_tokens()
+    headers = {"Authorization": f"Bearer {token['access_token']}"}
+    response = requests.get(
         f"https://www.strava.com/api/v3/activities/{activity_id}/streams",
         headers=headers,
         params={"keys": ",".join(types), "key_by_type": True}
     )
-    r.raise_for_status()
-    return r.json()
+    response.raise_for_status()
+    return response.json()
 
 if __name__ == "__main__":
     logger.info(f"Fetching activities from the past {ACTIVITY_DAYS_RANGE} days")
@@ -140,15 +140,15 @@ if __name__ == "__main__":
         df = df.rename(columns={"start_date_local": "activity start time"})
 
         # Select relevant columns
-        out_df = df[["name", "type", "activity start time"]]
+        output_df = df[["name", "type", "activity start time"]]
 
         # Calculate max width for each column
-        col_widths = {col: max(out_df[col].astype(str).map(len).max(), len(col)) for col in out_df.columns}
+        column_widths = {col: max(output_df[col].astype(str).map(len).max(), len(col)) for col in output_df.columns}
 
         # Create header row, left aligned
-        header = "  ".join(f"{col:<{col_widths[col]}}" for col in out_df.columns)
+        header = "  ".join(f"{col:<{column_widths[col]}}" for col in output_df.columns)
         print(header)
 
         # Print rows with left-aligned columns
-        for _, row in out_df.iterrows():
-            print("  ".join(f"{str(val):<{col_widths[col]}}" for col, val in row.items()))
+        for _, row in output_df.iterrows():
+            print("  ".join(f"{str(val):<{column_widths[col]}}" for col, val in row.items()))
