@@ -1,5 +1,6 @@
 # Import required libraries
 import os
+import time
 import webbrowser
 import datetime
 import logging
@@ -40,8 +41,10 @@ def authenticate():
         "code": code,
         "grant_type": "authorization_code"
     })
+
     resp.raise_for_status()
     tok = resp.json()
+    
     with open(TOKEN_PATH, "w") as f:
         import json; json.dump(tok, f)
     return tok
@@ -65,17 +68,41 @@ def refresh_access(tok):
         import json; json.dump(new, f)
     return new
 
-def get_latest_activities(limit=5):
+def get_latest_activities(days=14):
     tok = load_tokens()
     if tok["expires_at"] < datetime.datetime.now(datetime.timezone.utc).timestamp():
         tok = refresh_access(tok)
+
     headers = {"Authorization": f"Bearer {tok['access_token']}"}
-    params = {"per_page": limit, "page": 1}
-    r = requests.get("https://www.strava.com/api/v3/athlete/activities",
-                     headers=headers, params=params)
-    r.raise_for_status()
-    data = r.json()
-    return pd.DataFrame(data)
+
+    after = int((datetime.datetime.now() - datetime.timedelta(days=days)).timestamp())
+
+    activities = []
+    page = 1
+    per_page = 50
+
+    while True:
+        params = {
+            "after": after,
+            "page": page,
+            "per_page": per_page
+        }
+        r = requests.get("https://www.strava.com/api/v3/athlete/activities",
+                         headers=headers, params=params)
+        r.raise_for_status()
+        page_data = r.json()
+
+        if not page_data:
+            break
+
+        activities.extend(page_data)
+        page += 1
+        time.sleep(0.2)
+
+    if not activities:
+        return pd.DataFrame()
+
+    return pd.DataFrame(activities)
 
 def get_stream(activity_id, types=("heartrate","cadence","distance","time")):
     tok = load_tokens()
@@ -89,8 +116,19 @@ def get_stream(activity_id, types=("heartrate","cadence","distance","time")):
     return r.json()
 
 if __name__ == "__main__":
-    logger.info("Fetching the five latest activities")
-    df = get_latest_activities()
-    df["start_date_local"] = pd.to_datetime(df["start_date_local"]).dt.strftime("%d-%m-%Y %H:%M")
-    df = df.rename(columns={"start_date_local": "activity start time"})
-    print(df[["id", "name", "type", "activity start time"]])
+    logger.info("Fetching activities from the past 14 days")
+    df = get_latest_activities(days=14)
+
+    if df.empty:
+        print("No activities found.")
+    else:
+        expected_cols = ["id", "name", "type", "start_date_local"]
+        for col in expected_cols:
+            if col not in df.columns:
+                df[col] = None
+
+        df["start_date_local"] = pd.to_datetime(df["start_date_local"], errors='coerce')
+        df["start_date_local"] = df["start_date_local"].dt.strftime("%d-%m-%Y %H:%M")
+        df = df.rename(columns={"start_date_local": "activity start time"})
+
+        print(df[["id", "name", "type", "activity start time"]])
