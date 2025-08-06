@@ -8,6 +8,9 @@ import pandas as pd
 from dotenv import load_dotenv
 import requests
 
+# Set how many days back to fetch activities
+ACTIVITY_DAYS_RANGE = 14
+
 # Set up configuration
 load_dotenv()
 CLIENT_ID = os.getenv("STRAVA_CLIENT_ID")
@@ -68,7 +71,7 @@ def refresh_access(tok):
         import json; json.dump(new, f)
     return new
 
-def get_latest_activities(days=14):
+def get_latest_activities(days=ACTIVITY_DAYS_RANGE):
     tok = load_tokens()
     if tok["expires_at"] < datetime.datetime.now(datetime.timezone.utc).timestamp():
         tok = refresh_access(tok)
@@ -116,8 +119,8 @@ def get_stream(activity_id, types=("heartrate","cadence","distance","time")):
     return r.json()
 
 if __name__ == "__main__":
-    logger.info("Fetching activities from the past 14 days")
-    df = get_latest_activities(days=14)
+    logger.info(f"Fetching activities from the past {ACTIVITY_DAYS_RANGE} days")
+    df = get_latest_activities(days=ACTIVITY_DAYS_RANGE)
 
     if df.empty:
         print("No activities found.")
