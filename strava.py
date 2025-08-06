@@ -18,7 +18,7 @@ CLIENT_SECRET = os.getenv("STRAVA_CLIENT_SECRET")
 REDIRECT_URI = os.getenv("STRAVA_REDIRECT_URI", "http://localhost")
 
 if not CLIENT_ID or not CLIENT_SECRET:
-    raise RuntimeError("Set STRAVA_CLIENT_ID and STRAVA_CLIENT_SECRET in .env")
+    raise RuntimeError("Set STRAVA_CLIENT_ID and STRAVA_CLIENT_SECRET in environment file")
 
 # Set up logging for information
 logging.basicConfig(level=logging.INFO)
@@ -120,19 +120,31 @@ def get_stream(activity_id, types=("heartrate","cadence","distance","time")):
 
 if __name__ == "__main__":
     logger.info(f"Fetching activities from the past {ACTIVITY_DAYS_RANGE} days")
-    df = get_latest_activities(days=ACTIVITY_DAYS_RANGE)
+    df = get_latest_activities()
 
     if df.empty:
-        print("No activities found.")
+        print("No activities found")
     else:
         # Ensure required columns exist
         expected_cols = ["id", "name", "type", "start_date_local"]
         for col in expected_cols:
             if col not in df.columns:
-                df[col] = None # Fill missing with None
+                df[col] = None  # Fill missing with None
 
         df["start_date_local"] = pd.to_datetime(df["start_date_local"], errors='coerce')
         df["start_date_local"] = df["start_date_local"].dt.strftime("%d-%m-%Y %H:%M")
         df = df.rename(columns={"start_date_local": "activity start time"})
 
-        print(df[["id", "name", "type", "activity start time"]])
+        # Select relevant columns
+        out_df = df[["name", "type", "activity start time"]]
+
+        # Calculate max width for each column
+        col_widths = {col: max(out_df[col].astype(str).map(len).max(), len(col)) for col in out_df.columns}
+
+        # Create header row, left aligned
+        header = "  ".join(f"{col:<{col_widths[col]}}" for col in out_df.columns)
+        print(header)
+
+        # Print rows with left-aligned columns
+        for _, row in out_df.iterrows():
+            print("  ".join(f"{str(val):<{col_widths[col]}}" for col, val in row.items()))
