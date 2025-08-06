@@ -7,6 +7,7 @@ import logging
 import pandas as pd
 from dotenv import load_dotenv
 import requests
+import json
 
 # Set how many days back to fetch activities
 ACTIVITY_DAYS_RANGE = 14
@@ -25,6 +26,10 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 TOKEN_PATH = "strava_tokens.json"
+
+def save_tokens(tok):
+    with open(TOKEN_PATH, "w") as f:
+        json.dump(tok, f)
 
 def authenticate():
     url = (
@@ -47,15 +52,14 @@ def authenticate():
 
     resp.raise_for_status()
     tok = resp.json()
-    
-    with open(TOKEN_PATH, "w") as f:
-        import json; json.dump(tok, f)
+
+    save_tokens(tok)
     return tok
 
 def load_tokens():
-    import json
     if os.path.exists(TOKEN_PATH):
-        return json.load(open(TOKEN_PATH))
+        with open(TOKEN_PATH) as f:
+            return json.load(f)
     return authenticate()
 
 def refresh_access(tok):
@@ -67,13 +71,13 @@ def refresh_access(tok):
     })
     resp.raise_for_status()
     new = resp.json()
-    with open(TOKEN_PATH, "w") as f:
-        import json; json.dump(new, f)
+    save_tokens(new)
     return new
 
 def get_latest_activities(days=ACTIVITY_DAYS_RANGE):
     tok = load_tokens()
-    if tok["expires_at"] < datetime.datetime.now(datetime.timezone.utc).timestamp():
+    now_ts = datetime.datetime.now(datetime.timezone.utc).timestamp()
+    if tok["expires_at"] < now_ts:
         tok = refresh_access(tok)
 
     headers = {"Authorization": f"Bearer {tok['access_token']}"}
@@ -107,7 +111,7 @@ def get_latest_activities(days=ACTIVITY_DAYS_RANGE):
 
     return pd.DataFrame(activities)
 
-def get_stream(activity_id, types=("heartrate","cadence","distance","time")):
+def get_stream(activity_id, types=("heartrate", "cadence", "distance", "time")):
     tok = load_tokens()
     headers = {"Authorization": f"Bearer {tok['access_token']}"}
     r = requests.get(
@@ -129,7 +133,7 @@ if __name__ == "__main__":
         expected_cols = ["id", "name", "type", "start_date_local"]
         for col in expected_cols:
             if col not in df.columns:
-                df[col] = None  # Fill missing with None
+                df[col] = None # Fill missing with None
 
         df["start_date_local"] = pd.to_datetime(df["start_date_local"], errors='coerce')
         df["start_date_local"] = df["start_date_local"].dt.strftime("%d-%m-%Y %H:%M")
