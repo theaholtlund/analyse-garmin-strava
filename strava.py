@@ -79,7 +79,7 @@ def get_latest_activities(days=14):
 
     activities = []
     page = 1
-    per_page = 50
+    per_page = 50 # This is the Strava max
 
     while True:
         params = {
@@ -97,7 +97,7 @@ def get_latest_activities(days=14):
 
         activities.extend(page_data)
         page += 1
-        time.sleep(0.2)
+        time.sleep(0.2) # API rate limit safety
 
     if not activities:
         return pd.DataFrame()
@@ -122,10 +122,11 @@ if __name__ == "__main__":
     if df.empty:
         print("No activities found.")
     else:
+        # Ensure required columns exist
         expected_cols = ["id", "name", "type", "start_date_local"]
         for col in expected_cols:
             if col not in df.columns:
-                df[col] = None
+                df[col] = None # Fill missing with None
 
         df["start_date_local"] = pd.to_datetime(df["start_date_local"], errors='coerce')
         df["start_date_local"] = df["start_date_local"].dt.strftime("%d-%m-%Y %H:%M")
