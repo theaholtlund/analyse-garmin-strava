@@ -5,13 +5,16 @@ import matplotlib.pyplot as plt
 from garminconnect import Garmin, GarminConnectAuthenticationError, GarminConnectConnectionError, GarminConnectTooManyRequestsError
 
 # Import shared config and functions from other scripts
-from config import logger, ACTIVITY_DAYS_RANGE, GARMIN_USER, GARMIN_PASS
+from config import logger, GARMIN_USER, GARMIN_PASS, ACTIVITY_DAYS_RANGE, ACTIVITY_TYPE_TRANSLATIONS
 from todoist_integration import create_todoist_task
 from task_tracker import init_db, task_exists, mark_task_created
 
 # Validate credentials from shared configuration
 if not GARMIN_USER or not GARMIN_PASS:
     raise RuntimeError("Garmin user and password must be set as environment variables")
+
+def translate_activity_type(type_key):
+    return ACTIVITY_TYPE_TRANSLATIONS.get(type_key)
 
 def fetch_data(start_date, end_date):
     try:
@@ -65,13 +68,13 @@ def process_and_plot(df):
     print(df[['activityId','activityType','averageHR']].dropna().to_string(index=False))
 
 def main():
-    """
     end_time = datetime.date.today()
     start_time = end_time - datetime.timedelta(days=ACTIVITY_DAYS_RANGE)
 
     api, df = fetch_data(start_time, end_time)
     process_and_plot(df)
 
+    """
     today = end_time.isoformat()
     sleep = api.get_sleep_data(today)
     stats = api.get_stats(today)
@@ -87,7 +90,7 @@ def main():
 
     # Use today only
     today = datetime.date.today()
-    api, df = fetch_data(today, today)
+    _, df = fetch_data(today, today)
 
     if df.empty:
         logger.info("No Garmin activities found for today")
@@ -97,16 +100,16 @@ def main():
 
     for _, row in df.iterrows():
         activity_id = str(row['activityId'])
-        activity_type = row['activityType'].capitalize()
-        activity_type_case = activity_type.lower()
+        activity_type_key = row['activityType']
+        activity_type_no = translate_activity_type(activity_type_key)
 
         if task_exists(activity_id):
-            logger.info(f"Task already created for activity {activity_type} ({activity_id}), skipping.")
+            logger.info(f"Task already created for activity {activity_type_key} ({activity_id}), skipping.")
             continue
 
-        task_content = f"Oppdatere notater for {activity_type_case} i kalenderhendelse for trening"
+        task_content = f"Oppdatere notater for {activity_type_no} i kalenderhendelse for trening"
         create_todoist_task(content=task_content, due_string="today")
-        logger.info(f"Created task for Garmin activity {activity_id} ({activity_type})")
+        logger.info(f"Created task for Garmin activity {activity_id} ({activity_type_key})")
         mark_task_created(activity_id)
 
 if __name__ == "__main__":

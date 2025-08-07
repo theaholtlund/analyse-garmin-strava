@@ -13,6 +13,24 @@ logger = logging.getLogger(__name__)
 # Set how many days back to fetch activities
 ACTIVITY_DAYS_RANGE = 14
 
+# Mapping the Garmin Connect activity types to Norwegian names
+ACTIVITY_TYPE_TRANSLATIONS = {
+    "running": "løping",
+    "treadmill_running": "løping på tredemølle",
+    "cycling": "sykling",
+    "indoor_cycling": "innendørssykling",
+    "strength_training": "styrketrening",
+    "walking": "gåtur",
+    "swimming": "svømming",
+    "lap_swimming": "bassengsvømming",
+    "hiking": "fottur",
+    "multisport" : "triatlon",
+    "yoga": "yoga",
+    "rowing": "roing",
+    "elliptical": "ellipsemaskin",
+    "other": "annet",
+}
+
 # Load the credentials from Garmin
 GARMIN_USER = os.getenv("GARMIN_USER")
 GARMIN_PASS = os.getenv("GARMIN_PASS")
