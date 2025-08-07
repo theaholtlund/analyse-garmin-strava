@@ -5,9 +5,10 @@ import matplotlib.pyplot as plt
 from garminconnect import Garmin, GarminConnectAuthenticationError, GarminConnectConnectionError, GarminConnectTooManyRequestsError
 
 # Import shared config and functions from other scripts
-from config import logger, GARMIN_USER, GARMIN_PASS
+from config import logger, ACTIVITY_DAYS_RANGE, GARMIN_USER, GARMIN_PASS
+from todoist_integration import create_todoist_task
 
-# Set up configuration
+# Validate credentials from shared configuration
 if not GARMIN_USER or not GARMIN_PASS:
     raise RuntimeError("Garmin user and password must be set as environment variables")
 
@@ -63,12 +64,13 @@ def process_and_plot(df):
     print(df[['activityId','activityType','averageHR']].dropna().to_string(index=False))
 
 def main():
-    start_time = datetime.date(2025, 1, 1)
-    end_time = datetime.date(2025, 1, 15)
+    end_time = datetime.date.today()
+    start_time = end_time - datetime.timedelta(days=ACTIVITY_DAYS_RANGE)
+
     api, df = fetch_data(start_time, end_time)
     process_and_plot(df)
 
-    today = datetime.date.today().isoformat()
+    today = end_time.isoformat()
     sleep = api.get_sleep_data(today)
     stats = api.get_stats(today)
     print("\nSleep summary for", today, ":", sleep.get("dailySleepDTO", {}))
