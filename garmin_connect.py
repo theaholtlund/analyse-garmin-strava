@@ -1,29 +1,21 @@
 # Import required libraries
-import os
 import datetime
-import logging
 import pandas as pd
 import matplotlib.pyplot as plt
-from dotenv import load_dotenv
 from garminconnect import Garmin, GarminConnectAuthenticationError, GarminConnectConnectionError, GarminConnectTooManyRequestsError
 
+# Import shared config and functions from other scripts
+from config import logger, GARMIN_USER, GARMIN_PASS
+
 # Set up configuration
-load_dotenv()
-USER = os.getenv("GARMIN_USER")
-PASS = os.getenv("GARMIN_PASS")
-
-if not USER or not PASS:
+if not GARMIN_USER or not GARMIN_PASS:
     raise RuntimeError("Garmin user and password must be set as environment variables")
-
-# Set up logging for information
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
 
 def fetch_data(start_date, end_date):
     try:
-        api = Garmin(USER, PASS)
+        api = Garmin(GARMIN_USER, GARMIN_PASS)
         api.login()
-        logger.info("Authenticated as %s", USER)
+        logger.info("Authenticated as %s", GARMIN_USER)
 
         acts = api.get_activities_by_date(start_date.isoformat(), end_date.isoformat())
         df = pd.DataFrame(acts)
