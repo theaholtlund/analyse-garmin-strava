@@ -2,33 +2,34 @@ name: Garmin Connect to Todoist Task
 
 on:
   schedule:
-    - cron: "*/15 * * * *" # Run workflow every 15 minutes
+    - cron: "*/20 * * * *" # Run workflow every 20 minutes
   workflow_dispatch: # Allow manual trigger
 
 jobs:
   garmin-connect-task:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout the repo
+      - name: Checkout the repo # Ensure the workflow has access to the code
         uses: actions/checkout@v4
 
-      - name: Set up Python
+      - name: Set up Python # Make sure Python is available in GitHub runner environment
         uses: actions/setup-python@v5
         with:
           python-version: 3.11
 
-      - name: Install project dependencies
+      - name: Install project dependencies # Install required packages for script to run
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Restore the task tracker cache
+      - name: Restore the task tracker cache # Restore database file from cache if available, track tasks already created
         uses: actions/cache@v4
         with:
           path: created_tasks.db
           key: garmin-tasks-db
 
-      - name: Run the Garmin Connect script
+      - name: Run the Garmin Connect script # Execute main script
         env:
           GARMIN_USER: ${{ secrets.GARMIN_USER }}
           GARMIN_PASS: ${{ secrets.GARMIN_PASS }}
