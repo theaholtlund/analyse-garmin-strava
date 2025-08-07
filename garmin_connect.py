@@ -76,5 +76,8 @@ def main():
     print("\nSleep summary for", today, ":", sleep.get("dailySleepDTO", {}))
     print("Stats for", today, ":", stats)
 
+    # Create a task in Todoist
+    create_todoist_task(content="Data has been analysed for Garmin Connect", due_string="today")
+
 if __name__ == "__main__":
     main()
