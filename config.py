@@ -20,4 +20,6 @@ IC_USER = os.getenv("IC_USER")
 IC_PASS = os.getenv("IC_PASS")
 
 # Load the credentials from Todoist
+TODOIST_SECTION_ID = os.getenv("TODOIST_SECTION_ID")
+TODOIST_PROJECT_ID = os.getenv("TODOIST_PROJECT_ID")
 TODOIST_API_TOKEN = os.getenv("TODOIST_API_TOKEN")
