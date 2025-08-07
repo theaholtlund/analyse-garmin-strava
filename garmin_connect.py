@@ -63,17 +63,16 @@ def process_and_plot(df):
     print(df[['activityId','activityType','averageHR']].dropna().to_string(index=False))
 
 def main():
-    st = datetime.date(2025, 1, 1)
-    en = datetime.date(2025, 1, 15)
-    api, df = fetch_data(st, en)
+    start_time = datetime.date(2025, 1, 1)
+    end_time = datetime.date(2025, 1, 15)
+    api, df = fetch_data(start_time, end_time)
     process_and_plot(df)
 
-    if api:
-        today = datetime.date.today().isoformat()
-        sleep = api.get_sleep_data(today)
-        stats = api.get_stats(today)
-        print("\nSleep summary for", today, ":", sleep.get("dailySleepDTO", {}))
-        print("Stats for", today, ":", stats)
+    today = datetime.date.today().isoformat()
+    sleep = api.get_sleep_data(today)
+    stats = api.get_stats(today)
+    print("\nSleep summary for", today, ":", sleep.get("dailySleepDTO", {}))
+    print("Stats for", today, ":", stats)
 
 if __name__ == "__main__":
     main()
