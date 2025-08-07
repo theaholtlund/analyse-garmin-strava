@@ -49,9 +49,9 @@ def main():
     # Login to Intelligent Cycling profile
     try:
         intelligent_cycling_login()
-        logger.info("Intelligent Cycling login successful.")
+        logger.info("The login for Intelligent Cycling was successful")
     except Exception as e:
-        logger.error(f"Intelligent Cycling login failed: {e}")
+        logger.error(f"The login for Intelligent Cycling failed: {e}")
 
 if __name__ == "__main__":
     main()
