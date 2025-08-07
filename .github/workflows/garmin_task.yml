@@ -2,8 +2,8 @@ name: Garmin Connect to Todoist Task
 
 on:
   schedule:
-    - cron: "*/10 * * * *" # Every 10 minutes
-  workflow_dispatch:
+    - cron: "*/10 * * * *" # Run workflow very 10 minutes
+  workflow_dispatch: # Allow manual trigger
 
 jobs:
   garmin:
