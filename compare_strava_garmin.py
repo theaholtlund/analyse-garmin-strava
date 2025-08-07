@@ -6,7 +6,7 @@ from garmin_connect import fetch_data
 from strava import get_latest_activities
 from intelligent_cycling import intelligent_cycling_login
 
-# Set up logging for information
+# Set up logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -21,7 +21,7 @@ def normalise_strava(df):
     return df
 
 def main():
-    # Fetch the Garmin activities for last 14 days
+    # Fetch the activities from Garmin
     end_date = datetime.date.today()
     start_date = end_date - datetime.timedelta(days=14)
     _, garmin_df = fetch_data(start_date, end_date)
@@ -46,7 +46,7 @@ def main():
     else:
         print("All Garmin activities are present on Strava")
 
-    # Login to Intelligent Cycling, simulate integration
+    # Login to Intelligent Cycling profile
     try:
         intelligent_cycling_login()
         logger.info("Intelligent Cycling login successful.")
