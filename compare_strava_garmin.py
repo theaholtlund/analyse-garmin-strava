@@ -1,14 +1,12 @@
 # Import required libraries
 import datetime
-import logging
 import pandas as pd
+
+# Import shared config and functions from other scripts
+from config import logger
 from garmin_connect import fetch_data
 from strava import get_latest_activities
 from intelligent_cycling import intelligent_cycling_login
-
-# Set up logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
 
 def normalise_garmin(df):
     df = df[['activityName', 'startTimeLocal']].copy()
