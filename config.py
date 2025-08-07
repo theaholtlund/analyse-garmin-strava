@@ -6,6 +6,10 @@ from dotenv import load_dotenv
 # Load environment variables from environment file
 load_dotenv()
 
+# Set up logging for information
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 # Set how many days back to fetch activities
 ACTIVITY_DAYS_RANGE = 14
 
