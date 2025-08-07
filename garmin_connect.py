@@ -93,15 +93,20 @@ def main():
         logger.info("No Garmin activities found for today")
         return
 
+    df['activityType'] = df['activityType'].apply(lambda x: x.get('typeKey', 'unknown'))
+
     for _, row in df.iterrows():
         activity_id = str(row['activityId'])
+        activity_type = row['activityType'].capitalize()
+        activity_type_case = activity_type.lower()
 
         if task_exists(activity_id):
-            logger.info(f"Task already created for activity {activity_id}, skipping.")
+            logger.info(f"Task already created for activity {activity_type} ({activity_id}), skipping.")
             continue
 
-        create_todoist_task(content="Oppdatere notater i kalenderhendelse for trening", due_string="today")
-        logger.info(f"Created task for Garmin activity {activity_id}")
+        task_content = f"Oppdatere notater for {activity_type_case} i kalenderhendelse for trening"
+        create_todoist_task(content=task_content, due_string="today")
+        logger.info(f"Created task for Garmin activity {activity_id} ({activity_type})")
         mark_task_created(activity_id)
 
 if __name__ == "__main__":
