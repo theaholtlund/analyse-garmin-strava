@@ -3,8 +3,11 @@ import os
 import logging
 from dotenv import load_dotenv
 
-# Load environment variables from .env file
+# Load environment variables from environment file
 load_dotenv()
+
+# Set how many days back to fetch activities
+ACTIVITY_DAYS_RANGE = 14
 
 # Load the credentials from Garmin
 GARMIN_USER = os.getenv("GARMIN_USER")
