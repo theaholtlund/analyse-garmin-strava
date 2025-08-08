@@ -78,11 +78,18 @@ def process_and_plot(df):
     plt.ylabel("Varighet i timer")
     plt.title("Varighet for aktivitet over tid")
     plt.xticks(rotation=45)
+    insert_logo(plt.gca(), figure_2)
     plt.tight_layout()
     plt.show()
 
     print("\nGjennomsnittspuls per aktivitet:")
-    print(df[['activityId','activityTypeNameNo','averageHR']].dropna().to_string(index=False))
+    print(df[['activityId', 'activityTypeNameNo', 'averageHR']].dropna()
+          .assign(activityTypeNameNo=lambda x: x['activityTypeNameNo'].str.capitalize())
+          .rename(columns={
+            'activityId': 'Activity ID',
+            'activityTypeNameNo': 'Activity Type',
+            'averageHR': 'Average HR'
+        }).to_string(index=False))
 
 def main():
     end_time = datetime.date.today()
