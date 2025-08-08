@@ -14,7 +14,10 @@ if not GARMIN_USER or not GARMIN_PASS:
     raise RuntimeError("Garmin user and password must be set as environment variables")
 
 def translate_activity_type(type_key):
-    return ACTIVITY_TYPE_TRANSLATIONS.get(type_key)
+    return ACTIVITY_TYPE_TRANSLATIONS.get(type_key.lower())
+
+def extract_activity_type(row):
+    return row.get('activityType', {}).get('typeKey', 'unknown')
 
 def fetch_data(start_date, end_date):
     try:
@@ -38,34 +41,35 @@ def process_and_plot(df):
         return
 
     df = df[['activityId', 'activityType', 'startTimeLocal', 'duration', 'averageHR']].copy()
-    df['activityType'] = df['activityType'].apply(lambda x: x.get('typeKey', 'unknown'))
+    df['activityTypeKey'] = df['activityType'].apply(lambda x: x.get('typeKey', 'unknown'))
+    df['activityTypeNameNo'] = df['activityTypeKey'].apply(translate_activity_type)
     df['startTimeLocal'] = pd.to_datetime(df['startTimeLocal'])
     df['duration_hr'] = df['duration'] / 3600
 
-    counts = df['activityType'].value_counts()
-    counts_filtered = counts[counts >= 5]
-    counts_filtered['Other'] = counts[counts < 5].sum()
+    counts = df['activityTypeNameNo'].value_counts()
+    # counts_filtered = counts[counts >= 5]
+    # counts_filtered['Annet'] = counts[counts < 5].sum()
 
-    print("Activity counts in period:")
-    print(counts_filtered.to_string())
+    print("Aktiviteter i perioden:")
+    print(counts.to_string())
 
     plt.figure(figsize=(6,6))
-    plt.pie(counts_filtered.values, labels=counts_filtered.index, autopct='%1.1f%%')
-    plt.title("Activity type distribution")
+    plt.pie(counts.values, labels=counts.index, autopct='%1.1f%%')
+    plt.title("Aktivitetsfordeling")
     plt.tight_layout()
     plt.show()
 
     plt.figure(figsize=(10,5))
     plt.plot(df['startTimeLocal'], df['duration_hr'], marker='o')
-    plt.xlabel("Date")
-    plt.ylabel("Duration (hr)")
-    plt.title("Activity durations over time")
+    plt.xlabel("Dato")
+    plt.ylabel("Varighet i timer")
+    plt.title("Varighet for aktivitet over tid")
     plt.xticks(rotation=45)
     plt.tight_layout()
     plt.show()
 
-    print("\nAverage heart rate per activity:")
-    print(df[['activityId','activityType','averageHR']].dropna().to_string(index=False))
+    print("\nGjennomsnittspuls per aktivitet:")
+    print(df[['activityId','activityTypeNameNo','averageHR']].dropna().to_string(index=False))
 
 def main():
     end_time = datetime.date.today()
@@ -88,7 +92,7 @@ def main():
     # Initialise tracking database
     init_db()
 
-    # Use today only
+    # Use today only for task creation
     today = datetime.date.today()
     _, df = fetch_data(today, today)
 
@@ -96,20 +100,21 @@ def main():
         logger.info("No Garmin activities found for today")
         return
 
-    df['activityType'] = df['activityType'].apply(lambda x: x.get('typeKey', 'unknown'))
+    df['activityTypeKey'] = df['activityType'].apply(lambda x: x.get('typeKey', 'unknown'))
+    df['activityTypeNameNo'] = df['activityTypeKey'].apply(translate_activity_type)
 
     for _, row in df.iterrows():
         activity_id = str(row['activityId'])
-        activity_type_key = row['activityType']
-        activity_type_no = translate_activity_type(activity_type_key)
+        activity_type_key = row['activityTypeKey']
+        activity_type_no = row['activityTypeNameNo']
 
         if task_exists(activity_id):
             logger.info(f"Task already created for activity {activity_type_key} ({activity_id}), skipping.")
             continue
 
-        task_content = f"Oppdatere notater for {activity_type_no} i kalenderhendelse for trening"
+        task_content = f"Oppdatere notater i kalenderhendelse for {activity_type_no}"
         create_todoist_task(content=task_content, due_string="today")
-        logger.info(f"Created task for Garmin activity {activity_id} ({activity_type_key})")
+        logger.info(f"Created task for Garmin activity {activity_type_key} ({activity_id})")
         mark_task_created(activity_id)
 
 if __name__ == "__main__":
