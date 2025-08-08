@@ -65,7 +65,7 @@ def process_and_plot(df):
 
     # Create the graphics pie chart
     figure_1 = plt.figure(figsize=(6,6))
-    plt.pie(counts.values, labels=counts.index, autopct='%1.1f%%')
+    plt.pie(counts.values, labels=counts.index.str.capitalize(), autopct='%1.1f%%')
     plt.title("Aktivitetsfordeling")
     insert_logo(plt.gca(), figure_1)
     plt.tight_layout()
@@ -78,7 +78,6 @@ def process_and_plot(df):
     plt.ylabel("Varighet i timer")
     plt.title("Varighet for aktivitet over tid")
     plt.xticks(rotation=45)
-    insert_logo(plt.gca(), figure_2)
     plt.tight_layout()
     plt.show()
 
@@ -111,7 +110,7 @@ def main():
     _, df = fetch_data(today, today)
 
     if df.empty:
-        logger.info("No Garmin activities found for today")
+        logger.info("No activities from Garmin found for today")
         return
 
     df['activityTypeKey'] = df['activityType'].apply(lambda x: x.get('typeKey', 'unknown'))
