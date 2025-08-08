@@ -2,6 +2,7 @@
 import datetime
 import pandas as pd
 import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
 from garminconnect import Garmin, GarminConnectAuthenticationError, GarminConnectConnectionError, GarminConnectTooManyRequestsError
 
 # Import shared config and functions from other scripts
@@ -35,6 +36,15 @@ def fetch_data(start_date, end_date):
         logger.error("Token/cache error — run example.py first")
     return None, pd.DataFrame()
 
+def insert_logo(ax, fig):
+    try:
+        logo_img = mpimg.imread('graphics/app-logo-1.png')
+        logo_ax = fig.add_axes([0.80, 0.80, 0.18, 0.18], anchor='NE', zorder=1)
+        logo_ax.imshow(logo_img)
+        logo_ax.axis('off')
+    except FileNotFoundError:
+        logger.warning("Logo not found at graphics folder")
+
 def process_and_plot(df):
     if df.empty:
         print("No activities found in date range")
@@ -53,18 +63,22 @@ def process_and_plot(df):
     print("Aktiviteter i perioden:")
     print(counts.to_string())
 
-    plt.figure(figsize=(6,6))
+    # Create the graphics pie chart
+    figure_1 = plt.figure(figsize=(6,6))
     plt.pie(counts.values, labels=counts.index, autopct='%1.1f%%')
     plt.title("Aktivitetsfordeling")
+    insert_logo(plt.gca(), figure_1)
     plt.tight_layout()
     plt.show()
 
-    plt.figure(figsize=(10,5))
+    # Create the graphics line plot
+    figure_2 = plt.figure(figsize=(10,5))
     plt.plot(df['startTimeLocal'], df['duration_hr'], marker='o')
     plt.xlabel("Dato")
     plt.ylabel("Varighet i timer")
     plt.title("Varighet for aktivitet over tid")
     plt.xticks(rotation=45)
+    insert_logo(plt.gca(), figure_2)
     plt.tight_layout()
     plt.show()
 
