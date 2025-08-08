@@ -61,7 +61,9 @@ def process_and_plot(df):
     # counts_filtered['Annet'] = counts[counts < 5].sum()
 
     print("Aktiviteter i perioden:")
-    print(counts.to_string())
+    counts_case = counts.rename(index=lambda x: x.capitalize())
+    counts_case.index.name = "Activity Type"
+    print(counts_case.to_string())
 
     # Create the graphics pie chart
     figure_1 = plt.figure(figsize=(6,6))
