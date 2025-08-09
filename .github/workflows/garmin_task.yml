@@ -27,7 +27,10 @@ jobs:
         uses: actions/cache@v4
         with:
           path: created_tasks.db
-          key: garmin-tasks-db
+          key: garmin-tasks-db-${{ github.run_id }} # Use unique cache key per run to force saving updated database
+          restore-keys:
+            | # Restore most recent database between runs to prevent duplicate task creation
+            garmin-tasks-db-
 
       - name: Run the Garmin Connect script # Execute main script
         env:
