@@ -23,9 +23,9 @@ def save_tokens(tok):
 def authenticate():
     url = (
         "https://www.strava.com/oauth/authorize"
-        f"?client_id={CLIENT_ID}"
+        f"?client_id={STRAVA_CLIENT_ID}"
         "&response_type=code"
-        f"&redirect_uri={REDIRECT_URI}"
+        f"&redirect_uri={STRAVA_REDIRECT_URI}"
         "&approval_prompt=force"
         "&scope=activity:read_all,profile:read_all"
     )
