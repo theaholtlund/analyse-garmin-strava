@@ -1,4 +1,5 @@
 # Import required libraries
+import os
 import datetime
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -9,6 +10,9 @@ from garminconnect import Garmin, GarminConnectAuthenticationError, GarminConnec
 from config import logger, GARMIN_USER, GARMIN_PASS, ACTIVITY_DAYS_RANGE, ACTIVITY_TYPE_TRANSLATIONS
 from todoist_integration import create_todoist_task
 from task_tracker import init_db, task_exists, mark_task_created
+
+# Only show health related outputs when running locally
+RUNNING_THROUGH_GITHUB = os.getenv("GITHUB_ACTIONS", "").lower() == "true"
 
 # Validate credentials from shared configuration
 if not GARMIN_USER or not GARMIN_PASS:
@@ -47,7 +51,8 @@ def insert_logo(ax, fig):
 
 def process_and_plot(df):
     if df.empty:
-        print("No activities found in date range")
+        if not RUNNING_THROUGH_GITHUB:
+            print("No activities found in date range")
         return
 
     df = df[['activityId', 'activityType', 'startTimeLocal', 'duration', 'averageHR']].copy()
@@ -60,10 +65,11 @@ def process_and_plot(df):
     # counts_filtered = counts[counts >= 5]
     # counts_filtered['Annet'] = counts[counts < 5].sum()
 
-    print("Aktiviteter i perioden:")
-    counts_case = counts.rename(index=lambda x: x.capitalize())
-    counts_case.index.name = "Activity Type"
-    print(counts_case.to_string())
+    if not RUNNING_THROUGH_GITHUB:
+        print("Aktiviteter i perioden:")
+        counts_case = counts.rename(index=lambda x: x.capitalize())
+        counts_case.index.name = "Activity Type"
+        print(counts_case.to_string())
 
     # Create the graphics pie chart
     figure_1 = plt.figure(figsize=(6,6))
@@ -84,14 +90,16 @@ def process_and_plot(df):
     plt.tight_layout()
     plt.show()
 
-    print("\nGjennomsnittspuls per aktivitet:")
-    print(df[['activityId', 'activityTypeNameNo', 'averageHR']].dropna()
-          .assign(activityTypeNameNo=lambda x: x['activityTypeNameNo'].str.capitalize())
-          .rename(columns={
-            'activityId': 'Activity ID',
-            'activityTypeNameNo': 'Activity Type',
-            'averageHR': 'Average HR'
-        }).to_string(index=False))
+    if not RUNNING_THROUGH_GITHUB:
+        print("\nGjennomsnittspuls per aktivitet:")
+        print(df[['activityId', 'activityTypeNameNo', 'averageHR']].dropna()
+              .assign(activityTypeNameNo=lambda x: x['activityTypeNameNo'].str.capitalize())
+              .rename(columns={
+                'activityId': 'Activity ID',
+                'activityTypeNameNo': 'Activity Type',
+                'averageHR': 'Average HR'
+            }).to_string(index=False))
+
 
 def main():
     end_time = datetime.date.today()
