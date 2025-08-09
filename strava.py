@@ -3,27 +3,16 @@ import os
 import time
 import webbrowser
 import datetime
-import logging
 import pandas as pd
-from dotenv import load_dotenv
 import requests
 import json
 
-# Set how many days back to fetch activities
-ACTIVITY_DAYS_RANGE = 14
+# Import shared config and functions from other scripts
+from config import logger, STRAVA_CLIENT_ID, STRAVA_CLIENT_SECRET, STRAVA_REDIRECT_URI, ACTIVITY_DAYS_RANGE
 
-# Set up configuration
-load_dotenv()
-CLIENT_ID = os.getenv("STRAVA_CLIENT_ID")
-CLIENT_SECRET = os.getenv("STRAVA_CLIENT_SECRET")
-REDIRECT_URI = os.getenv("STRAVA_REDIRECT_URI", "http://localhost")
-
-if not CLIENT_ID or not CLIENT_SECRET:
+# Validate credentials from shared configuration
+if not STRAVA_CLIENT_ID or not STRAVA_CLIENT_SECRET:
     raise RuntimeError("Set STRAVA_CLIENT_ID and STRAVA_CLIENT_SECRET in environment file")
-
-# Set up logging for information
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
 
 TOKEN_PATH = "strava_tokens.json"
 
