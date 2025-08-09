@@ -33,8 +33,8 @@ def authenticate():
     webbrowser.open(url)
     code = input("Paste the code parameter from the URL after approve: ").strip()
     response = requests.post("https://www.strava.com/api/v3/oauth/token", data={
-        "client_id": CLIENT_ID,
-        "client_secret": CLIENT_SECRET,
+        "client_id": STRAVA_CLIENT_ID,
+        "client_secret": STRAVA_CLIENT_SECRET,
         "code": code,
         "grant_type": "authorization_code"
     })
@@ -53,8 +53,8 @@ def load_tokens():
 
 def refresh_access(tok):
     response = requests.post("https://www.strava.com/api/v3/oauth/token", data={
-        "client_id": CLIENT_ID,
-        "client_secret": CLIENT_SECRET,
+        "client_id": STRAVA_CLIENT_ID,
+        "client_secret": STRAVA_CLIENT_SECRET,
         "grant_type": "refresh_token",
         "refresh_token": tok["refresh_token"],
     })
