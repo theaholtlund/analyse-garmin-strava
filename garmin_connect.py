@@ -72,7 +72,7 @@ def process_and_plot(df):
         print(counts_case.to_string())
 
     # Create the graphics pie chart
-    figure_1 = plt.figure(figsize=(6,6))
+    figure_1 = plt.figure(figsize=(6, 6), constrained_layout=True)
     plt.pie(counts.values, labels=counts.index.str.capitalize(), autopct='%1.1f%%')
     plt.title("Aktivitetsfordeling")
     insert_logo(plt.gca(), figure_1)
@@ -80,7 +80,7 @@ def process_and_plot(df):
     plt.show()
 
     # Create the graphics line plot
-    figure_2 = plt.figure(figsize=(10,5))
+    figure_2 = plt.figure(figsize=(10, 5), constrained_layout=True)
     plt.plot(df['startTimeLocal'], df['duration_hr'], marker='o')
     plt.xlabel("Dato")
     plt.ylabel("Varighet i timer")
