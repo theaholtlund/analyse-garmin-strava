@@ -16,7 +16,8 @@ def create_todoist_task(content, due_string="today"):
             content=content,
             section_id=TODOIST_SECTION_ID,
             project_id=TODOIST_PROJECT_ID,
-            due_string=due_string
+            due_string=due_string,
+            labels=["Garmin Connect App"]
         )
         logger.info(f"Created Todoist task: {task.content}")
         return task
