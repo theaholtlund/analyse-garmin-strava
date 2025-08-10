@@ -9,11 +9,13 @@ from strava import get_latest_activities
 from intelligent_cycling import intelligent_cycling_login
 
 def normalise_garmin(df):
+    """Normalise Garmin dataframe timestamps for comparison."""
     df = df[['activityName', 'startTimeLocal']].copy()
     df['startTimeLocal'] = pd.to_datetime(df['startTimeLocal']).dt.tz_localize(None).dt.floor('min')
     return df
 
 def normalise_strava(df):
+    """Normalise Strava dataframe timestamps for comparison."""
     df = df[['name', 'start_date_local']].copy()
     df['start_date_local'] = pd.to_datetime(df['start_date_local']).dt.tz_localize(None).dt.floor('min')
     return df
