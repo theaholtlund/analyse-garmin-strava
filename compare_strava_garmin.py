@@ -10,12 +10,16 @@ from intelligent_cycling import intelligent_cycling_login
 
 def normalise_garmin(df):
     """Normalise Garmin dataframe timestamps for comparison."""
+    if df.empty:
+        return df
     df = df[['activityName', 'startTimeLocal']].copy()
     df['startTimeLocal'] = pd.to_datetime(df['startTimeLocal']).dt.tz_localize(None).dt.floor('min')
     return df
 
 def normalise_strava(df):
     """Normalise Strava dataframe timestamps for comparison."""
+    if df.empty:
+        return df
     df = df[['name', 'start_date_local']].copy()
     df['start_date_local'] = pd.to_datetime(df['start_date_local']).dt.tz_localize(None).dt.floor('min')
     return df
@@ -32,8 +36,8 @@ def main():
     strava_df = normalise_strava(strava_df)
 
     # Compare by start time only
-    garmin_times = set(garmin_df['startTimeLocal'])
-    strava_times = set(strava_df['start_date_local'])
+    garmin_times = set(garmin_df['startTimeLocal'].dropna())
+    strava_times = set(strava_df['start_date_local'].dropna())
 
     missing_times = garmin_times - strava_times
     logger.info(f"Garmin activity times not found on Strava: {missing_times}")
