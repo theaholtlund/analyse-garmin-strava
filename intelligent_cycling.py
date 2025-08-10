@@ -1,22 +1,13 @@
 def intelligent_cycling_login():
     # Import required libraries
-    import os
-    import logging
-    from dotenv import load_dotenv
     from selenium import webdriver
     from selenium.webdriver.common.by import By
     from selenium.webdriver.chrome.options import Options
 
-    # Set up configuration
-    load_dotenv()
-    IC_USER = os.getenv("IC_USER")
-    IC_PASS = os.getenv("IC_PASS")
+    # Import shared config and functions from other scripts
+    from config import logger, IC_USER, IC_PASS
 
-    # Configure logging
-    logging.basicConfig(level=logging.INFO)
-    logger = logging.getLogger(__name__)
-
-    # Configure Chrome options
+    # Configure options for Chrome driver
     chrome_options = Options()
     chrome_options.add_argument("--start-maximized")
     chrome_options.add_argument("--disable-extensions")
