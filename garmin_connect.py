@@ -50,17 +50,29 @@ def insert_logo(ax, fig):
     except FileNotFoundError:
         logger.warning("Logo not found at graphics folder")
 
+def prepare_dataframe(df):
+    """Normalise dataframe columns and add derived fields used for plotting and tasks."""
+    if df.empty:
+        return df
+    # Keep only expected columns if present, handle missing keys safely
+    cols = ['activityId', 'activityType', 'startTimeLocal', 'duration', 'averageHR']
+    for c in cols:
+        if c not in df.columns:
+            df[c] = None
+    df = df[cols].copy()
+    df['activityTypeKey'] = df['activityType'].apply(lambda x: (x or {}).get('typeKey', 'unknown'))
+    df['activityTypeNameNo'] = df['activityTypeKey'].apply(lambda k: translate_activity_type(k) or 'annet')
+    df['startTimeLocal'] = pd.to_datetime(df['startTimeLocal'])
+    df['duration_hr'] = df['duration'].fillna(0) / 3600
+    return df
+
 def process_and_plot(df):
     if df.empty:
         if not RUNNING_THROUGH_GITHUB:
             print("No activities found in date range")
         return
 
-    df = df[['activityId', 'activityType', 'startTimeLocal', 'duration', 'averageHR']].copy()
-    df['activityTypeKey'] = df['activityType'].apply(lambda x: x.get('typeKey', 'unknown'))
-    df['activityTypeNameNo'] = df['activityTypeKey'].apply(translate_activity_type)
-    df['startTimeLocal'] = pd.to_datetime(df['startTimeLocal'])
-    df['duration_hr'] = df['duration'] / 3600
+    df = prepare_dataframe(df)
 
     counts = df['activityTypeNameNo'].value_counts()
     # counts_filtered = counts[counts >= 5]
@@ -131,8 +143,7 @@ def main():
         logger.info("No activities from Garmin found for today")
         return
 
-    df['activityTypeKey'] = df['activityType'].apply(lambda x: x.get('typeKey', 'unknown'))
-    df['activityTypeNameNo'] = df['activityTypeKey'].apply(translate_activity_type)
+    df = prepare_dataframe(df)
 
     for _, row in df.iterrows():
         activity_id = str(row['activityId'])
