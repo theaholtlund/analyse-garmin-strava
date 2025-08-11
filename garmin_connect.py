@@ -77,6 +77,20 @@ def plot_pie(counts):
     else:
         plt.close(figure_1)
 
+def plot_line(df):
+    """Create line plot for activity duration over time."""
+    figure_2 = plt.figure(figsize=(10, 5), constrained_layout=True)
+    plt.plot(df['startTimeLocal'], df['duration_hr'], marker='o')
+    plt.xlabel("Dato")
+    plt.ylabel("Varighet i timer")
+    plt.title("Varighet for aktivitet over tid")
+    plt.xticks(rotation=45)
+    insert_logo(plt.gca(), figure_2)
+    if PLOT_ENABLED:
+        plt.show()
+    else:
+        plt.close(figure_2)
+
 def process_and_plot(df):
     if df.empty:
         if not RUNNING_THROUGH_GITHUB:
@@ -99,16 +113,9 @@ def process_and_plot(df):
     plot_pie(counts)
 
     # Create the graphics line plot
-    figure_2 = plt.figure(figsize=(10, 5), constrained_layout=True)
-    plt.plot(df['startTimeLocal'], df['duration_hr'], marker='o')
-    plt.xlabel("Dato")
-    plt.ylabel("Varighet i timer")
-    plt.title("Varighet for aktivitet over tid")
-    plt.xticks(rotation=45)
-    insert_logo(plt.gca(), figure_2)
-    plt.tight_layout()
-    plt.show()
+    plot_line(df)
 
+    # Only print sensitive HR table when running locally
     if not RUNNING_THROUGH_GITHUB:
         print("\nGjennomsnittspuls per aktivitet:")
         print(df[['activityId', 'activityTypeNameNo', 'averageHR']].dropna()
