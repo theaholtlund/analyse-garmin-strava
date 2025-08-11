@@ -10,6 +10,20 @@ load_dotenv()
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# Detect whether running inside GitHub Actions
+RUNNING_THROUGH_GITHUB = os.getenv("GITHUB_ACTIONS", "").lower() == "true"
+
+# Environment variable to control whether plotting should be enabled
+# Overrides automatic detection, default enable locally and disable for GitHub Actions
+_env_plot = os.getenv("ENABLE_PLOTTING")
+if _env_plot is None:
+    PLOT_ENABLED = not RUNNING_THROUGH_GITHUB
+else:
+    PLOT_ENABLED = _env_plot.lower() in ("1", "true", "yes")
+
+# Path to logo used in plots
+LOGO_PATH = "graphics/app-logo-1.png"
+
 # Set how many days back to fetch activities
 ACTIVITY_DAYS_RANGE = 14
 
