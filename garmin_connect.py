@@ -43,7 +43,7 @@ def fetch_data(start_date, end_date):
 def insert_logo(ax, fig):
     """Insert application logo into the given figure if available."""
     try:
-        logo_img = mpimg.imread('graphics/app-logo-1.png')
+        logo_img = mpimg.imread(LOGO_PATH)
         logo_ax = fig.add_axes([0.80, 0.80, 0.18, 0.18], anchor='NE', zorder=1)
         logo_ax.imshow(logo_img)
         logo_ax.axis('off')
