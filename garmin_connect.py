@@ -66,6 +66,17 @@ def prepare_dataframe(df):
     df['duration_hr'] = df['duration'].fillna(0) / 3600
     return df
 
+def plot_pie(counts):
+    """Create pie chart for activity distribution."""
+    figure_1 = plt.figure(figsize=(6, 6), constrained_layout=True)
+    plt.pie(counts.values, labels=counts.index.str.capitalize(), autopct='%1.1f%%')
+    plt.title("Aktivitetsfordeling")
+    insert_logo(plt.gca(), figure_1)
+    if PLOT_ENABLED:
+        plt.show()
+    else:
+        plt.close(figure_1)
+
 def process_and_plot(df):
     if df.empty:
         if not RUNNING_THROUGH_GITHUB:
@@ -85,12 +96,7 @@ def process_and_plot(df):
         print(counts_case.to_string())
 
     # Create the graphics pie chart
-    figure_1 = plt.figure(figsize=(6, 6), constrained_layout=True)
-    plt.pie(counts.values, labels=counts.index.str.capitalize(), autopct='%1.1f%%')
-    plt.title("Aktivitetsfordeling")
-    insert_logo(plt.gca(), figure_1)
-    plt.tight_layout()
-    plt.show()
+    plot_pie(counts)
 
     # Create the graphics line plot
     figure_2 = plt.figure(figsize=(10, 5), constrained_layout=True)
