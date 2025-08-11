@@ -35,9 +35,9 @@ def fetch_data(start_date, end_date):
         return api, df
 
     except (GarminConnectAuthenticationError, GarminConnectConnectionError, GarminConnectTooManyRequestsError) as e:
-        logger.error("API error: %s", e)
+        logger.error("API error: %s", e, exc_info=True)
     except AssertionError:
-        logger.error("Token/cache error — run example.py first")
+        logger.error("Token or cache error for Garmin", exc_info=True)
     return None, pd.DataFrame()
 
 def insert_logo(ax, fig):

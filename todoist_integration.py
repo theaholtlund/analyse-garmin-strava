@@ -22,4 +22,5 @@ def create_todoist_task(content, due_string="today"):
         logger.info(f"Created Todoist task: {task.content}")
         return task
     except Exception as error:
-        logger.error(f"Error creating Todoist task: {error}")
+        # Log exception with traceback for debugging
+        logger.error(f"Error creating Todoist task: {error}", exc_info=True)
