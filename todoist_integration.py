@@ -5,6 +5,7 @@ from todoist_api_python.api import TodoistAPI
 from config import logger, TODOIST_SECTION_ID, TODOIST_PROJECT_ID, TODOIST_API_TOKEN
 
 def create_todoist_task(content, due_string="today"):
+    """Create a Todoist task with a Garmin Connect label."""
     if not TODOIST_API_TOKEN:
         logger.warning("No Todoist API token found in environment variables")
         return

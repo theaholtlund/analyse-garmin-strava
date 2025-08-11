@@ -19,12 +19,15 @@ if not GARMIN_USER or not GARMIN_PASS:
     raise RuntimeError("Garmin user and password must be set as environment variables")
 
 def translate_activity_type(type_key):
+    """Return the Norwegian activity name for a given Garmin Connect type key."""
     return ACTIVITY_TYPE_TRANSLATIONS.get(type_key.lower())
 
 def extract_activity_type(row):
+    """Extract the typeKey from activity row."""
     return row.get('activityType', {}).get('typeKey', 'unknown')
 
 def fetch_data(start_date, end_date):
+    """Fetch activities from Garmin Connect for a given date range."""
     try:
         api = Garmin(GARMIN_USER, GARMIN_PASS)
         api.login()
@@ -41,6 +44,7 @@ def fetch_data(start_date, end_date):
     return None, pd.DataFrame()
 
 def insert_logo(ax, fig):
+    """Insert application logo into the given figure if available."""
     try:
         logo_img = mpimg.imread('graphics/app-logo-1.png')
         logo_ax = fig.add_axes([0.80, 0.80, 0.18, 0.18], anchor='NE', zorder=1)

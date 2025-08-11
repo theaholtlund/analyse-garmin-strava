@@ -9,7 +9,7 @@ from strava import get_latest_activities
 from intelligent_cycling import intelligent_cycling_login
 
 def normalise_garmin(df):
-    """Normalise Garmin dataframe timestamps for comparison."""
+    """Normalise Garmin Connect dataframe timestamps for comparison."""
     if df.empty:
         return df
     df = df[['activityName', 'startTimeLocal']].copy()
@@ -25,6 +25,7 @@ def normalise_strava(df):
     return df
 
 def main():
+    """Compare activities from Garmin Connect to Strava by start time and report missing items."""
     # Fetch the activities from Garmin
     end_date = datetime.date.today()
     start_date = end_date - datetime.timedelta(days=14)
