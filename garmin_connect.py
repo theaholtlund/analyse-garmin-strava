@@ -7,12 +7,9 @@ import matplotlib.image as mpimg
 from garminconnect import Garmin, GarminConnectAuthenticationError, GarminConnectConnectionError, GarminConnectTooManyRequestsError
 
 # Import shared config and functions from other scripts
-from config import logger, GARMIN_USER, GARMIN_PASS, ACTIVITY_DAYS_RANGE, ACTIVITY_TYPE_TRANSLATIONS
+from config import (logger, GARMIN_USER, GARMIN_PASS, ACTIVITY_DAYS_RANGE, ACTIVITY_TYPE_TRANSLATIONS, RUNNING_THROUGH_GITHUB, LOGO_PATH, PLOT_ENABLED)
 from todoist_integration import create_todoist_task
 from task_tracker import init_db, task_exists, mark_task_created
-
-# Only show health related outputs when running locally
-RUNNING_THROUGH_GITHUB = os.getenv("GITHUB_ACTIONS", "").lower() == "true"
 
 # Validate credentials from shared configuration
 if not GARMIN_USER or not GARMIN_PASS:
