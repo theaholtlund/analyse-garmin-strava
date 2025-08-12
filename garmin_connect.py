@@ -94,6 +94,7 @@ def plot_line(df):
         plt.close(figure_2)
 
 def process_and_plot(df):
+    """Process activities dataframe and produce plots and optional sensitive output."""
     if df.empty:
         if not RUNNING_THROUGH_GITHUB:
             print("No activities found in date range")
@@ -105,6 +106,7 @@ def process_and_plot(df):
     # counts_filtered = counts[counts >= 5]
     # counts_filtered['Annet'] = counts[counts < 5].sum()
 
+    # Only print personal training summaries when running locally
     if not RUNNING_THROUGH_GITHUB:
         print("Aktiviteter i perioden:")
         counts_case = counts.rename(index=lambda x: x.capitalize())
@@ -130,6 +132,7 @@ def process_and_plot(df):
 
 
 def main():
+    """Main entry point for fetching, processing and creating tasks."""
     end_time = datetime.date.today()
     start_time = end_time - datetime.timedelta(days=ACTIVITY_DAYS_RANGE)
 
