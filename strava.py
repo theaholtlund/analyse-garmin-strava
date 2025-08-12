@@ -120,6 +120,13 @@ def download_activity_fit(activity_id): # FOR WIP FUNCTIONALITY
     response.raise_for_status()
     return response.content
 
+def get_virtual_ride_activities(days=ACTIVITY_DAYS_RANGE): # FOR WIP FUNCTIONALITY
+    """Fetch recent Strava activities filtered for Virtual Ride type."""
+    df = get_latest_activities(days=days)
+    if df.empty:
+        return pd.DataFrame()
+    return df[df['type'] == 'VirtualRide'].copy()
+
 if __name__ == "__main__":
     logger.info(f"Fetching activities from the past {ACTIVITY_DAYS_RANGE} days")
     df = get_latest_activities()
