@@ -49,6 +49,8 @@ def insert_logo(ax, fig):
         logo_ax.axis('off')
     except FileNotFoundError:
         logger.warning("Logo not found at graphics folder")
+    except Exception as e:
+        logger.warning("Failed to insert logo: %s", e)
 
 def prepare_dataframe(df):
     """Normalise dataframe columns and add derived fields used for plotting and tasks."""
