@@ -130,6 +130,11 @@ def process_and_plot(df):
                 'averageHR': 'Average HR'
             }).to_string(index=False))
 
+def upload_activity_file_to_garmin(file_path): # FOR WIP FUNCTIONALITY
+    """Upload activity FIT file to Garmin Connect using garminconnect library."""
+    api = Garmin(GARMIN_USER, GARMIN_PASS)
+    api.login()
+    api.upload_activity(file_path)
 
 def main():
     """Main entry point for fetching, processing and creating tasks."""
