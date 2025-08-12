@@ -111,6 +111,15 @@ def get_stream(activity_id, types=("heartrate", "cadence", "distance", "time")):
     response.raise_for_status()
     return response.json()
 
+def download_activity_fit(activity_id): # FOR WIP FUNCTIONALITY
+    """Download FIT file of Strava activity."""
+    token = load_tokens()
+    headers = {"Authorization": f"Bearer {token['access_token']}"}
+    url = f"https://www.strava.com/api/v3/activities/{activity_id}/export_fit"
+    response = requests.get(url, headers=headers)
+    response.raise_for_status()
+    return response.content
+
 if __name__ == "__main__":
     logger.info(f"Fetching activities from the past {ACTIVITY_DAYS_RANGE} days")
     df = get_latest_activities()
