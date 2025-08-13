@@ -39,5 +39,5 @@ def intelligent_cycling_login():
         logger.error(f"Error during Intelligent Cycling login: {e}")
         raise
     finally:
-        logger.info("Closing the browser.")
+        logger.info("Closing the browser")
         driver.quit()
