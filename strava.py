@@ -78,11 +78,7 @@ def get_latest_activities(days=ACTIVITY_DAYS_RANGE):
     per_page = 50 # This is the Strava max
 
     while True:
-        params = {
-            "after": after,
-            "page": page,
-            "per_page": per_page
-        }
+        params = {"after": after, "page": page, "per_page": per_page}
         response = requests.get("https://www.strava.com/api/v3/athlete/activities",
                          headers=headers, params=params)
         response.raise_for_status()
