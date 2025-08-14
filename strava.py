@@ -115,7 +115,7 @@ def download_activity_fit(activity_id): # FOR WIP FUNCTIONALITY
     """Download FIT file of Strava activity."""
     token = load_tokens()
     headers = {"Authorization": f"Bearer {token['access_token']}"}
-    url = f"https://www.strava.com/api/v3/activities/{activity_id}/export_fit"
+    url = f"https://www.strava.com/api/v3/activities/{activity_id}/export_original"
     response = requests.get(url, headers=headers)
     response.raise_for_status()
     return response.content
