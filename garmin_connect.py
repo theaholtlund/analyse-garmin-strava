@@ -132,9 +132,18 @@ def process_and_plot(df):
 
 def upload_activity_file_to_garmin(file_path): # FOR WIP FUNCTIONALITY
     """Upload activity FIT file to Garmin Connect using garminconnect library."""
-    api = Garmin(GARMIN_USER, GARMIN_PASS)
-    api.login()
-    api.upload_activity(file_path)
+    try:
+        api = Garmin(GARMIN_USER, GARMIN_PASS)
+        api.login()
+        logger.info("Authenticated for Garmin Connect API")
+        api.upload_activity(file_path)
+        logger.info(f"Successfully uploaded activity file: {file_path}")
+    except (GarminConnectAuthenticationError, GarminConnectConnectionError, GarminConnectTooManyRequestsError) as e:
+        logger.error(f"Failed to upload activity to Garmin Connect: {e}", exc_info=True)
+        raise
+    except AssertionError:
+        logger.error("Token or cache error for Garmin", exc_info=True)
+        raise
 
 def main():
     """Main entry point for fetching, processing and creating tasks."""
