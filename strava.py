@@ -118,7 +118,14 @@ def download_activity_fit(activity_id): # FOR WIP FUNCTIONALITY
     url = f"https://www.strava.com/api/v3/activities/{activity_id}/export_original"
     response = requests.get(url, headers=headers)
     response.raise_for_status()
-    return response.content
+
+    # Create a downloads directory if it does not exist
+    os.makedirs("downloads", exist_ok=True)
+    file_path = f"downloads/strava_activity_{activity_id}.fit"
+    with open(file_path, "wb") as f:
+        f.write(response.content)
+    logger.info(f"Downloaded activity {activity_id} to {file_path}")
+    return file_path
 
 def get_virtual_ride_activities(days=ACTIVITY_DAYS_RANGE): # FOR WIP FUNCTIONALITY
     """Fetch recent Strava activities filtered for Virtual Ride type."""
