@@ -50,6 +50,8 @@ GARMIN_USER = os.getenv("GARMIN_USER")
 GARMIN_PASS = os.getenv("GARMIN_PASS")
 
 # Load the credentials from Strava
+STRAVA_USER = os.getenv("STRAVA_USER")
+STRAVA_PASS = os.getenv("STRAVA_PASS")
 STRAVA_CLIENT_ID = os.getenv("STRAVA_CLIENT_ID")
 STRAVA_CLIENT_SECRET = os.getenv("STRAVA_CLIENT_SECRET")
 STRAVA_REDIRECT_URI = os.getenv("STRAVA_REDIRECT_URI", "http://localhost")
