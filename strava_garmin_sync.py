@@ -1,6 +1,4 @@
 # Import required libraries
-import os
-import datetime
 import requests
 import sqlite3
 from pathlib import Path
