@@ -35,3 +35,11 @@ def is_synced(strava_activity_id):
     exists = cursor.fetchone() is not None
     conn.close()
     return exists
+
+def mark_synced(strava_activity_id):
+    """Record that a Strava activity has been synced."""
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("INSERT OR IGNORE INTO strava_garmin_sync (strava_activity_id) VALUES (?)", (strava_activity_id,))
+    conn.commit()
+    conn.close()
