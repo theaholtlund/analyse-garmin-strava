@@ -103,6 +103,7 @@ def get_latest_activities(days=ACTIVITY_DAYS_RANGE):
     return pd.DataFrame(activities)
 
 def get_stream(activity_id, types=("heartrate", "cadence", "distance", "time")):
+    """Fetch detailed data streams for a given Strava activity."""
     token = load_tokens()
     headers = {"Authorization": f"Bearer {token['access_token']}"}
     response = requests.get(
@@ -115,9 +116,7 @@ def get_stream(activity_id, types=("heartrate", "cadence", "distance", "time")):
 
 
 def download_activity_fit(activity_id): # FOR WIP FUNCTIONALITY
-    """
-    Downloads a FIT file from Strava using Selenium by performing a multi-step login.
-    """
+    """Download a FIT file from Strava using Selenium by performing a multi-step login."""
     if not STRAVA_USER or not STRAVA_PASS:
         raise RuntimeError("Strava user and password must be set in config.py")
 
@@ -140,7 +139,6 @@ def download_activity_fit(activity_id): # FOR WIP FUNCTIONALITY
     try:
         logger.info("Opening Strava login page")
         driver.get("https://www.strava.com/login")
-
 
         # Add e-mail and click the login button
         logger.info("Entering email on Strava login page")
