@@ -1,4 +1,6 @@
 # Import required libraries
+import os
+import datetime
 import requests
 import sqlite3
 from pathlib import Path
@@ -24,3 +26,12 @@ def init_db():
     """)
     conn.commit()
     conn.close()
+
+def is_synced(strava_activity_id):
+    """Check if a Strava activity has already been synced."""
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("SELECT 1 FROM strava_garmin_sync WHERE strava_activity_id = ?", (strava_activity_id,))
+    exists = cursor.fetchone() is not None
+    conn.close()
+    return exists
