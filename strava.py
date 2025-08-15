@@ -6,9 +6,15 @@ import datetime
 import pandas as pd
 import requests
 import json
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.action_chains import ActionChains
 
 # Import shared config and functions from other scripts
-from config import logger, STRAVA_CLIENT_ID, STRAVA_CLIENT_SECRET, STRAVA_REDIRECT_URI, ACTIVITY_DAYS_RANGE
+from config import logger, STRAVA_CLIENT_ID, STRAVA_CLIENT_SECRET, STRAVA_REDIRECT_URI, ACTIVITY_DAYS_RANGE, STRAVA_USER, STRAVA_PASS
 
 # Validate credentials from shared configuration
 if not STRAVA_CLIENT_ID or not STRAVA_CLIENT_SECRET:
@@ -107,21 +113,53 @@ def get_stream(activity_id, types=("heartrate", "cadence", "distance", "time")):
     response.raise_for_status()
     return response.json()
 
-def download_activity_fit(activity_id): # FOR WIP FUNCTIONALITY
-    """Download FIT file of Strava activity."""
-    token = load_tokens()
-    headers = {"Authorization": f"Bearer {token['access_token']}"}
-    url = f"https://www.strava.com/api/v3/activities/{activity_id}/export_original"
-    response = requests.get(url, headers=headers)
-    response.raise_for_status()
 
-    # Create a downloads directory if it does not exist
-    os.makedirs("downloads", exist_ok=True)
-    file_path = f"downloads/strava_activity_{activity_id}.fit"
-    with open(file_path, "wb") as f:
-        f.write(response.content)
-    logger.info(f"Downloaded activity {activity_id} to {file_path}")
-    return file_path
+def download_activity_fit(activity_id): # FOR WIP FUNCTIONALITY
+    """
+    Downloads a FIT file from Strava using Selenium by performing a multi-step login.
+    """
+    if not STRAVA_USER or not STRAVA_PASS:
+        raise RuntimeError("Strava user and password must be set in config.py")
+
+    options = Options()
+    options.add_argument("--headless=new") # Headless so Chrome opens visibly for debugging
+
+    download_dir = os.path.join(os.getcwd(), "downloads")
+    if not os.path.exists(download_dir):
+        os.makedirs(download_dir)
+    
+    options.add_experimental_option("prefs", {
+        "download.default_directory": download_dir,
+        "download.prompt_for_download": False,
+        "download.directory_upgrade": True,
+        "safeBrowse.enabled": True
+    })
+
+    driver = webdriver.Chrome(options=options)
+    
+    try:
+        logger.info("Opening Strava login page")
+        driver.get("https://www.strava.com/login")
+
+
+        # Add e-mail and click the login button
+        logger.info("Entering email on Strava login page")
+        email_field = WebDriverWait(driver, 20).until(
+            EC.presence_of_element_located((By.ID, "desktop-email"))
+        )
+        email_field.send_keys(STRAVA_USER)
+
+        logger.info("Sending e-mail on Strava login page")
+        login_button_email_stage = WebDriverWait(driver, 20).until(
+            EC.element_to_be_clickable((By.ID, "desktop-login-button"))
+        )
+        login_button_email_stage.click()
+    
+    except Exception as e:
+        logger.error(f"Error during Selenium download for activity {activity_id}: {e}", exc_info=True)
+        return None
+    finally:
+        driver.quit()
 
 def get_virtual_ride_activities(days=ACTIVITY_DAYS_RANGE): # FOR WIP FUNCTIONALITY
     """Fetch recent Strava activities filtered for Virtual Ride type."""
@@ -160,3 +198,7 @@ if __name__ == "__main__":
         # Print rows with left-aligned columns
         for _, row in output_df.iterrows():
             print("  ".join(f"{str(val):<{column_widths[col]}}" for col, val in row.items()))
+
+        if not df.empty:
+            first_id = df.iloc[0]["id"]
+            download_activity_fit(first_id)
