@@ -139,11 +139,11 @@ def download_activity_fit(activity_id): # FOR WIP FUNCTIONALITY
     driver = webdriver.Chrome(options=options)
     
     try:
-        logger.info("Opening Strava login page")
+        logger.info("Opening the Strava login page")
         driver.get("https://www.strava.com/login")
 
         # Add e-mail and click the login button
-        logger.info("Entering email on Strava login page")
+        logger.info("Entering e-mail on Strava login page")
         email_field = WebDriverWait(driver, 20).until(
             EC.presence_of_element_located((By.ID, "desktop-email"))
         )
