@@ -41,3 +41,9 @@ def mark_synced(strava_activity_id):
     cursor.execute("INSERT OR IGNORE INTO strava_garmin_sync (strava_activity_id) VALUES (?)", (strava_activity_id,))
     conn.commit()
     conn.close()
+
+def sync_virtual_rides():
+    init_db()
+
+    logger.info(f"Fetching Virtual Ride activities from Strava for the last {ACTIVITY_DAYS_RANGE} days...")
+    virtual_rides_df = get_virtual_ride_activities(days=ACTIVITY_DAYS_RANGE)
