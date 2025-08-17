@@ -23,10 +23,12 @@ if not STRAVA_CLIENT_ID or not STRAVA_CLIENT_SECRET:
 TOKEN_PATH = "strava_tokens.json"
 
 def save_tokens(tok):
+    """Save Strava API tokens to a local JSON file."""
     with open(TOKEN_PATH, "w") as f:
         json.dump(tok, f)
 
 def authenticate():
+    """Perform Strava OAuth authentication and return new tokens."""
     url = (
         "https://www.strava.com/oauth/authorize"
         f"?client_id={STRAVA_CLIENT_ID}"
