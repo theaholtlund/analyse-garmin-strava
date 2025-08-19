@@ -42,9 +42,10 @@ def mark_synced(strava_activity_id):
     conn.commit()
     conn.close()
 
-def sync_virtual_rides():
+def sync_virtual_rides(): # FOR WIP FUNCTIONALITY
     init_db()
 
+    # Get virtual ride activities from Strava within the defined date range
     logger.info(f"Fetching Virtual Ride activities from Strava for the last {ACTIVITY_DAYS_RANGE} days...")
     virtual_rides_df = get_virtual_ride_activities(days=ACTIVITY_DAYS_RANGE)
 
@@ -55,4 +56,6 @@ def sync_virtual_rides():
             logger.info(f"Activity {strava_activity_id} is already synced, skipping.")
             continue
 
+        try:
+            # Download the FIT file from Strava
             file_path = download_activity_fit(strava_activity_id)
