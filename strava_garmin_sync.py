@@ -47,3 +47,12 @@ def sync_virtual_rides():
 
     logger.info(f"Fetching Virtual Ride activities from Strava for the last {ACTIVITY_DAYS_RANGE} days...")
     virtual_rides_df = get_virtual_ride_activities(days=ACTIVITY_DAYS_RANGE)
+
+    for _, row in virtual_rides_df.iterrows():
+        strava_activity_id = str(row['id'])
+
+        if is_synced(strava_activity_id):
+            logger.info(f"Activity {strava_activity_id} is already synced, skipping.")
+            continue
+
+            file_path = download_activity_fit(strava_activity_id)
