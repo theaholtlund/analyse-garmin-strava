@@ -54,12 +54,14 @@ def authenticate():
     return token
 
 def load_tokens():
+    """Load existing Strava tokens from file or authenticate if missing."""
     if os.path.exists(TOKEN_PATH):
         with open(TOKEN_PATH) as f:
             return json.load(f)
     return authenticate()
 
 def refresh_access(tok):
+    """Refresh an expired Strava access token using the refresh token."""
     response = requests.post("https://www.strava.com/api/v3/oauth/token", data={
         "client_id": STRAVA_CLIENT_ID,
         "client_secret": STRAVA_CLIENT_SECRET,
