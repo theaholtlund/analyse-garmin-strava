@@ -49,6 +49,10 @@ def sync_virtual_rides(): # FOR WIP FUNCTIONALITY
     logger.info(f"Fetching Virtual Ride activities from Strava for the last {ACTIVITY_DAYS_RANGE} days...")
     virtual_rides_df = get_virtual_ride_activities(days=ACTIVITY_DAYS_RANGE)
 
+    if virtual_rides_df.empty:
+        logger.info("No new Virtual Ride activities found on Strava.")
+        return
+
     for _, row in virtual_rides_df.iterrows():
         strava_activity_id = str(row['id'])
 
