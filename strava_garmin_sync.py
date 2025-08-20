@@ -65,7 +65,10 @@ def sync_virtual_rides(): # FOR WIP FUNCTIONALITY
             file_path = download_activity_fit(strava_activity_id)
 
             # Upload the FIT file to Garmin Connect
-            upload_activity_file_to_garmin(file_path)
+            # upload_activity_file_to_garmin(file_path)
+
+            # Mark the activity as synced in the database
+            # mark_synced(strava_activity_id)
 
             logger.info(f"Successfully synced Strava activity {strava_activity_id} to Garmin Connect.")
 
