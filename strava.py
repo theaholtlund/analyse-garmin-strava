@@ -125,7 +125,7 @@ def download_activity_fit(activity_id): # FOR WIP FUNCTIONALITY
         raise RuntimeError("Strava user and password must be set in config.py")
 
     options = Options()
-    options.add_argument("--headless=new") # Headless so Chrome opens visibly for debugging
+    # options.add_argument("--headless=new") # Comment out headless to open Chrome for debugging
 
     download_dir = os.path.join(os.getcwd(), "downloads")
     if not os.path.exists(download_dir):
