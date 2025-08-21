@@ -66,7 +66,7 @@ Strava:
 python strava.py
 ```
 
-Sync between Strava and Garmin:
+Comparison between Strava and Garmin:
 
 ```bash
 python compare_strava_garmin.py
