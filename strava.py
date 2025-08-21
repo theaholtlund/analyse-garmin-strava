@@ -156,6 +156,55 @@ def download_activity_fit(activity_id): # FOR WIP FUNCTIONALITY
             EC.element_to_be_clickable((By.ID, "desktop-login-button"))
         )
         login_button_email_stage.click()
+
+        ### HERE BEGINS LOGIN FUNCTIONALITY THAT DOES NOt WORK ###
+        # Click the button to use password instead
+        logger.info("Clicking the button to use password instead")
+        use_password_btn = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, "//button[contains(., 'Use password instead')]"))).click()
+        use_password_btn.click()
+
+        # Enter the password for Strava login
+        logger.info("Entering password on login page")
+        password_field = WebDriverWait(driver, 20).until(
+            EC.presence_of_element_located((By.NAME, "password"))
+        )
+        password_field.send_keys(STRAVA_PASS)
+
+        # Click the final login button
+        login_button_password_stage = WebDriverWait(driver, 20).until(
+            EC.element_to_be_clickable((By.CSS_SELECTOR, "button.Button_primary___8ywh"))
+        )
+        login_button_password_stage.click()
+        
+        # Wait for the login to complete and the URL to change to the dashboard
+        logger.info("Login successful, navigating to activity page")
+        WebDriverWait(driver, 20).until(EC.url_contains("dashboard"))
+        
+        activity_url = f"https://www.strava.com/activities/{activity_id}"
+        driver.get(activity_url)
+        
+        # Click the export original button
+        logger.info("Waiting for 'Export Original' button")
+        export_link = WebDriverWait(driver, 15).until(
+            EC.visibility_of_element_located(
+                (By.XPATH, f"//a[contains(@href, '/activities/{activity_id}/export_original')]")
+            )
+        )
+        # Use of ActionsChains to ensure the click is successful
+        ActionChains(driver).move_to_element(export_link).click().perform()
+        
+        logger.info("Download initiated. Waiting for file to appear...")
+        start_time = time.time()
+        file_path = os.path.join(download_dir, f"{activity_id}.fit")
+        while not os.path.exists(file_path):
+            time.sleep(1)
+            if time.time() - start_time > 60:
+                raise TimeoutError("File download timed out.")
+        
+        logger.info(f"Downloaded activity {activity_id} to {file_path}")
+        return file_path
+    
+        ### HERE ENDS LOGIN FUNCTIONALITY THAT DOES NOT WORK ###
     
     except Exception as e:
         logger.error(f"Error during Selenium download for activity {activity_id}: {e}", exc_info=True)
