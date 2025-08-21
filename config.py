@@ -25,7 +25,7 @@ else:
 LOGO_PATH = "graphics/app-logo-1.png"
 
 # Set how many days back to fetch activities
-ACTIVITY_DAYS_RANGE = 14
+ACTIVITY_DAYS_RANGE = 30
 
 # Mapping the Garmin Connect activity types to Norwegian names
 ACTIVITY_TYPE_TRANSLATIONS = {
