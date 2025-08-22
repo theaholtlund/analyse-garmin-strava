@@ -322,12 +322,3 @@ if __name__ == "__main__":
         # Print rows with left-aligned columns
         for _, row in output_df.iterrows():
             print("  ".join(f"{str(val):<{column_widths[col]}}" for col, val in row.items()))
-
-        if not df.empty:
-            logger.info(f"Starting bulk download of {len(df)} activities")
-            downloaded_files = download_multiple_activities(df)
-            
-            downloaded_count = sum(1 for f in downloaded_files if f is not None)
-            failed_count = len(downloaded_files) - downloaded_count
-            
-            logger.info(f"Download complete. Successfully downloaded: {downloaded_count}, Failed: {failed_count}")

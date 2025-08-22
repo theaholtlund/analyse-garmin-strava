@@ -58,9 +58,19 @@ def sync_virtual_rides(): # FOR WIP FUNCTIONALITY
         logger.info("No new Virtual Ride activities found on Strava.")
         return
 
-    # Bulk download the virtual ride activities
-    logger.info(f"Starting bulk download of {len(df)} Virtual Ride activities")
-    downloaded_files = download_multiple_activities(df)
+    # Filter out already synced activities
+    df_to_download = df[~df['id'].astype(str).apply(is_synced)]
+    if df_to_download.empty:
+        logger.info("All Virtual Ride activities have already been synced.")
+        return
+
+    logger.info(f"Starting bulk download of {len(df_to_download)} Virtual Ride activities")
+    downloaded_files = download_multiple_activities(df_to_download)
+
+    # Record successful downloads in the database
+    for activity_id, file_path in zip(df_to_download['id'], downloaded_files):
+        if file_path is not None:
+            mark_synced(str(activity_id))
 
     downloaded_count = sum(1 for f in downloaded_files if f is not None)
     failed_count = len(downloaded_files) - downloaded_count
