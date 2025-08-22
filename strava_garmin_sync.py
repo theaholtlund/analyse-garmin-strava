@@ -47,6 +47,7 @@ def mark_synced(strava_activity_id):
 
 
 def sync_virtual_rides(): # FOR WIP FUNCTIONALITY
+    """Main function to sync Strava Virtual Rides to Garmin Connect."""
     init_db()
 
     # Get virtual ride activities from Strava within the defined date range
@@ -76,8 +77,15 @@ def sync_virtual_rides(): # FOR WIP FUNCTIONALITY
 
             logger.info(f"Successfully synced Strava activity {strava_activity_id} to Garmin Connect.")
 
+            # Clean up the downloaded file to prevent disk clutter
+            # os.remove(file_path)
+            # logger.info(f"Removed temporary file: {file_path}")
+
         except requests.exceptions.RequestException as e:
             logger.error(f"Error downloading Strava activity {strava_activity_id}: {e}", exc_info=True)
+            continue
+        except (GarminConnectAuthenticationError, GarminConnectConnectionError, GarminConnectTooManyRequestsError) as e:
+            logger.error(f"Error uploading activity {strava_activity_id} to Garmin Connect: {e}", exc_info=True)
             continue
 
 if __name__ == "__main__":
