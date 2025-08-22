@@ -159,7 +159,7 @@ def download_multiple_activities(activities_df): # FOR WIP FUNCTIONALITY
     downloaded_files = []
     
     try:
-        # Login once
+        # Log in to Strava profile
         logger.info("Opening the Strava login page")
         driver.get("https://www.strava.com/login")
 
@@ -175,27 +175,28 @@ def download_multiple_activities(activities_df): # FOR WIP FUNCTIONALITY
         except:
             logger.info("No cookie banner found or already accepted")
 
-        # Add e-mail and click the login button
+        # Enter e-mail for the login page
         logger.info("Entering e-mail on Strava login page")
         email_field = WebDriverWait(driver, 20).until(
             EC.presence_of_element_located((By.ID, "mobile-email"))
         )
         email_field.send_keys(STRAVA_USER)
 
+        # Click the login button to proceed to password stage
         logger.info("Sending e-mail on Strava login page")
         login_button_email_stage = WebDriverWait(driver, 20).until(
             EC.element_to_be_clickable((By.ID, "mobile-login-button"))
         )
         driver.execute_script("arguments[0].click();", login_button_email_stage)
 
-        # Wait for the OTP page to load and click "Use password instead"
-        logger.info("Waiting for OTP page and clicking 'Use password instead'")
+        # Wait for the OTP page to load and click button to use password instead
+        logger.info("Waiting for OTP page and clicking button to use password instead")
         use_password_btn = WebDriverWait(driver, 20).until(
             EC.element_to_be_clickable((By.CSS_SELECTOR, "[data-testid='use-password-cta'] button"))
         )
         driver.execute_script("arguments[0].click();", use_password_btn)
 
-        # Wait for password page to load and enter the password
+        # Enter the password to log in to Strava
         logger.info("Entering password on login page")
         password_field = WebDriverWait(driver, 20).until(
             EC.presence_of_element_located((By.CSS_SELECTOR, "input[data-cy='password']"))
@@ -214,7 +215,7 @@ def download_multiple_activities(activities_df): # FOR WIP FUNCTIONALITY
         WebDriverWait(driver, 30).until(EC.url_contains("dashboard"))
         logger.info("Login successful, starting activity downloads")
         
-        # Now download each activity
+        # Download each relevant activity file
         for index, row in activities_df.iterrows():
             activity_id = row["id"]
             activity_name = row["name"]
@@ -232,7 +233,7 @@ def download_multiple_activities(activities_df): # FOR WIP FUNCTIONALITY
                 )
                 ActionChains(driver).move_to_element(dropdown_button).click().perform()
                 
-                # Click the export original button
+                # Click the export file button
                 export_link = WebDriverWait(driver, 15).until(
                     EC.element_to_be_clickable(
                         (By.XPATH, f"//a[contains(@href, '/activities/{activity_id}/export_original')]")
@@ -249,9 +250,7 @@ def download_multiple_activities(activities_df): # FOR WIP FUNCTIONALITY
                     
                     for filename in files:
                         full_path = os.path.join(download_dir, filename)
-                        file_creation_time = os.path.getctime(full_path)
-                        
-                        if file_creation_time > download_start_time:
+                        if os.path.getctime(full_path) > download_start_time:
                             file_path = full_path
                             break
                     
@@ -270,7 +269,7 @@ def download_multiple_activities(activities_df): # FOR WIP FUNCTIONALITY
                     downloaded_files.append(None)
                     logger.warning(f"Failed to download activity {activity_id}")
                 
-                # Small delay between downloads
+                # Add short delay between downloads
                 time.sleep(2)
                 
             except Exception as e:
