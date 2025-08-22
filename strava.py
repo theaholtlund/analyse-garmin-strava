@@ -120,13 +120,22 @@ def get_stream(activity_id, types=("heartrate", "cadence", "distance", "time")):
     return response.json()
 
 
-def download_activity_fit(activity_id): # FOR WIP FUNCTIONALITY
-    """Download a FIT file from Strava using Selenium by performing a multi-step login."""
+def download_activity_fit(activity_id): # FOR WIP FUNCTIONALITY - Single activity download
+    """Download a single FIT file from Strava using Selenium."""
+    activities_df = pd.DataFrame([{'id': activity_id, 'name': f'Activity {activity_id}'}])
+    results = download_multiple_activities(activities_df)
+    return results[0] if results else None
+
+def download_multiple_activities(activities_df): # FOR WIP FUNCTIONALITY
+    """Download multiple FIT files from Strava using Selenium with a single login session."""
     if not STRAVA_USER or not STRAVA_PASS:
         raise RuntimeError("Strava user and password must be set in config.py")
 
     options = Options()
     # options.add_argument("--headless=new") # Comment out headless to open Chrome for debugging
+
+    options.add_argument("--window-size=390,844")
+    options.add_argument("--user-agent=Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.0 Mobile/15E148 Safari/604.1")
 
     download_dir = os.path.join(os.getcwd(), "downloads")
     if not os.path.exists(download_dir):
@@ -140,76 +149,132 @@ def download_activity_fit(activity_id): # FOR WIP FUNCTIONALITY
     })
 
     driver = webdriver.Chrome(options=options)
+    downloaded_files = []
     
     try:
+        # Login once
         logger.info("Opening the Strava login page")
         driver.get("https://www.strava.com/login")
+
+        # Handle cookie banner if present
+        try:
+            logger.info("Checking for cookie banner")
+            cookie_accept = WebDriverWait(driver, 5).until(
+                EC.element_to_be_clickable((By.CSS_SELECTOR, "button[data-cy='accept-cookies'], .CookieBanner button, button[id*='cookie'], button[class*='cookie']"))
+            )
+            cookie_accept.click()
+            logger.info("Cookie banner accepted")
+            time.sleep(1)
+        except:
+            logger.info("No cookie banner found or already accepted")
 
         # Add e-mail and click the login button
         logger.info("Entering e-mail on Strava login page")
         email_field = WebDriverWait(driver, 20).until(
-            EC.presence_of_element_located((By.ID, "desktop-email"))
+            EC.presence_of_element_located((By.ID, "mobile-email"))
         )
         email_field.send_keys(STRAVA_USER)
 
         logger.info("Sending e-mail on Strava login page")
         login_button_email_stage = WebDriverWait(driver, 20).until(
-            EC.element_to_be_clickable((By.ID, "desktop-login-button"))
+            EC.element_to_be_clickable((By.ID, "mobile-login-button"))
         )
-        login_button_email_stage.click()
+        driver.execute_script("arguments[0].click();", login_button_email_stage)
 
-        ### HERE BEGINS LOGIN FUNCTIONALITY THAT DOES NOt WORK ###
-        # Click the button to use password instead
-        logger.info("Clicking the button to use password instead")
-        use_password_btn = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, "//button[contains(., 'Use password instead')]"))).click()
-        use_password_btn.click()
+        # Wait for the OTP page to load and click "Use password instead"
+        logger.info("Waiting for OTP page and clicking 'Use password instead'")
+        use_password_btn = WebDriverWait(driver, 20).until(
+            EC.element_to_be_clickable((By.CSS_SELECTOR, "[data-testid='use-password-cta'] button"))
+        )
+        driver.execute_script("arguments[0].click();", use_password_btn)
 
-        # Enter the password for Strava login
+        # Wait for password page to load and enter the password
         logger.info("Entering password on login page")
         password_field = WebDriverWait(driver, 20).until(
-            EC.presence_of_element_located((By.NAME, "password"))
+            EC.presence_of_element_located((By.CSS_SELECTOR, "input[data-cy='password']"))
         )
         password_field.send_keys(STRAVA_PASS)
 
         # Click the final login button
+        logger.info("Clicking final login button")
         login_button_password_stage = WebDriverWait(driver, 20).until(
-            EC.element_to_be_clickable((By.CSS_SELECTOR, "button.Button_primary___8ywh"))
+            EC.element_to_be_clickable((By.CSS_SELECTOR, "button[type='submit'].Button_primary___8ywh"))
         )
-        login_button_password_stage.click()
+        driver.execute_script("arguments[0].click();", login_button_password_stage)
         
-        # Wait for the login to complete and the URL to change to the dashboard
-        logger.info("Login successful, navigating to activity page")
-        WebDriverWait(driver, 20).until(EC.url_contains("dashboard"))
+        # Wait for the login to complete
+        logger.info("Waiting for login to complete")
+        WebDriverWait(driver, 30).until(EC.url_contains("dashboard"))
+        logger.info("Login successful, starting activity downloads")
         
-        activity_url = f"https://www.strava.com/activities/{activity_id}"
-        driver.get(activity_url)
+        # Now download each activity
+        for index, row in activities_df.iterrows():
+            activity_id = row["id"]
+            activity_name = row["name"]
+            
+            try:
+                logger.info(f"Downloading activity {index + 1}/{len(activities_df)}: {activity_name} (ID: {activity_id})")
+                
+                # Navigate to activity page
+                activity_url = f"https://www.strava.com/activities/{activity_id}"
+                driver.get(activity_url)
+                
+                # Click dropdown menu to reveal export options
+                dropdown_button = WebDriverWait(driver, 15).until(
+                    EC.element_to_be_clickable((By.CSS_SELECTOR, "button.slide-menu.drop-down-menu"))
+                )
+                ActionChains(driver).move_to_element(dropdown_button).click().perform()
+                
+                # Click the export original button
+                export_link = WebDriverWait(driver, 15).until(
+                    EC.element_to_be_clickable(
+                        (By.XPATH, f"//a[contains(@href, '/activities/{activity_id}/export_original')]")
+                    )
+                )
+                ActionChains(driver).move_to_element(export_link).click().perform()
+                
+                # Wait for file to download
+                download_start_time = time.time()
+                file_path = None
+                
+                while True:
+                    files = [f for f in os.listdir(download_dir) if os.path.isfile(os.path.join(download_dir, f))]
+                    
+                    for filename in files:
+                        full_path = os.path.join(download_dir, filename)
+                        file_creation_time = os.path.getctime(full_path)
+                        
+                        if file_creation_time > download_start_time:
+                            file_path = full_path
+                            break
+                    
+                    if file_path:
+                        break
+                        
+                    time.sleep(1)
+                    if time.time() - download_start_time > 60:
+                        logger.warning(f"Download timeout for activity {activity_id}")
+                        break
+                
+                if file_path:
+                    downloaded_files.append(file_path)
+                    logger.info(f"Successfully downloaded: {file_path}")
+                else:
+                    downloaded_files.append(None)
+                    logger.warning(f"Failed to download activity {activity_id}")
+                
+                # Small delay between downloads
+                time.sleep(2)
+                
+            except Exception as e:
+                logger.error(f"Error downloading activity {activity_id}: {e}")
+                downloaded_files.append(None)
         
-        # Click the export original button
-        logger.info("Waiting for 'Export Original' button")
-        export_link = WebDriverWait(driver, 15).until(
-            EC.visibility_of_element_located(
-                (By.XPATH, f"//a[contains(@href, '/activities/{activity_id}/export_original')]")
-            )
-        )
-        # Use of ActionsChains to ensure the click is successful
-        ActionChains(driver).move_to_element(export_link).click().perform()
-        
-        logger.info("Download initiated. Waiting for file to appear...")
-        start_time = time.time()
-        file_path = os.path.join(download_dir, f"{activity_id}.fit")
-        while not os.path.exists(file_path):
-            time.sleep(1)
-            if time.time() - start_time > 60:
-                raise TimeoutError("File download timed out.")
-        
-        logger.info(f"Downloaded activity {activity_id} to {file_path}")
-        return file_path
-    
-        ### HERE ENDS LOGIN FUNCTIONALITY THAT DOES NOT WORK ###
+        return downloaded_files
     
     except Exception as e:
-        logger.error(f"Error during Selenium download for activity {activity_id}: {e}", exc_info=True)
-        return None
+        logger.error(f"Error during bulk download: {e}", exc_info=True)
+        return []
     finally:
         driver.quit()
         
@@ -253,5 +318,10 @@ if __name__ == "__main__":
             print("  ".join(f"{str(val):<{column_widths[col]}}" for col, val in row.items()))
 
         if not df.empty:
-            first_id = df.iloc[0]["id"]
-            download_activity_fit(first_id)
+            logger.info(f"Starting bulk download of {len(df)} activities")
+            downloaded_files = download_multiple_activities(df)
+            
+            downloaded_count = sum(1 for f in downloaded_files if f is not None)
+            failed_count = len(downloaded_files) - downloaded_count
+            
+            logger.info(f"Download complete. Successfully downloaded: {downloaded_count}, Failed: {failed_count}")
