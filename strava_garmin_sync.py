@@ -47,46 +47,25 @@ def mark_synced(strava_activity_id):
 
 
 def sync_virtual_rides(): # FOR WIP FUNCTIONALITY
-    """Main function to sync Strava Virtual Rides to Garmin Connect."""
+    """Synchronise activities of the type virtual ride from Strava to Garmin Connect."""
     init_db()
 
     # Get virtual ride activities from Strava within the defined date range
-    logger.info(f"Fetching Virtual Ride activities from Strava for the last {ACTIVITY_DAYS_RANGE} days...")
-    virtual_rides_df = get_virtual_ride_activities(days=ACTIVITY_DAYS_RANGE)
+    logger.info(f"Fetching Virtual Ride activities from Strava for the last {ACTIVITY_DAYS_RANGE} days")
+    df = get_virtual_ride_activities(days=ACTIVITY_DAYS_RANGE)
 
-    if virtual_rides_df.empty:
+    if df.empty:
         logger.info("No new Virtual Ride activities found on Strava.")
         return
 
-    for _, row in virtual_rides_df.iterrows():
-        strava_activity_id = str(row['id'])
+    # Bulk download the virtual ride activities
+    logger.info(f"Starting bulk download of {len(df)} Virtual Ride activities")
+    downloaded_files = download_multiple_activities(df)
 
-        if is_synced(strava_activity_id):
-            logger.info(f"Activity {strava_activity_id} is already synced, skipping.")
-            continue
+    downloaded_count = sum(1 for f in downloaded_files if f is not None)
+    failed_count = len(downloaded_files) - downloaded_count
+    logger.info(f"Download complete, successfully downloaded: {downloaded_count}, failed: {failed_count}")
 
-        try:
-            # Download the FIT file from Strava
-            file_path = download_activity_fit(strava_activity_id)
-
-            # Upload the FIT file to Garmin Connect
-            # upload_activity_file_to_garmin(file_path)
-
-            # Mark the activity as synced in the database
-            # mark_synced(strava_activity_id)
-
-            logger.info(f"Successfully synced Strava activity {strava_activity_id} to Garmin Connect.")
-
-            # Clean up the downloaded file to prevent disk clutter
-            # os.remove(file_path)
-            # logger.info(f"Removed temporary file: {file_path}")
-
-        except requests.exceptions.RequestException as e:
-            logger.error(f"Error downloading Strava activity {strava_activity_id}: {e}", exc_info=True)
-            continue
-        except (GarminConnectAuthenticationError, GarminConnectConnectionError, GarminConnectTooManyRequestsError) as e:
-            logger.error(f"Error uploading activity {strava_activity_id} to Garmin Connect: {e}", exc_info=True)
-            continue
 
 if __name__ == "__main__":
     sync_virtual_rides()
