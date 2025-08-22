@@ -6,8 +6,8 @@ import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 from garminconnect import Garmin, GarminConnectAuthenticationError, GarminConnectConnectionError, GarminConnectTooManyRequestsError
 
-# Import shared config and functions from other scripts
-from config import (logger, GARMIN_USER, GARMIN_PASS, ACTIVITY_DAYS_RANGE, ACTIVITY_TYPE_TRANSLATIONS, RUNNING_THROUGH_GITHUB, LOGO_PATH, PLOT_ENABLED)
+# Import shared configuration and functions from other scripts
+from config import logger, GARMIN_USER, GARMIN_PASS, ACTIVITY_DAYS_RANGE, ACTIVITY_TYPE_TRANSLATIONS, RUNNING_THROUGH_GITHUB, LOGO_PATH, PLOT_ENABLED
 from todoist_integration import create_todoist_task
 from task_tracker import init_db, task_exists, mark_task_created
 
@@ -15,13 +15,16 @@ from task_tracker import init_db, task_exists, mark_task_created
 if not GARMIN_USER or not GARMIN_PASS:
     raise RuntimeError("Garmin user and password must be set as environment variables")
 
+
 def translate_activity_type(type_key):
     """Return the Norwegian activity name for a given Garmin Connect type key."""
     return ACTIVITY_TYPE_TRANSLATIONS.get(type_key.lower())
 
+
 def extract_activity_type(row):
     """Extract the typeKey from activity row."""
     return row.get('activityType', {}).get('typeKey', 'unknown')
+
 
 def fetch_data(start_date, end_date):
     """Fetch activities from Garmin Connect for a given date range."""
@@ -40,6 +43,7 @@ def fetch_data(start_date, end_date):
         logger.error("Token or cache error for Garmin", exc_info=True)
     return None, pd.DataFrame()
 
+
 def insert_logo(ax, fig):
     """Insert application logo into the given figure if available."""
     try:
@@ -51,6 +55,7 @@ def insert_logo(ax, fig):
         logger.warning("Logo not found at graphics folder")
     except Exception as e:
         logger.warning("Failed to insert logo: %s", e)
+
 
 def prepare_dataframe(df):
     """Normalise dataframe columns and add derived fields used for plotting and tasks."""
@@ -68,6 +73,7 @@ def prepare_dataframe(df):
     df['duration_hr'] = df['duration'].fillna(0) / 3600
     return df
 
+
 def plot_pie(counts):
     """Create pie chart for activity distribution."""
     figure_1 = plt.figure(figsize=(6, 6), constrained_layout=True)
@@ -78,6 +84,7 @@ def plot_pie(counts):
         plt.show()
     else:
         plt.close(figure_1)
+
 
 def plot_line(df):
     """Create line plot for activity duration over time."""
@@ -92,6 +99,7 @@ def plot_line(df):
         plt.show()
     else:
         plt.close(figure_2)
+
 
 def process_and_plot(df):
     """Process activities dataframe and produce plots and optional sensitive output."""
@@ -130,6 +138,7 @@ def process_and_plot(df):
                 'averageHR': 'Average HR'
             }).to_string(index=False))
 
+
 def upload_activity_file_to_garmin(file_path): # FOR WIP FUNCTIONALITY
     """Upload activity FIT file to Garmin Connect using garminconnect library."""
     try:
@@ -144,6 +153,7 @@ def upload_activity_file_to_garmin(file_path): # FOR WIP FUNCTIONALITY
     except AssertionError:
         logger.error("Token or cache error for Garmin", exc_info=True)
         raise
+
 
 def main():
     """Main entry point for fetching, processing and creating tasks."""

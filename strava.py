@@ -13,7 +13,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
 
-# Import shared config and functions from other scripts
+# Import shared configuration and functions from other scripts
 from config import logger, STRAVA_CLIENT_ID, STRAVA_CLIENT_SECRET, STRAVA_REDIRECT_URI, ACTIVITY_DAYS_RANGE, STRAVA_USER, STRAVA_PASS
 
 # Validate credentials from shared configuration
@@ -22,10 +22,12 @@ if not STRAVA_CLIENT_ID or not STRAVA_CLIENT_SECRET:
 
 TOKEN_PATH = "strava_tokens.json"
 
+
 def save_tokens(tok):
     """Save Strava API tokens to a local JSON file."""
     with open(TOKEN_PATH, "w") as f:
         json.dump(tok, f)
+
 
 def authenticate():
     """Perform Strava OAuth authentication and return new tokens."""
@@ -53,12 +55,14 @@ def authenticate():
     save_tokens(token)
     return token
 
+
 def load_tokens():
     """Load existing Strava tokens from file or authenticate if missing."""
     if os.path.exists(TOKEN_PATH):
         with open(TOKEN_PATH) as f:
             return json.load(f)
     return authenticate()
+
 
 def refresh_access(tok):
     """Refresh an expired Strava access token using the refresh token."""
@@ -72,6 +76,7 @@ def refresh_access(tok):
     new = response.json()
     save_tokens(new)
     return new
+
 
 def get_latest_activities(days=ACTIVITY_DAYS_RANGE):
     """Fetch the latest Strava activities within the specified number of days."""
@@ -107,6 +112,7 @@ def get_latest_activities(days=ACTIVITY_DAYS_RANGE):
 
     return pd.DataFrame(activities)
 
+
 def get_stream(activity_id, types=("heartrate", "cadence", "distance", "time")):
     """Fetch detailed data streams for a given Strava activity."""
     token = load_tokens()
@@ -125,6 +131,7 @@ def download_activity_fit(activity_id): # FOR WIP FUNCTIONALITY - Single activit
     activities_df = pd.DataFrame([{'id': activity_id, 'name': f'Activity {activity_id}'}])
     results = download_multiple_activities(activities_df)
     return results[0] if results else None
+
 
 def download_multiple_activities(activities_df): # FOR WIP FUNCTIONALITY
     """Download multiple FIT files from Strava using Selenium with a single login session."""
@@ -277,7 +284,7 @@ def download_multiple_activities(activities_df): # FOR WIP FUNCTIONALITY
         return []
     finally:
         driver.quit()
-        
+
 
 def get_virtual_ride_activities(days=ACTIVITY_DAYS_RANGE): # FOR WIP FUNCTIONALITY
     """Fetch recent Strava activities filtered for Virtual Ride type."""

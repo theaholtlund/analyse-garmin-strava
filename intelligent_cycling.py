@@ -4,7 +4,7 @@ def intelligent_cycling_login():
     from selenium.webdriver.common.by import By
     from selenium.webdriver.chrome.options import Options
 
-    # Import shared config and functions from other scripts
+    # Import shared configuration and functions from other scripts
     from config import logger, IC_USER, IC_PASS
 
     # Configure options for Chrome driver

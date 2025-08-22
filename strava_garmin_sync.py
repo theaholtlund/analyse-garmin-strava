@@ -4,13 +4,14 @@ import sqlite3
 from pathlib import Path
 from garminconnect import GarminConnectAuthenticationError, GarminConnectConnectionError, GarminConnectTooManyRequestsError
 
-# Import functions from other scripts
+# Import shared configuration and functions from other scripts
 from config import logger, ACTIVITY_DAYS_RANGE
 from strava import get_virtual_ride_activities, download_activity_fit
 from garmin_connect import upload_activity_file_to_garmin
 
 # Define the path to the local SQLite database file for sync tracking
 DB_PATH = Path("strava_garmin_sync.db")
+
 
 def init_db():
     """Initialise the database and create tracking table if it does not exist."""
@@ -25,6 +26,7 @@ def init_db():
     conn.commit()
     conn.close()
 
+
 def is_synced(strava_activity_id):
     """Check if a Strava activity has already been synced."""
     conn = sqlite3.connect(DB_PATH)
@@ -34,6 +36,7 @@ def is_synced(strava_activity_id):
     conn.close()
     return exists
 
+
 def mark_synced(strava_activity_id):
     """Record that a Strava activity has been synced."""
     conn = sqlite3.connect(DB_PATH)
@@ -41,6 +44,7 @@ def mark_synced(strava_activity_id):
     cursor.execute("INSERT OR IGNORE INTO strava_garmin_sync (strava_activity_id) VALUES (?)", (strava_activity_id,))
     conn.commit()
     conn.close()
+
 
 def sync_virtual_rides(): # FOR WIP FUNCTIONALITY
     init_db()
