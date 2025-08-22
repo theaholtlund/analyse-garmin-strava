@@ -47,14 +47,14 @@ def main():
     logger.info(f"Garmin activity times not found on Strava: {missing_times}")
 
     if missing_times:
-        print("Simulating upload of these Garmin activities to Strava, not yet implemented:")
+        print("The following activities are available Garmin Connect, but not in Strava:")
         for ts in sorted(missing_times):
             row = garmin_df[garmin_df['startTimeLocal'] == ts].iloc[0]
             print(f" - {row['activityName']} at {ts.strftime('%d-%m-%Y %H:%M')}")
     else:
         print("All Garmin activities are present on Strava")
 
-    # Login to Intelligent Cycling profile
+    # Login to Intelligent Cycling profile for proof of concept
     try:
         intelligent_cycling_login()
         logger.info("The login for Intelligent Cycling was successful")
