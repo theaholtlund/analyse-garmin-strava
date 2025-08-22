@@ -2,7 +2,7 @@
 
 Work in progress. Project working with Strava and Garmin Connect data in various ways, aiming to analyse, process and transform activities.
 
-# Ideas for Later, Components to Implement:
+## Ideas for Later, Components to Implement
 
 - Add compoment for Intelligent Cycling activities?
 - More elaborate secret management, use Azure? GitHub?
@@ -14,7 +14,7 @@ Work in progress. Project working with Strava and Garmin Connect data in various
 
 - Python ≥ 3.10, as this is required by GarminConnect
 - ChromeDriver, which can be installed for example via Homebrew
-- Strava developer app, created at https://www.strava.com/settings/api
+- Strava developer app, created at <https://www.strava.com/settings/api>
 
 ## Create a Virtual Environment
 
@@ -29,7 +29,7 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-## Configure Environment Variables:
+## Configure Environment Variables
 
 Set the following environment variables, as they will be needed to run the project scripts:
 
@@ -70,4 +70,10 @@ Comparison between Strava and Garmin:
 
 ```bash
 python compare_strava_garmin.py
+```
+
+Sync between Strava and Garmin:
+
+```bash
+python strava_garmin_sync.py
 ```
