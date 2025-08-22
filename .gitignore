@@ -2,6 +2,8 @@
 .venv
 .vscode
 .DS_Store
+downloads
 created_tasks.db
+strava_garmin_sync.db
 strava_tokens.json
 __pycache__
