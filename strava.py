@@ -74,6 +74,7 @@ def refresh_access(tok):
     return new
 
 def get_latest_activities(days=ACTIVITY_DAYS_RANGE):
+    """Fetch the latest Strava activities within the specified number of days."""
     token = load_tokens()
     current_timestamp = datetime.datetime.now(datetime.timezone.utc).timestamp()
     if token["expires_at"] < current_timestamp:
@@ -211,6 +212,7 @@ def download_activity_fit(activity_id): # FOR WIP FUNCTIONALITY
         return None
     finally:
         driver.quit()
+        
 
 def get_virtual_ride_activities(days=ACTIVITY_DAYS_RANGE): # FOR WIP FUNCTIONALITY
     """Fetch recent Strava activities filtered for Virtual Ride type."""
