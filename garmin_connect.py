@@ -157,22 +157,13 @@ def upload_activity_file_to_garmin(file_path): # FOR WIP FUNCTIONALITY
 
 def main():
     """Main entry point for fetching, processing and creating tasks."""
-    end_time = datetime.date.today()
-    start_time = end_time - datetime.timedelta(days=ACTIVITY_DAYS_RANGE)
+    today = datetime.date.today()
+    start_time = today - datetime.timedelta(days=ACTIVITY_DAYS_RANGE)
+    end_time = today
 
-    api, df = fetch_data(start_time, end_time)
-    process_and_plot(df)
-
-    """
-    today = end_time.isoformat()
-    sleep = api.get_sleep_data(today)
-    stats = api.get_stats(today)
-    print("\nSleep summary for", today, ":", sleep.get("dailySleepDTO", {}))
-    print("Stats for", today, ":", stats)
-
-    # Create a task in Todoist
-    create_todoist_task(content="Data has been analysed for Garmin Connect", due_string="today")
-    """
+    # Fetch and process all activities for plotting
+    _, df_all = fetch_data(start_time, end_time)
+    process_and_plot(df_all)
 
     # Initialise tracking database
     init_db()
