@@ -109,8 +109,6 @@ def process_and_plot(df):
     df = prepare_dataframe(df)
 
     counts = df['activityTypeNameNo'].value_counts()
-    # counts_filtered = counts[counts >= 5]
-    # counts_filtered['Annet'] = counts[counts < 5].sum()
 
     # Print the personal training summaries
     print("Aktiviteter i perioden:")
