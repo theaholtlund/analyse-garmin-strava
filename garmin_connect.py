@@ -1,5 +1,4 @@
 # Import required libraries
-import os
 import datetime
 import pandas as pd
 import matplotlib.pyplot as plt
