@@ -103,8 +103,7 @@ def plot_line(df):
 def process_and_plot(df):
     """Process activities dataframe and produce plots and optional sensitive output."""
     if df.empty:
-        if not RUNNING_THROUGH_GITHUB:
-            print("No activities found in date range")
+        print("No activities found in date range")
         return
 
     df = prepare_dataframe(df)
@@ -113,12 +112,11 @@ def process_and_plot(df):
     # counts_filtered = counts[counts >= 5]
     # counts_filtered['Annet'] = counts[counts < 5].sum()
 
-    # Only print personal training summaries when running locally
-    if not RUNNING_THROUGH_GITHUB:
-        print("Aktiviteter i perioden:")
-        counts_case = counts.rename(index=lambda x: x.capitalize())
-        counts_case.index.name = "Activity Type"
-        print(counts_case.to_string())
+    # Print the personal training summaries
+    print("Aktiviteter i perioden:")
+    counts_case = counts.rename(index=lambda x: x.capitalize())
+    counts_case.index.name = "Activity Type"
+    print(counts_case.to_string())
 
     # Create the graphics pie chart
     plot_pie(counts)
@@ -126,16 +124,15 @@ def process_and_plot(df):
     # Create the graphics line plot
     plot_line(df)
 
-    # Only print sensitive HR table when running locally
-    if not RUNNING_THROUGH_GITHUB:
-        print("\nGjennomsnittspuls per aktivitet:")
-        print(df[['activityId', 'activityTypeNameNo', 'averageHR']].dropna()
-              .assign(activityTypeNameNo=lambda x: x['activityTypeNameNo'].str.capitalize())
-              .rename(columns={
-                'activityId': 'Activity ID',
-                'activityTypeNameNo': 'Activity Type',
-                'averageHR': 'Average HR'
-            }).to_string(index=False))
+    # Print the heart rate table
+    print("\nGjennomsnittspuls per aktivitet:")
+    print(df[['activityId', 'activityTypeNameNo', 'averageHR']].dropna()
+          .assign(activityTypeNameNo=lambda x: x['activityTypeNameNo'].str.capitalize())
+          .rename(columns={
+              'activityId': 'Activity ID',
+              'activityTypeNameNo': 'Activity Type',
+              'averageHR': 'Average HR'
+          }).to_string(index=False))
 
 
 def upload_activity_file_to_garmin(file_path): # FOR WIP FUNCTIONALITY
@@ -160,9 +157,10 @@ def main():
     start_time = today - datetime.timedelta(days=ACTIVITY_DAYS_RANGE)
     end_time = today
 
-    # Fetch and process all activities for plotting
-    _, df_all = fetch_data(start_time, end_time)
-    process_and_plot(df_all)
+    # Fetch and process all activities for plotting, skip if running through GitHub
+    if not RUNNING_THROUGH_GITHUB:
+        _, df_all = fetch_data(start_time, end_time)
+        process_and_plot(df_all)
 
     # Initialise tracking database
     init_db()
