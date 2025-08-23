@@ -168,17 +168,15 @@ def main():
     # Initialise tracking database
     init_db()
 
-    # Use today only for task creation
-    today = datetime.date.today()
-    _, df = fetch_data(today, today)
-
-    if df.empty:
+    # Fetch today's activities for task creation
+    _, df_today = fetch_data(today, today)
+    if df_today.empty:
         logger.info("No activities from Garmin found for today")
         return
 
-    df = prepare_dataframe(df)
+    df_today = prepare_dataframe(df_today)
 
-    for _, row in df.iterrows():
+    for _, row in df_today.iterrows():
         activity_id = str(row['activityId'])
         activity_type_key = row['activityTypeKey']
         activity_type_no = row['activityTypeNameNo']
