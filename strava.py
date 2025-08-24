@@ -126,13 +126,6 @@ def get_stream(activity_id, types=("heartrate", "cadence", "distance", "time")):
     return response.json()
 
 
-def download_activity_fit(activity_id): # FOR WIP FUNCTIONALITY, SINGLE ACTIVITY DOWNLOAD
-    """Download a single FIT file from Strava using Selenium."""
-    activities_df = pd.DataFrame([{'id': activity_id, 'name': f'Activity {activity_id}'}])
-    results = download_multiple_activities(activities_df)
-    return results[0] if results else None
-
-
 def download_multiple_activities(activities_df): # FOR WIP FUNCTIONALITY
     """Download multiple FIT files from Strava using Selenium with a single login session."""
     if not STRAVA_USER or not STRAVA_PASS:
