@@ -6,7 +6,7 @@ import matplotlib.image as mpimg
 from garminconnect import Garmin, GarminConnectAuthenticationError, GarminConnectConnectionError, GarminConnectTooManyRequestsError
 
 # Import shared configuration and functions from other scripts
-from config import logger, GARMIN_USER, GARMIN_PASS, ACTIVITY_DAYS_RANGE, ACTIVITY_TYPE_TRANSLATIONS, RUNNING_THROUGH_GITHUB, LOGO_PATH, PLOT_ENABLED
+from config import logger, GARMIN_USER, GARMIN_PASS, ACTIVITY_DAYS_RANGE, ACTIVITY_TYPE_TRANSLATIONS, RUNNING_THROUGH_GITHUB, LOGO_PATH
 from todoist_integration import create_todoist_task
 from task_tracker import init_db, task_exists, mark_task_created
 
@@ -43,7 +43,7 @@ def fetch_data(start_date, end_date):
     return None, pd.DataFrame()
 
 
-def insert_logo(ax, fig):
+def insert_logo(fig):
     """Insert application logo into the given figure if available."""
     try:
         logo_img = mpimg.imread(LOGO_PATH)
@@ -78,11 +78,8 @@ def plot_pie(counts):
     figure_1 = plt.figure(figsize=(6, 6), constrained_layout=True)
     plt.pie(counts.values, labels=counts.index.str.capitalize(), autopct='%1.1f%%')
     plt.title("Aktivitetsfordeling")
-    insert_logo(plt.gca(), figure_1)
-    if PLOT_ENABLED:
-        plt.show()
-    else:
-        plt.close(figure_1)
+    insert_logo(figure_1)
+    plt.show()
 
 
 def plot_line(df):
@@ -93,11 +90,8 @@ def plot_line(df):
     plt.ylabel("Varighet i timer")
     plt.title("Varighet for aktivitet over tid")
     plt.xticks(rotation=45)
-    insert_logo(plt.gca(), figure_2)
-    if PLOT_ENABLED:
-        plt.show()
-    else:
-        plt.close(figure_2)
+    insert_logo(figure_2)
+    plt.show()
 
 
 def process_and_plot(df):
