@@ -34,7 +34,6 @@ ACTIVITY_TYPE_TRANSLATIONS = {
     "yoga": "yoga",
     "rowing": "roing",
     "elliptical": "ellipsemaskin",
-    "hyrox": "HYROX",
     "other": "annet"
 }
 
