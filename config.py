@@ -34,7 +34,8 @@ ACTIVITY_TYPE_TRANSLATIONS = {
     "yoga": "yoga",
     "rowing": "roing",
     "elliptical": "ellipsemaskin",
-    "other": "annet",
+    "hyrox": "HYROX",
+    "other": "annet"
 }
 
 # Load the credentials from Garmin
