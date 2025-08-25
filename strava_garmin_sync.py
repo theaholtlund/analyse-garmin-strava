@@ -1,8 +1,6 @@
 # Import required libraries
-import requests
 import sqlite3
 from pathlib import Path
-from garminconnect import GarminConnectAuthenticationError, GarminConnectConnectionError, GarminConnectTooManyRequestsError
 
 # Import shared configuration and functions from other scripts
 from config import logger, ACTIVITY_DAYS_RANGE
