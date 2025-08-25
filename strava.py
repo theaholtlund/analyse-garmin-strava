@@ -126,7 +126,7 @@ def get_stream(activity_id, types=("heartrate", "cadence", "distance", "time")):
     return response.json()
 
 
-def download_multiple_activities(activities_df): # FOR WIP FUNCTIONALITY
+def download_multiple_activities(activities_df):
     """Download multiple FIT files from Strava using Selenium with a single login session."""
     if not STRAVA_USER or not STRAVA_PASS:
         raise RuntimeError("Strava user and password must be set in config.py")
@@ -278,8 +278,8 @@ def download_multiple_activities(activities_df): # FOR WIP FUNCTIONALITY
         driver.quit()
 
 
-def get_virtual_ride_activities(days=ACTIVITY_DAYS_RANGE): # FOR WIP FUNCTIONALITY
-    """Fetch recent Strava activities filtered for Virtual Ride type."""
+def get_virtual_ride_activities(days=ACTIVITY_DAYS_RANGE):
+    """Fetch recent Strava activities filtered for virtual ride type."""
     df = get_latest_activities(days=days)
     if df.empty:
         return pd.DataFrame()
