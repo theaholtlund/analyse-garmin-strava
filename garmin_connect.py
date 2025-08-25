@@ -32,8 +32,8 @@ def fetch_data(start_date, end_date):
         api.login()
         logger.info("Authenticated as %s", GARMIN_USER)
 
-        acts = api.get_activities_by_date(start_date.isoformat(), end_date.isoformat())
-        df = pd.DataFrame(acts)
+        activities = api.get_activities_by_date(start_date.isoformat(), end_date.isoformat())
+        df = pd.DataFrame(activities)
         return api, df
 
     except (GarminConnectAuthenticationError, GarminConnectConnectionError, GarminConnectTooManyRequestsError) as e:
@@ -61,11 +61,11 @@ def prepare_dataframe(df):
     if df.empty:
         return df
     # Keep only expected columns if present, handle missing keys safely
-    cols = ['activityId', 'activityType', 'startTimeLocal', 'duration', 'averageHR']
-    for c in cols:
-        if c not in df.columns:
-            df[c] = None
-    df = df[cols].copy()
+    columns = ['activityId', 'activityType', 'startTimeLocal', 'duration', 'averageHR']
+    for column in columns:
+        if column not in df.columns:
+            df[column] = None
+    df = df[columns].copy()
     df['activityTypeKey'] = df['activityType'].apply(lambda x: (x or {}).get('typeKey', 'unknown'))
     df['activityTypeNameNo'] = df['activityTypeKey'].apply(lambda k: translate_activity_type(k) or 'annet')
     df['startTimeLocal'] = pd.to_datetime(df['startTimeLocal'])
