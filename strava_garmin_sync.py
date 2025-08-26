@@ -4,7 +4,7 @@ from pathlib import Path
 
 # Import shared configuration and functions from other scripts
 from config import logger, ACTIVITY_DAYS_RANGE
-from strava import get_virtual_ride_activities, download_activity_fit
+from strava import get_virtual_ride_activities, download_multiple_activities
 from garmin_connect import upload_activity_file_to_garmin
 
 # Define the path to the local SQLite database file for sync tracking
@@ -73,6 +73,16 @@ def sync_virtual_rides(): # FOR WIP FUNCTIONALITY
     downloaded_count = sum(1 for f in downloaded_files if f is not None)
     failed_count = len(downloaded_files) - downloaded_count
     logger.info(f"Download complete, successfully downloaded: {downloaded_count}, failed: {failed_count}")
+
+    # Placeholder for Garmin Connect upload
+    logger.info("Starting Garmin Connect upload for downloaded activities")
+    for file_path in downloaded_files:
+        if file_path is not None:
+            try:
+                upload_activity_file_to_garmin(file_path)
+                logger.info(f"Uploaded to Garmin: {file_path}")
+            except Exception as e:
+                logger.error(f"Failed to upload {file_path} to Garmin: {e}")
 
 
 if __name__ == "__main__":
