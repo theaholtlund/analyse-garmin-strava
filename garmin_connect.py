@@ -127,8 +127,8 @@ def process_and_plot(df):
           }).to_string(index=False))
 
 
-def upload_activity_file_to_garmin(file_path): # FOR WIP FUNCTIONALITY
-    """Upload activity FIT file to Garmin Connect using garminconnect library."""
+def upload_activity_file_to_garmin(file_path):
+    """Upload an activity FIT file to Garmin Connect."""
     try:
         api = Garmin(GARMIN_USER, GARMIN_PASS)
         api.login()
