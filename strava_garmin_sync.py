@@ -1,7 +1,3 @@
-# Import required libraries
-import sqlite3
-from pathlib import Path
-
 # Import shared configuration and functions from other scripts
 from config import logger, ACTIVITY_DAYS_RANGE
 from task_tracker import init_db, is_uploaded_to_garmin, mark_uploaded_to_garmin
