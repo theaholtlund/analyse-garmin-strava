@@ -1,0 +1,42 @@
+name: Virtual Ride Sync to Garmin Connect
+
+on:
+  schedule:
+    - cron: "0 6-21 * * *" # Run workflow once an hour from 06:00 to 21:00 every day
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  sync-strava-to-garmin:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.11
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Create temporary downloads folder
+        run: mkdir -p /tmp/strava_downloads
+
+      - name: Run Strava to Garmin sync
+        env:
+          STRAVA_USER: ${{ secrets.STRAVA_USER }}
+          STRAVA_PASS: ${{ secrets.STRAVA_PASS }}
+          STRAVA_CLIENT_ID: ${{ secrets.STRAVA_CLIENT_ID }}
+          STRAVA_CLIENT_SECRET: ${{ secrets.STRAVA_CLIENT_SECRET }}
+          STRAVA_REDIRECT_URI: ${{ secrets.STRAVA_REDIRECT_URI }}
+          GARMIN_USER: ${{ secrets.GARMIN_USER }}
+          GARMIN_PASS: ${{ secrets.GARMIN_PASS }}
+          STRAVA_DOWNLOAD_DIR: /tmp/strava_downloads
+        run: python strava_garmin_sync.py
+
+      - name: Cleanup downloaded files
+        run: rm -rf /tmp/strava_downloads
