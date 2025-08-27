@@ -3,7 +3,6 @@
 .vscode
 .DS_Store
 downloads
-created_tasks.db
-strava_garmin_sync.db
+sync_tracker.db
 strava_tokens.json
 __pycache__
