@@ -4,44 +4,9 @@ from pathlib import Path
 
 # Import shared configuration and functions from other scripts
 from config import logger, ACTIVITY_DAYS_RANGE
+from task_tracker import init_db, is_uploaded_to_garmin, mark_uploaded_to_garmin
 from strava import get_virtual_ride_activities, download_multiple_activities
 from garmin_connect import upload_activity_file_to_garmin
-
-# Define the path to the local SQLite database file for sync tracking
-DB_PATH = Path("strava_garmin_sync.db")
-
-
-def init_db():
-    """Initialise the database and create tracking table if it does not exist."""
-    conn = sqlite3.connect(DB_PATH)
-    cursor = conn.cursor()
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS strava_garmin_sync (
-            strava_activity_id TEXT PRIMARY KEY,
-            garmin_upload_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )
-    """)
-    conn.commit()
-    conn.close()
-
-
-def is_synced(strava_activity_id):
-    """Check if a Strava activity has already been synced."""
-    conn = sqlite3.connect(DB_PATH)
-    cursor = conn.cursor()
-    cursor.execute("SELECT 1 FROM strava_garmin_sync WHERE strava_activity_id = ?", (strava_activity_id,))
-    exists = cursor.fetchone() is not None
-    conn.close()
-    return exists
-
-
-def mark_synced(strava_activity_id):
-    """Record that a Strava activity has been synced."""
-    conn = sqlite3.connect(DB_PATH)
-    cursor = conn.cursor()
-    cursor.execute("INSERT OR IGNORE INTO strava_garmin_sync (strava_activity_id) VALUES (?)", (strava_activity_id,))
-    conn.commit()
-    conn.close()
 
 
 def sync_virtual_rides():
@@ -57,7 +22,7 @@ def sync_virtual_rides():
         return
 
     # Filter out already synced activities
-    df_to_download = df[~df['id'].astype(str).apply(is_synced)]
+    df_to_download = df[~df['id'].astype(str).apply(is_uploaded_to_garmin)]
     if df_to_download.empty:
         logger.info("All virtual ride activities have already been synced.")
         return
@@ -68,13 +33,13 @@ def sync_virtual_rides():
     # Record successful downloads in the database
     for activity_id, file_path in zip(df_to_download['id'], downloaded_files):
         if file_path is not None:
-            mark_synced(str(activity_id))
+            mark_uploaded_to_garmin(str(activity_id))
 
     downloaded_count = sum(1 for f in downloaded_files if f is not None)
     failed_count = len(downloaded_files) - downloaded_count
     logger.info(f"Download complete, successfully downloaded: {downloaded_count}, failed: {failed_count}")
 
-    # Placeholder for Garmin Connect upload
+    # Placeholder for Garmin Connect upload functionality
     logger.info("Starting Garmin Connect upload for downloaded activities")
     for file_path in downloaded_files:
         if file_path is not None:
