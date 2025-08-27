@@ -49,20 +49,20 @@ def sync_virtual_rides(): # FOR WIP FUNCTIONALITY
     init_db()
 
     # Get virtual ride activities from Strava within the defined date range
-    logger.info(f"Fetching Virtual Ride activities from Strava for the last {ACTIVITY_DAYS_RANGE} days")
+    logger.info(f"Fetching virtual ride activities from Strava for the last {ACTIVITY_DAYS_RANGE} days")
     df = get_virtual_ride_activities(days=ACTIVITY_DAYS_RANGE)
 
     if df.empty:
-        logger.info("No new Virtual Ride activities found on Strava.")
+        logger.info("No new virtual ride activities found on Strava.")
         return
 
     # Filter out already synced activities
     df_to_download = df[~df['id'].astype(str).apply(is_synced)]
     if df_to_download.empty:
-        logger.info("All Virtual Ride activities have already been synced.")
+        logger.info("All virtual ride activities have already been synced.")
         return
 
-    logger.info(f"Starting bulk download of {len(df_to_download)} Virtual Ride activities")
+    logger.info(f"Starting bulk download of {len(df_to_download)} virtual ride activities")
     downloaded_files = download_multiple_activities(df_to_download)
 
     # Record successful downloads in the database
