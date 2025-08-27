@@ -126,21 +126,15 @@ def get_stream(activity_id, types=("heartrate", "cadence", "distance", "time")):
     return response.json()
 
 
-def download_multiple_activities(activities_df):
+def download_multiple_activities(activities_df, download_dir=None):
     """Download multiple FIT files from Strava using Selenium with a single login session."""
     if not STRAVA_USER or not STRAVA_PASS:
         raise RuntimeError("Strava user and password must be set in config.py")
 
     options = Options()
-    # options.add_argument("--headless=new") # Comment out headless to open Chrome for debugging
-
+    # options.add_argument("--headless=new") # Uncomment for headless
     options.add_argument("--window-size=390,844")
     options.add_argument("--user-agent=Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.0 Mobile/15E148 Safari/604.1")
-
-    download_dir = os.path.join(os.getcwd(), "downloads")
-    if not os.path.exists(download_dir):
-        os.makedirs(download_dir)
-    
     options.add_experimental_option("prefs", {
         "download.default_directory": download_dir,
         "download.prompt_for_download": False,
@@ -237,24 +231,17 @@ def download_multiple_activities(activities_df):
                 # Wait for file to download
                 download_start_time = time.time()
                 file_path = None
-                
                 while True:
                     files = [f for f in os.listdir(download_dir) if os.path.isfile(os.path.join(download_dir, f))]
-                    
                     for filename in files:
                         full_path = os.path.join(download_dir, filename)
                         if os.path.getctime(full_path) > download_start_time:
                             file_path = full_path
                             break
-                    
-                    if file_path:
+                    if file_path or time.time() - download_start_time > 60:
                         break
-                        
                     time.sleep(1)
-                    if time.time() - download_start_time > 60:
-                        logger.warning(f"Download timeout for activity {activity_id}")
-                        break
-                
+
                 if file_path:
                     downloaded_files.append(file_path)
                     logger.info(f"Successfully downloaded: {file_path}")
@@ -270,10 +257,7 @@ def download_multiple_activities(activities_df):
                 downloaded_files.append(None)
         
         return downloaded_files
-    
-    except Exception as e:
-        logger.error(f"Error during bulk download: {e}", exc_info=True)
-        return []
+
     finally:
         driver.quit()
 
