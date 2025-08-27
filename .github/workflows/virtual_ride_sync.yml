@@ -33,6 +33,9 @@ jobs:
           STRAVA_CLIENT_ID: ${{ secrets.STRAVA_CLIENT_ID }}
           STRAVA_CLIENT_SECRET: ${{ secrets.STRAVA_CLIENT_SECRET }}
           STRAVA_REDIRECT_URI: ${{ secrets.STRAVA_REDIRECT_URI }}
+          STRAVA_ACCESS_TOKEN: ${{ secrets.STRAVA_ACCESS_TOKEN }}
+          STRAVA_REFRESH_TOKEN: ${{ secrets.STRAVA_REFRESH_TOKEN }}
+          STRAVA_EXPIRES_AT: ${{ secrets.STRAVA_EXPIRES_AT }}
           GARMIN_USER: ${{ secrets.GARMIN_USER }}
           GARMIN_PASS: ${{ secrets.GARMIN_PASS }}
           STRAVA_DOWNLOAD_DIR: /tmp/strava_downloads # Ensure downloads go to temp folder

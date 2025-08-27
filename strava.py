@@ -57,20 +57,34 @@ def authenticate():
 
 
 def load_tokens():
-    """Load existing Strava tokens from file or authenticate if missing."""
+    """Load existing Strava tokens from file, environment or authenticate if missing."""
+    # Use the CI environment variables if present
+    if os.getenv("CI") or os.getenv("GITHUB_ACTIONS"):
+        if all(os.getenv(v) for v in ["STRAVA_ACCESS_TOKEN", "STRAVA_REFRESH_TOKEN", "STRAVA_EXPIRES_AT"]):
+            return {
+                "access_token": os.environ["STRAVA_ACCESS_TOKEN"],
+                "refresh_token": os.environ["STRAVA_REFRESH_TOKEN"],
+                "expires_at": int(os.environ["STRAVA_EXPIRES_AT"]),
+                "token_type": "Bearer"
+            }
+
+    # Use local token file if it exists
     if os.path.exists(TOKEN_PATH):
         with open(TOKEN_PATH) as f:
             return json.load(f)
+
+    # Fallback to interactive authenticate, only works locally
     return authenticate()
 
 
-def refresh_access(tok):
+
+def refresh_access(token):
     """Refresh an expired Strava access token using the refresh token."""
     response = requests.post("https://www.strava.com/api/v3/oauth/token", data={
         "client_id": STRAVA_CLIENT_ID,
         "client_secret": STRAVA_CLIENT_SECRET,
         "grant_type": "refresh_token",
-        "refresh_token": tok["refresh_token"],
+        "refresh_token": token["refresh_token"],
     })
     response.raise_for_status()
     new = response.json()
