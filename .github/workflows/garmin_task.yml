@@ -26,7 +26,7 @@ jobs:
       - name: Restore the task tracker cache # Restore database file from cache if available, track tasks already created
         uses: actions/cache@v4
         with:
-          path: created_tasks.db
+          path: sync_tracker.db
           key: garmin-tasks-db-${{ github.run_id }} # Use unique cache key per run to force saving updated database
           restore-keys:
             | # Restore most recent database between runs to prevent duplicate task creation
