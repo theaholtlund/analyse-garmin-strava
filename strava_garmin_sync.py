@@ -44,7 +44,7 @@ def mark_synced(strava_activity_id):
     conn.close()
 
 
-def sync_virtual_rides(): # FOR WIP FUNCTIONALITY
+def sync_virtual_rides():
     """Synchronise activities of the type virtual ride from Strava to Garmin Connect."""
     init_db()
 
