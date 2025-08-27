@@ -35,7 +35,7 @@ def sync_virtual_rides():
     failed_count = len(downloaded_files) - downloaded_count
     logger.info(f"Download complete, successfully downloaded: {downloaded_count}, failed: {failed_count}")
 
-    # Placeholder for Garmin Connect upload functionality
+    # Upload the activity to Garmin Connect
     logger.info("Starting Garmin Connect upload for downloaded activities")
     for file_path in downloaded_files:
         if file_path is not None:
