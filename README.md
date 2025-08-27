@@ -50,12 +50,14 @@ TODOIST_API_TOKEN="YOUR-TODOIST-TOKEN"
 ## Run the Project Files
 
 Garmin Connect:
+The file holds functions related to Garmin Connect operations, and running the script will create follow-up tasks in Todoist for today's activities that have not yet been processed.
 
 ```bash
 python garmin_connect.py
 ```
 
 Intelligent Cycling:
+The file holds functions related to Intelligent Cycling operations. No main script logic.
 
 ```bash
 python intelligent_cycling.py
@@ -74,6 +76,7 @@ python compare_strava_garmin.py
 ```
 
 Sync between Strava and Garmin:
+The file holds functions related to keeping track of activities synchronised from Strava to Garmin Connect, and running the script will synchronise activities of the type virtual ride from Strava to Garmin Connect.
 
 ```bash
 python strava_garmin_sync.py
