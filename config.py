@@ -23,6 +23,8 @@ ACTIVITY_DAYS_RANGE = 30
 ACTIVITY_TYPE_TRANSLATIONS = {
     "running": "løping",
     "treadmill_running": "løping på tredemølle",
+    "track_running": "baneløping",
+    "trail_running": "terrengløping",
     "road_biking": "landeveissykling",
     "indoor_cycling": "innendørssykling",
     "strength_training": "styrketrening",
@@ -31,6 +33,7 @@ ACTIVITY_TYPE_TRANSLATIONS = {
     "open_water_swimming": "utendørssvømming",
     "hiking": "fottur",
     "multisport" : "triatlon",
+    "bouldering": "buldring",
     "yoga": "yoga",
     "rowing": "roing",
     "elliptical": "ellipsemaskin",
