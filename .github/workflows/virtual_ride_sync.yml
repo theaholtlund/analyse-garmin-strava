@@ -1,4 +1,4 @@
-name: Sync Virtual Ride to Garmin Connect
+name: Sync Cycling to Garmin Connect
 
 on:
   schedule:
@@ -23,6 +23,14 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      - name: Restore the activity sync cache # Restore database file from cache if available, track synced activities
+        uses: actions/cache@v4
+        with:
+          path: sync_tracker.db
+          key: strava-garmin-sync-db-${{ github.run_id }} # Use unique cache key per run to force saving updated database
+          restore-keys: |
+            strava-garmin-sync-db-
+
       - name: Create temporary downloads folder # Ensure a clean temporary folder for FIT file downloads
         run: mkdir -p /tmp/strava_downloads
 
@@ -38,7 +46,7 @@ jobs:
           STRAVA_EXPIRES_AT: ${{ secrets.STRAVA_EXPIRES_AT }}
           GARMIN_USER: ${{ secrets.GARMIN_USER }}
           GARMIN_PASS: ${{ secrets.GARMIN_PASS }}
-          STRAVA_DOWNLOAD_DIR: /tmp/strava_downloads # Ensure downloads go to temp folder
+          STRAVA_DOWNLOAD_DIR: /tmp/strava_downloads
         run: python strava_garmin_sync.py
 
       - name: Cleanup downloaded files # Remove temporary folder after upload
