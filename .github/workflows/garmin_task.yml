@@ -41,8 +41,3 @@ jobs:
           TODOIST_API_TOKEN: ${{ secrets.TODOIST_API_TOKEN }}
         run: |
           python garmin_connect.py
-      - name: Upload DB as artefact
-        uses: actions/upload-artifact@v4
-        with:
-          name: sync-tracker-db
-          path: sync_tracker.db
