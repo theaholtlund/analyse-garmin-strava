@@ -1,4 +1,4 @@
-name: Virtual Ride Sync to Garmin Connect
+name: Sync Virtual Ride to Garmin Connect
 
 on:
   schedule:
