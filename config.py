@@ -35,12 +35,14 @@ ACTIVITY_TYPE_TRANSLATIONS = {
     "multisport" : "triatlon",
     "bouldering": "buldring",
     "yoga": "yoga",
+    "pilates": "pilates",
     "rowing": "roing",
+    "cardio": "cardio",
     "elliptical": "ellipsemaskin",
     "other": "annet"
 }
 
-# Load the credentials from Garmin
+# Load the credentials from Garmin Connect
 GARMIN_USER = os.getenv("GARMIN_USER")
 GARMIN_PASS = os.getenv("GARMIN_PASS")
 
