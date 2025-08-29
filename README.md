@@ -4,6 +4,7 @@ Work in progress. Project working with Strava and Garmin Connect data in various
 
 ## Ideas for Later, Components to Implement
 
+- Add to task in Todoist if one already exists, instead of making new one?
 - Fix and complete GitHub workflow to upload activities to Garmin Connect?
 - Remove default gear when uploading virtual ride activities to Garmin Connect?
 - Implement functionality to update calendar notes using AppleScript?
