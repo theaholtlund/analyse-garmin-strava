@@ -146,14 +146,29 @@ def download_multiple_activities(activities_df, download_dir=None):
         raise RuntimeError("Strava user and password must be set in config.py")
 
     options = Options()
-    # options.add_argument("--headless=new") # Uncomment for headless
+    # Run headless in CI (enable if needed)
+    # options.add_argument("--headless=new")
     options.add_argument("--window-size=390,844")
-    options.add_argument("--user-agent=Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.0 Mobile/15E148 Safari/604.1")
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
+
+    # Ensure a unique Chrome user data directory for each run
+    import tempfile
+    user_data_dir = tempfile.mkdtemp()
+    options.add_argument(f"--user-data-dir={user_data_dir}")
+
+    # Mobile user agent to get mobile Strava pages
+    options.add_argument(
+        "--user-agent=Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) "
+        "AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.0 Mobile/15E148 Safari/604.1"
+    )
+
+    # Configure automatic downloads
     options.add_experimental_option("prefs", {
         "download.default_directory": download_dir,
         "download.prompt_for_download": False,
         "download.directory_upgrade": True,
-        "safeBrowse.enabled": True
+        "safebrowsing.enabled": True
     })
 
     driver = webdriver.Chrome(options=options)
