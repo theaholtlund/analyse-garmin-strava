@@ -12,7 +12,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
-
+import tempfile, shutil
 # Import shared configuration and functions from other scripts
 from config import logger, STRAVA_CLIENT_ID, STRAVA_CLIENT_SECRET, STRAVA_REDIRECT_URI, ACTIVITY_DAYS_RANGE, STRAVA_USER, STRAVA_PASS
 
@@ -139,21 +139,18 @@ def get_stream(activity_id, types=("heartrate", "cadence", "distance", "time")):
     response.raise_for_status()
     return response.json()
 
-
 def download_multiple_activities(activities_df, download_dir=None):
     """Download multiple FIT files from Strava using Selenium with a single login session."""
     if not STRAVA_USER or not STRAVA_PASS:
         raise RuntimeError("Strava user and password must be set in config.py")
 
     options = Options()
-    # Run headless in CI (enable if needed)
-    # options.add_argument("--headless=new")
+    options.add_argument("--headless=new")
     options.add_argument("--window-size=390,844")
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
 
     # Ensure a unique Chrome user data directory for each run
-    import tempfile
     user_data_dir = tempfile.mkdtemp()
     options.add_argument(f"--user-data-dir={user_data_dir}")
 
@@ -289,7 +286,10 @@ def download_multiple_activities(activities_df, download_dir=None):
 
     finally:
         driver.quit()
-
+        try:
+            shutil.rmtree(user_data_dir, ignore_errors=True)
+        except Exception as e:
+            logger.warning(f"Could not remove temp Chrome profile: {e}")
 
 def get_virtual_ride_activities(days=ACTIVITY_DAYS_RANGE):
     """Fetch recent Strava activities filtered for virtual ride type."""
