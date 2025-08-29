@@ -44,7 +44,7 @@ def main():
     strava_times = set(strava_df['start_date_local'].dropna())
 
     missing_times = garmin_times - strava_times
-    logger.info(f"Garmin activity times not found on Strava: {missing_times}")
+    logger.info(f"Garmin Connect activity times not found on Strava: {missing_times}")
 
     if missing_times:
         print("The following activities are available Garmin Connect, but not in Strava:")
@@ -52,7 +52,7 @@ def main():
             row = garmin_df[garmin_df['startTimeLocal'] == ts].iloc[0]
             print(f" - {row['activityName']} at {ts.strftime('%d-%m-%Y %H:%M')}")
     else:
-        print("All Garmin activities are present on Strava")
+        print("All activities from Garmin Connect are present on Strava")
 
     # Login to Intelligent Cycling profile for proof of concept
     try:
