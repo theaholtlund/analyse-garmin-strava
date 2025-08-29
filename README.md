@@ -57,17 +57,18 @@ The file holds functions related to Garmin Connect operations, and running the s
 python garmin_connect.py
 ```
 
+Strava:
+The file holds functions related to Strava operations, and running the script will output details on the activities completed on the days specified in the ACTIVITY_DAYS_RANGE variable from Strava.
+
+```bash
+python strava.py
+```
+
 Intelligent Cycling:
 The file holds functions related to Intelligent Cycling operations. No main script logic.
 
 ```bash
 python intelligent_cycling.py
-```
-
-Strava:
-
-```bash
-python strava.py
 ```
 
 Comparison between Strava and Garmin:
