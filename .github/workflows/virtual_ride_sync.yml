@@ -23,15 +23,26 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Install Google Chrome and ChromeDriver # Needed for Selenium
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y google-chrome-stable unzip wget
-          DRIVER_VERSION=$(curl -s "https://googlechromelabs.github.io/chrome-for-testing/LATEST_RELEASE")
-          wget https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/$DRIVER_VERSION/linux64/chromedriver-linux64.zip
-          unzip chromedriver-linux64.zip
-          sudo mv chromedriver-linux64/chromedriver /usr/local/bin/
-          rm -rf chromedriver-linux64.zip chromedriver-linux64
+      - name: Installing package list
+        run: apt list --installed
+      - name: Removing previous chrome instances on runner
+        run: sudo apt purge google-chrome-stable
+
+        # Need to fetch reqs if needed
+      - name: Installing all necessary packages
+        run: pip install chromedriver-autoinstaller selenium pyvirtualdisplay
+      - name: Install xvfb
+        run: sudo apt-get install xvfb
+
+      # - name: Install Google Chrome and ChromeDriver # Needed for Selenium
+      #   run: |
+      #     sudo apt-get update
+      #     sudo apt-get install -y google-chrome-stable unzip wget
+      #     DRIVER_VERSION=$(curl -s "https://googlechromelabs.github.io/chrome-for-testing/LATEST_RELEASE_STABLE")
+      #     wget https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/$DRIVER_VERSION/linux64/chromedriver-linux64.zip
+      #     unzip chromedriver-linux64.zip
+      #     sudo mv chromedriver-linux64/chromedriver /usr/local/bin/
+      #     rm -rf chromedriver-linux64.zip chromedriver-linux64
 
       - name: Restore the activity sync cache # Restore database file from cache if available, track synced activities
         uses: actions/cache@v4
