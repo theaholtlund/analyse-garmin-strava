@@ -72,6 +72,7 @@ python intelligent_cycling.py
 ```
 
 Comparison between Strava and Garmin:
+The file holds functions related to comparing activities from Garmin Connect to Strava, and running the script will output any activities from Garmin Connect that are not in Strava for the days specified in the ACTIVITY_DAYS_RANGE variable.
 
 ```bash
 python compare_strava_garmin.py
