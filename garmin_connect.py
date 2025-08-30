@@ -20,11 +20,6 @@ def translate_activity_type(type_key):
     return ACTIVITY_TYPE_TRANSLATIONS.get(type_key.lower())
 
 
-def extract_activity_type(row):
-    """Extract the typeKey from activity row."""
-    return row.get('activityType', {}).get('typeKey', 'unknown')
-
-
 def fetch_data(start_date, end_date):
     """Fetch activities from Garmin Connect for a given date range."""
     try:
