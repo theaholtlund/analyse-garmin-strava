@@ -9,7 +9,7 @@ def create_todoist_task(content, due_string="today"):
     """Create a Todoist task with a Garmin Connect label."""
     if not TODOIST_API_TOKEN:
         logger.warning("No Todoist API token found in environment variables")
-        return
+        return None
 
     api = TodoistAPI(TODOIST_API_TOKEN)
 
@@ -26,3 +26,4 @@ def create_todoist_task(content, due_string="today"):
     except Exception as error:
         # Log exception with traceback for debugging
         logger.error(f"Error creating Todoist task: {error}", exc_info=True)
+        return None
