@@ -52,6 +52,17 @@ def load_env(var_name, default=None):
         logger.warning(f"Environment variable '{var_name}' is not set")
     return value
 
+
+def check_strava_credentials():
+    """Check if Strava credentials are set and log a warning if any are missing."""
+    critical = {
+        "STRAVA_CLIENT_ID": STRAVA_CLIENT_ID,
+        "STRAVA_CLIENT_SECRET": STRAVA_CLIENT_SECRET
+    }
+    missing = [k for k, v in critical.items() if not v]
+    if missing:
+        logger.warning(f"Missing critical credentials: {missing}")
+
 # Load the credentials from Garmin Connect
 GARMIN_USER = os.getenv("GARMIN_USER")
 GARMIN_PASS = os.getenv("GARMIN_PASS")

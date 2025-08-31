@@ -13,12 +13,9 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
 import tempfile, shutil
-# Import shared configuration and functions from other scripts
-from config import logger, STRAVA_CLIENT_ID, STRAVA_CLIENT_SECRET, STRAVA_REDIRECT_URI, ACTIVITY_DAYS_RANGE, STRAVA_USER, STRAVA_PASS
 
-# Validate credentials from shared configuration
-if not STRAVA_CLIENT_ID or not STRAVA_CLIENT_SECRET:
-    raise RuntimeError("Set STRAVA_CLIENT_ID and STRAVA_CLIENT_SECRET in environment file")
+# Import shared configuration and functions from other scripts
+from config import logger, check_strava_credentials, STRAVA_CLIENT_ID, STRAVA_CLIENT_SECRET, STRAVA_REDIRECT_URI, ACTIVITY_DAYS_RANGE, STRAVA_USER, STRAVA_PASS
 
 TOKEN_PATH = "strava_tokens.json"
 
@@ -299,6 +296,9 @@ def get_virtual_ride_activities(days=ACTIVITY_DAYS_RANGE):
     return df[df['type'] == 'VirtualRide'].copy()
 
 if __name__ == "__main__":
+    # Run credential check for Strava
+    check_strava_credentials()
+
     logger.info(f"Fetching activities from the past {ACTIVITY_DAYS_RANGE} days")
     df = get_latest_activities()
 
