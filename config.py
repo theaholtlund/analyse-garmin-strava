@@ -44,6 +44,14 @@ ACTIVITY_TYPE_TRANSLATIONS = {
     "other": "annet"
 }
 
+
+def load_env(var_name, default=None):
+    """Load an environment variable, log a warning if it is not set and return its value."""
+    value = os.getenv(var_name, default)
+    if value is None:
+        logger.warning(f"Environment variable '{var_name}' is not set")
+    return value
+
 # Load the credentials from Garmin Connect
 GARMIN_USER = os.getenv("GARMIN_USER")
 GARMIN_PASS = os.getenv("GARMIN_PASS")
