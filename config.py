@@ -40,6 +40,7 @@ ACTIVITY_TYPE_TRANSLATIONS = {
     "cardio": "cardio",
     "elliptical": "ellipsemaskin",
     "downhill_skiing": "slalåm",
+    "snowboarding": "snowboarding",
     "cross_country_classic_skiing": "klassisk langrenn",
     "other": "annet"
 }
