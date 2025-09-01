@@ -64,6 +64,18 @@ def check_strava_credentials():
     if missing:
         logger.warning(f"Missing critical credentials: {missing}")
 
+
+def check_garmin_credentials():
+    """Check if Garmin Connect credentials are set and log a warning if any are missing."""
+    critical = {
+        "GARMIN_USER": GARMIN_USER,
+        "GARMIN_PASS": GARMIN_PASS
+    }
+    missing = [k for k, v in critical.items() if not v]
+    if missing:
+        logger.warning(f"Missing critical credentials: {missing}")
+
+
 # Load the credentials from Garmin Connect
 GARMIN_USER = os.getenv("GARMIN_USER")
 GARMIN_PASS = os.getenv("GARMIN_PASS")

@@ -6,7 +6,7 @@ import matplotlib.image as mpimg
 from garminconnect import Garmin, GarminConnectAuthenticationError, GarminConnectConnectionError, GarminConnectTooManyRequestsError
 
 # Import shared configuration and functions from other scripts
-from config import logger, GARMIN_USER, GARMIN_PASS, ACTIVITY_DAYS_RANGE, ACTIVITY_TYPE_TRANSLATIONS, RUNNING_THROUGH_GITHUB, LOGO_PATH
+from config import logger, check_garmin_credentials, GARMIN_USER, GARMIN_PASS, ACTIVITY_DAYS_RANGE, ACTIVITY_TYPE_TRANSLATIONS, RUNNING_THROUGH_GITHUB, LOGO_PATH
 from todoist_integration import create_todoist_task
 from task_tracker import init_db, task_exists, mark_task_created
 
@@ -141,6 +141,9 @@ def upload_activity_file_to_garmin(file_path):
 
 def main():
     """Main entry point for fetching, processing and creating tasks."""
+    # Run credential check for Garmin Connect
+    check_garmin_credentials()
+
     today = datetime.date.today()
     start_time = today - datetime.timedelta(days=ACTIVITY_DAYS_RANGE)
     end_time = today
