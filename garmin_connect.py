@@ -10,10 +10,6 @@ from config import logger, check_garmin_credentials, GARMIN_USER, GARMIN_PASS, A
 from todoist_integration import create_todoist_task
 from task_tracker import init_db, task_exists, mark_task_created
 
-# Validate credentials from shared configuration
-if not GARMIN_USER or not GARMIN_PASS:
-    raise RuntimeError("Garmin user and password must be set as environment variables")
-
 
 def translate_activity_type(type_key):
     """Return the Norwegian activity name for a given Garmin Connect type key."""
