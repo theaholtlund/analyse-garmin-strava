@@ -77,21 +77,21 @@ def check_garmin_credentials():
 
 
 # Load the credentials from Garmin Connect
-GARMIN_USER = os.getenv("GARMIN_USER")
-GARMIN_PASS = os.getenv("GARMIN_PASS")
+GARMIN_USER = load_env("GARMIN_USER")
+GARMIN_PASS = load_env("GARMIN_PASS")
 
 # Load the credentials from Strava
-STRAVA_USER = os.getenv("STRAVA_USER")
-STRAVA_PASS = os.getenv("STRAVA_PASS")
-STRAVA_CLIENT_ID = os.getenv("STRAVA_CLIENT_ID")
-STRAVA_CLIENT_SECRET = os.getenv("STRAVA_CLIENT_SECRET")
-STRAVA_REDIRECT_URI = os.getenv("STRAVA_REDIRECT_URI", "http://localhost")
+STRAVA_USER = load_env("STRAVA_USER")
+STRAVA_PASS = load_env("STRAVA_PASS")
+STRAVA_CLIENT_ID = load_env("STRAVA_CLIENT_ID")
+STRAVA_CLIENT_SECRET = load_env("STRAVA_CLIENT_SECRET")
+STRAVA_REDIRECT_URI = load_env("STRAVA_REDIRECT_URI", "http://localhost")
 
 # Load the credentials from Intelligent Cycling
-IC_USER = os.getenv("IC_USER")
-IC_PASS = os.getenv("IC_PASS")
+IC_USER = load_env("IC_USER")
+IC_PASS = load_env("IC_PASS")
 
 # Load the credentials from Todoist
-TODOIST_SECTION_ID = os.getenv("TODOIST_SECTION_ID")
-TODOIST_PROJECT_ID = os.getenv("TODOIST_PROJECT_ID")
-TODOIST_API_TOKEN = os.getenv("TODOIST_API_TOKEN")
+TODOIST_SECTION_ID = load_env("TODOIST_SECTION_ID")
+TODOIST_PROJECT_ID = load_env("TODOIST_PROJECT_ID")
+TODOIST_API_TOKEN = load_env("TODOIST_API_TOKEN")
