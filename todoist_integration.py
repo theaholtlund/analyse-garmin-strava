@@ -2,7 +2,13 @@
 from todoist_api_python.api import TodoistAPI
 
 # Import shared configuration and functions from other scripts
-from config import logger, TODOIST_SECTION_ID, TODOIST_PROJECT_ID, TODOIST_API_TOKEN
+from config import logger, check_todoist_credentials
+
+# Get credentials and run credentials check
+creds = check_todoist_credentials()
+TODOIST_SECTION_ID = creds["TODOIST_SECTION_ID"]
+TODOIST_PROJECT_ID = creds["TODOIST_PROJECT_ID"]
+TODOIST_API_TOKEN = creds["TODOIST_API_TOKEN"]
 
 
 def create_todoist_task(content, due_string="today"):
