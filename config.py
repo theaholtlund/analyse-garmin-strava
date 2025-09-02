@@ -32,7 +32,7 @@ ACTIVITY_TYPE_TRANSLATIONS = {
     "lap_swimming": "bassengsvømming",
     "open_water_swimming": "utendørssvømming",
     "hiking": "fottur",
-    "multisport" : "triatlon",
+    "multisport": "triatlon",
     "bouldering": "buldring",
     "yoga": "yoga",
     "pilates": "pilates",
@@ -54,44 +54,73 @@ def load_env(var_name, default=None):
     return value
 
 
+def get_strava_credentials():
+    """Return the credentials needed for Strava functionality."""
+    return {
+        "STRAVA_USER": load_env("STRAVA_USER"),
+        "STRAVA_PASS": load_env("STRAVA_PASS"),
+        "STRAVA_CLIENT_ID": load_env("STRAVA_CLIENT_ID"),
+        "STRAVA_CLIENT_SECRET": load_env("STRAVA_CLIENT_SECRET"),
+        "STRAVA_REDIRECT_URI": load_env("STRAVA_REDIRECT_URI", "http://localhost")
+    }
+
+
 def check_strava_credentials():
     """Check if Strava credentials are set and log a warning if any are missing."""
-    critical = {
-        "STRAVA_CLIENT_ID": STRAVA_CLIENT_ID,
-        "STRAVA_CLIENT_SECRET": STRAVA_CLIENT_SECRET
-    }
-    missing = [k for k, v in critical.items() if not v]
+    creds = get_strava_credentials()
+    missing = [k for k, v in creds.items() if not v]
     if missing:
-        logger.warning(f"Missing critical credentials: {missing}")
+        logger.warning(f"Missing credential for Strava: {missing}")
+    return creds
+
+
+def get_garmin_credentials():
+    """Return the credentials needed for Garmin Connect functionality."""
+    return {
+        "GARMIN_USER": load_env("GARMIN_USER"),
+        "GARMIN_PASS": load_env("GARMIN_PASS")
+    }
 
 
 def check_garmin_credentials():
     """Check if Garmin Connect credentials are set and log a warning if any are missing."""
-    critical = {
-        "GARMIN_USER": GARMIN_USER,
-        "GARMIN_PASS": GARMIN_PASS
-    }
-    missing = [k for k, v in critical.items() if not v]
+    creds = get_garmin_credentials()
+    missing = [k for k, v in creds.items() if not v]
     if missing:
-        logger.warning(f"Missing critical credentials: {missing}")
+        logger.warning(f"Missing credential for Garmin Connect: {missing}")
+    return creds
 
 
-# Load the credentials from Garmin Connect
-GARMIN_USER = load_env("GARMIN_USER")
-GARMIN_PASS = load_env("GARMIN_PASS")
+def get_ic_credentials():
+    """Return the credentials needed for Intelligent Cycling functionality."""
+    return {
+        "IC_USER": load_env("IC_USER"),
+        "IC_PASS": load_env("IC_PASS")
+    }
 
-# Load the credentials from Strava
-STRAVA_USER = load_env("STRAVA_USER")
-STRAVA_PASS = load_env("STRAVA_PASS")
-STRAVA_CLIENT_ID = load_env("STRAVA_CLIENT_ID")
-STRAVA_CLIENT_SECRET = load_env("STRAVA_CLIENT_SECRET")
-STRAVA_REDIRECT_URI = load_env("STRAVA_REDIRECT_URI", "http://localhost")
 
-# Load the credentials from Intelligent Cycling
-IC_USER = load_env("IC_USER")
-IC_PASS = load_env("IC_PASS")
+def check_ic_credentials():
+    """Check if Intelligent Cycling credentials are set and log a warning if any are missing."""
+    creds = get_ic_credentials()
+    missing = [k for k, v in creds.items() if not v]
+    if missing:
+        logger.warning(f"Missing credential for Intelligent Cycling: {missing}")
+    return creds
 
-# Load the credentials from Todoist
-TODOIST_SECTION_ID = load_env("TODOIST_SECTION_ID")
-TODOIST_PROJECT_ID = load_env("TODOIST_PROJECT_ID")
-TODOIST_API_TOKEN = load_env("TODOIST_API_TOKEN")
+
+def get_todoist_credentials():
+    """Return the credentials needed for Todoist functionality."""
+    return {
+        "TODOIST_SECTION_ID": load_env("TODOIST_SECTION_ID"),
+        "TODOIST_PROJECT_ID": load_env("TODOIST_PROJECT_ID"),
+        "TODOIST_API_TOKEN": load_env("TODOIST_API_TOKEN")
+    }
+
+
+def check_todoist_credentials():
+    """Check if Todoist credentials are set and log a warning if any are missing."""
+    creds = get_todoist_credentials()
+    missing = [k for k, v in creds.items() if not v]
+    if missing:
+        logger.warning(f"Missing credential for Todoist: {missing}")
+    return creds
