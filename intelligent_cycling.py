@@ -36,7 +36,7 @@ def intelligent_cycling_login():
         driver.implicitly_wait(10)
 
     except Exception as e:
-        logger.error(f"Error during Intelligent Cycling login: {e}")
+        logger.error(f"Error during Intelligent Cycling login: {e}", exc_info=True)
         raise
     finally:
         logger.info("Closing the browser")
