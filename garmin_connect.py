@@ -6,7 +6,7 @@ import matplotlib.image as mpimg
 from garminconnect import Garmin, GarminConnectAuthenticationError, GarminConnectConnectionError, GarminConnectTooManyRequestsError
 
 # Import shared configuration and functions from other scripts
-from config import logger, check_garmin_credentials, GARMIN_USER, GARMIN_PASS, ACTIVITY_DAYS_RANGE, ACTIVITY_TYPE_TRANSLATIONS, RUNNING_THROUGH_GITHUB, LOGO_PATH
+from config import logger, check_garmin_credentials, ACTIVITY_DAYS_RANGE, ACTIVITY_TYPE_TRANSLATIONS, RUNNING_THROUGH_GITHUB, LOGO_PATH
 from todoist_integration import create_todoist_task
 from task_tracker import init_db, task_exists, mark_task_created
 
@@ -16,12 +16,12 @@ def translate_activity_type(type_key):
     return ACTIVITY_TYPE_TRANSLATIONS.get(type_key.lower())
 
 
-def fetch_data(start_date, end_date):
+def fetch_data(start_date, end_date, creds):
     """Fetch activities from Garmin Connect for a given date range."""
     try:
-        api = Garmin(GARMIN_USER, GARMIN_PASS)
+        api = Garmin(creds["GARMIN_USER"], creds["GARMIN_PASS"])
         api.login()
-        logger.info("Authenticated as %s", GARMIN_USER)
+        logger.info("Authenticated as %s", creds["GARMIN_USER"])
 
         activities = api.get_activities_by_date(start_date.isoformat(), end_date.isoformat())
         df = pd.DataFrame(activities)
@@ -119,10 +119,10 @@ def process_and_plot(df):
           }).to_string(index=False))
 
 
-def upload_activity_file_to_garmin(file_path):
+def upload_activity_file_to_garmin(file_path, creds):
     """Upload an activity FIT file to Garmin Connect."""
     try:
-        api = Garmin(GARMIN_USER, GARMIN_PASS)
+        api = Garmin(creds["GARMIN_USER"], creds["GARMIN_PASS"])
         api.login()
         logger.info("Authenticated for Garmin Connect API")
         api.upload_activity(file_path)
@@ -138,8 +138,8 @@ def upload_activity_file_to_garmin(file_path):
 
 def main():
     """Main entry point for fetching, processing and creating tasks."""
-    # Run credential check for Garmin Connect
-    check_garmin_credentials()
+    # Get credentials and run credentials check
+    garmin_creds = check_garmin_credentials()
 
     today = datetime.date.today()
     start_time = today - datetime.timedelta(days=ACTIVITY_DAYS_RANGE)
@@ -147,14 +147,14 @@ def main():
 
     # Fetch and process all activities for plotting, skip if running through GitHub
     if not RUNNING_THROUGH_GITHUB:
-        _, df_all = fetch_data(start_time, end_time)
+        _, df_all = fetch_data(start_time, end_time, garmin_creds)
         process_and_plot(df_all)
 
     # Initialise tracking database
     init_db()
 
     # Fetch today's activities for task creation
-    _, df_today = fetch_data(today, today)
+    _, df_today = fetch_data(today, today, garmin_creds)
     if df_today.empty:
         logger.info("No activities from Garmin found for today")
         return
