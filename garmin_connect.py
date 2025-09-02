@@ -51,6 +51,7 @@ def prepare_dataframe(df):
     """Normalise dataframe columns and add derived fields used for plotting and tasks."""
     if df.empty:
         return df
+
     # Keep only expected columns if present, handle missing keys safely
     columns = ['activityId', 'activityType', 'startTimeLocal', 'duration', 'averageHR']
     for column in columns:
@@ -59,7 +60,7 @@ def prepare_dataframe(df):
     df = df[columns].copy()
     df['activityTypeKey'] = df['activityType'].apply(lambda x: (x or {}).get('typeKey', 'unknown'))
     df['activityTypeNameNo'] = df['activityTypeKey'].apply(lambda k: translate_activity_type(k) or 'annet')
-    df['startTimeLocal'] = pd.to_datetime(df['startTimeLocal'])
+    df['startTimeLocal'] = pd.to_datetime(df['startTimeLocal'], errors="coerce", utc=True).dt.tz_convert(None)
     df['duration_hr'] = df['duration'].fillna(0) / 3600
     return df
 
