@@ -2,7 +2,7 @@ name: Sync Cycling to Garmin Connect
 
 on:
   schedule:
-    - cron: "0 6-21 * * *" # Run workflow once an hour from 06:00 to 21:00 every day
+    - cron: "0 6-21/2 * * *" # Run workflow every two hours from 06:00 to 21:00 every day
   workflow_dispatch: # Allow manual trigger
 
 jobs:
