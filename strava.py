@@ -6,17 +6,19 @@ import datetime
 import pandas as pd
 import requests
 import json
+import tempfile
+import shutil
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
-import tempfile, shutil
 
 # Import shared configuration and functions from other scripts
 from config import logger, check_strava_credentials, STRAVA_CLIENT_ID, STRAVA_CLIENT_SECRET, STRAVA_REDIRECT_URI, ACTIVITY_DAYS_RANGE, STRAVA_USER, STRAVA_PASS
 
+# Token storage path
 TOKEN_PATH = "strava_tokens.json"
 
 
@@ -48,7 +50,7 @@ def authenticate():
 
     response.raise_for_status()
     token = response.json()
-
+    
     save_tokens(token)
     return token
 
@@ -72,7 +74,6 @@ def load_tokens():
 
     # Fallback to interactive authenticate, only works locally
     return authenticate()
-
 
 
 def refresh_access(token):
@@ -139,7 +140,7 @@ def get_stream(activity_id, types=("heartrate", "cadence", "distance", "time")):
 def download_multiple_activities(activities_df, download_dir=None):
     """Download multiple FIT files from Strava using Selenium with a single login session."""
     if not STRAVA_USER or not STRAVA_PASS:
-        raise RuntimeError("Strava user and password must be set in config.py")
+        raise RuntimeError("Strava username and password must be set in config.py")
 
     options = Options()
     options.add_argument("--headless=new")
