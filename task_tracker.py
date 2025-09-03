@@ -19,8 +19,8 @@ def get_connection():
 
 def init_db():
     """Initialise local SQLite database and create tracking tables if they do not exist."""
-    conn = sqlite3.connect(DB_PATH)
-    cursor = conn.cursor()
+    with get_connection() as conn:
+        cursor = conn.cursor()
 
     # Track tasks in Garmin Connect, used for Todoist task creation
     cursor.execute("""
