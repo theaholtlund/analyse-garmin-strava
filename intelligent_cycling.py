@@ -5,7 +5,12 @@ def intelligent_cycling_login():
     from selenium.webdriver.chrome.options import Options
 
     # Import shared configuration and functions from other scripts
-    from config import logger, IC_USER, IC_PASS
+    from config import logger, check_ic_credentials
+
+    # Get credentials and run credentials check
+    creds = check_ic_credentials()
+    IC_USER = creds["IC_USER"]
+    IC_PASS = creds["IC_PASS"]
 
     # Configure options for Chrome driver
     chrome_options = Options()
