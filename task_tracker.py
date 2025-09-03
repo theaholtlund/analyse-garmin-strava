@@ -22,43 +22,39 @@ def init_db():
     with get_connection() as conn:
         cursor = conn.cursor()
 
-    # Track tasks in Garmin Connect, used for Todoist task creation
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS garmin_tasks (
-            activity_id TEXT PRIMARY KEY,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )
-    """)
+        # Track tasks in Garmin Connect, used for Todoist task creation
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS garmin_tasks (
+                activity_id TEXT PRIMARY KEY,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        """)
 
-    # Track activity uploads to Garmin Connect from Strava
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS strava_garmin_sync (
-            strava_activity_id TEXT PRIMARY KEY,
-            garmin_upload_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )
-    """)
+        # Track activity uploads to Garmin Connect from Strava
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS strava_garmin_sync (
+                strava_activity_id TEXT PRIMARY KEY,
+                garmin_upload_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        """)
 
-    conn.commit()
-    conn.close()
+        conn.commit()
 
 
 def task_exists(activity_id):
     """Check if a Garmin Connect task already exists for the given activity ID."""
-    conn = sqlite3.connect(DB_PATH)
-    cursor = conn.cursor()
-    cursor.execute("SELECT 1 FROM garmin_tasks WHERE activity_id = ?", (activity_id,))
-    exists = cursor.fetchone() is not None
-    conn.close()
-    return exists
+    with get_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT 1 FROM garmin_tasks WHERE activity_id = ?", (activity_id,))
+        return cursor.fetchone() is not None
 
 
 def mark_task_created(activity_id):
     """Mark a Garmin Connect task as created for the specified activity ID."""
-    conn = sqlite3.connect(DB_PATH)
-    cursor = conn.cursor()
-    cursor.execute("INSERT OR IGNORE INTO garmin_tasks (activity_id) VALUES (?)", (activity_id,))
-    conn.commit()
-    conn.close()
+    with get_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute("INSERT OR IGNORE INTO garmin_tasks (activity_id) VALUES (?)", (activity_id,))
+        conn.commit()
 
 
 def is_uploaded_to_garmin(activity_id):
