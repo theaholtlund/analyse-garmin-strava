@@ -6,6 +6,16 @@ import sqlite3
 DB_PATH = os.path.join(os.path.dirname(__file__), "sync_tracker.db")
 
 
+@contextmanager
+def get_connection():
+    """Provide a transactional scope around SQLite DB operations."""
+    conn = sqlite3.connect(DB_PATH)
+    try:
+        yield conn
+    finally:
+        conn.close()
+
+
 def init_db():
     """Initialise local SQLite database and create tracking tables if they do not exist."""
     conn = sqlite3.connect(DB_PATH)
