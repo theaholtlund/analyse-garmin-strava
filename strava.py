@@ -22,10 +22,10 @@ from config import logger, check_strava_credentials, STRAVA_CLIENT_ID, STRAVA_CL
 TOKEN_PATH = "strava_tokens.json"
 
 
-def save_tokens(tok):
+def save_tokens(token_data):
     """Save Strava API tokens to a local JSON file."""
-    with open(TOKEN_PATH, "w") as f:
-        json.dump(tok, f)
+    with open(TOKEN_PATH, "w") as file:
+        json.dump(token_data, file)
 
 
 def authenticate():
