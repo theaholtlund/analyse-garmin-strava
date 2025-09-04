@@ -67,8 +67,7 @@ def is_uploaded_to_garmin(activity_id):
 
 def mark_uploaded_to_garmin(activity_id):
     """Mark a Strava activity as uploaded to Garmin Connect."""
-    conn = sqlite3.connect(DB_PATH)
-    cursor = conn.cursor()
-    cursor.execute("INSERT OR IGNORE INTO strava_garmin_sync (strava_activity_id) VALUES (?)", (activity_id,))
-    conn.commit()
-    conn.close()
+    with get_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute("INSERT OR IGNORE INTO strava_garmin_sync (strava_activity_id) VALUES (?)", (activity_id,))
+        conn.commit()
