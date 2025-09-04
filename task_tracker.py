@@ -59,12 +59,10 @@ def mark_task_created(activity_id):
 
 def is_uploaded_to_garmin(activity_id):
     """Check if a Strava activity has already been uploaded to Garmin Connect."""
-    conn = sqlite3.connect(DB_PATH)
-    cursor = conn.cursor()
-    cursor.execute("SELECT 1 FROM strava_garmin_sync WHERE strava_activity_id = ?", (activity_id,))
-    exists = cursor.fetchone() is not None
-    conn.close()
-    return exists
+    with get_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT 1 FROM strava_garmin_sync WHERE strava_activity_id = ?", (activity_id,))
+        return cursor.fetchone() is not None
 
 
 def mark_uploaded_to_garmin(activity_id):
