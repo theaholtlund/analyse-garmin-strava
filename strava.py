@@ -46,6 +46,7 @@ def authenticate():
         "&approval_prompt=force"
         "&scope=activity:read_all,profile:read_all"
     )
+    
     logger.info("Opening browser for Strava OAuth flow")
     webbrowser.open(url)
     code = input("Paste the code parameter from the URL after approval: ").strip()
@@ -58,6 +59,7 @@ def authenticate():
             "code": code,
             "grant_type": "authorization_code",
         })
+    
     response.raise_for_status()
     token = response.json()
     
@@ -146,6 +148,7 @@ def get_stream(activity_id, types=("heartrate", "cadence", "distance", "time")):
     )
     response.raise_for_status()
     return response.json()
+
 
 def download_multiple_activities(activities_df, download_dir=None):
     """Download multiple FIT files from Strava using Selenium with a single login session."""
