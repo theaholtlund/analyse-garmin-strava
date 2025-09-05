@@ -48,14 +48,16 @@ def authenticate():
     )
     logger.info("Opening browser for Strava OAuth flow")
     webbrowser.open(url)
-    code = input("Paste the code parameter from the URL after approve: ").strip()
-    response = requests.post("https://www.strava.com/api/v3/oauth/token", data={
-        "client_id": STRAVA_CLIENT_ID,
-        "client_secret": STRAVA_CLIENT_SECRET,
-        "code": code,
-        "grant_type": "authorization_code"
-    })
+    code = input("Paste the code parameter from the URL after approval: ").strip()
 
+    response = requests.post(
+        "https://www.strava.com/api/v3/oauth/token",
+        data={
+            "client_id": STRAVA_CLIENT_ID,
+            "client_secret": STRAVA_CLIENT_SECRET,
+            "code": code,
+            "grant_type": "authorization_code",
+        })
     response.raise_for_status()
     token = response.json()
     
