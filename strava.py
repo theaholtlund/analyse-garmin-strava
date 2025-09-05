@@ -15,11 +15,19 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
 
-# Import shared configuration and functions from other scripts
-from config import logger, check_strava_credentials, STRAVA_CLIENT_ID, STRAVA_CLIENT_SECRET, STRAVA_REDIRECT_URI, ACTIVITY_DAYS_RANGE, STRAVA_USER, STRAVA_PASS
+# Import shared configuration and functions
+from config import logger, check_strava_credentials, ACTIVITY_DAYS_RANGE
 
 # Token storage path
 TOKEN_PATH = "strava_tokens.json"
+
+# Retrieve credentials and check at the same time
+creds = check_strava_credentials()
+STRAVA_USER = creds["STRAVA_USER"]
+STRAVA_PASS = creds["STRAVA_PASS"]
+STRAVA_CLIENT_ID = creds["STRAVA_CLIENT_ID"]
+STRAVA_CLIENT_SECRET = creds["STRAVA_CLIENT_SECRET"]
+STRAVA_REDIRECT_URI = creds["STRAVA_REDIRECT_URI"]
 
 
 def save_tokens(token_data):
