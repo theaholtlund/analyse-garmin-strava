@@ -305,6 +305,7 @@ def download_multiple_activities(activities_df, download_dir=None):
         except Exception as e:
             logger.warning(f"Could not remove temp Chrome profile: {e}")
 
+
 def get_virtual_ride_activities(days=ACTIVITY_DAYS_RANGE):
     """Fetch recent Strava activities filtered for virtual ride type."""
     df = get_latest_activities(days=days)
@@ -313,9 +314,6 @@ def get_virtual_ride_activities(days=ACTIVITY_DAYS_RANGE):
     return df[df['type'] == 'VirtualRide'].copy()
 
 if __name__ == "__main__":
-    # Run credential check for Strava
-    check_strava_credentials()
-
     logger.info(f"Fetching activities from the past {ACTIVITY_DAYS_RANGE} days")
     df = get_latest_activities()
 
