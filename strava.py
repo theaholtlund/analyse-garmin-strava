@@ -90,12 +90,15 @@ def load_tokens():
 
 def refresh_access(token):
     """Refresh an expired Strava access token using the refresh token."""
-    response = requests.post("https://www.strava.com/api/v3/oauth/token", data={
-        "client_id": STRAVA_CLIENT_ID,
-        "client_secret": STRAVA_CLIENT_SECRET,
-        "grant_type": "refresh_token",
-        "refresh_token": token["refresh_token"],
-    })
+    response = requests.post(
+        "https://www.strava.com/api/v3/oauth/token",
+        data={
+            "client_id": STRAVA_CLIENT_ID,
+            "client_secret": STRAVA_CLIENT_SECRET,
+            "grant_type": "refresh_token",
+            "refresh_token": token["refresh_token"],
+        },
+    )
     response.raise_for_status()
     new = response.json()
     save_tokens(new)
