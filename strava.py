@@ -100,9 +100,9 @@ def refresh_access(token):
         },
     )
     response.raise_for_status()
-    new = response.json()
-    save_tokens(new)
-    return new
+    new_token = response.json()
+    save_tokens(new_token)
+    return new_token
 
 
 def get_latest_activities(days=ACTIVITY_DAYS_RANGE):
