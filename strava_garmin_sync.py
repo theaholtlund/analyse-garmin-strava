@@ -28,6 +28,9 @@ def sync_virtual_rides():
 
     logger.info(f"Starting bulk download of {len(df_to_download)} virtual ride activities")
 
+    uploaded_count = 0
+    failed_count = 0
+
     # Use a temporary directory for downloads
     with tempfile.TemporaryDirectory() as tmp_download_dir:
         logger.info(f"Using temporary download directory: {tmp_download_dir}")
@@ -44,13 +47,22 @@ def sync_virtual_rides():
 
         # Upload the activity to Garmin Connect
         logger.info("Starting Garmin Connect upload for downloaded activities")
-        for file_path in downloaded_files:
-            if file_path is not None:
-                try:
-                    upload_activity_file_to_garmin(file_path)
-                    logger.info(f"Uploaded to Garmin: {file_path}")
-                except Exception as e:
-                    logger.error(f"Failed to upload {file_path} to Garmin: {e}")
+        for activity_id, file_path in zip(df_to_download['id'], downloaded_files):
+            if file_path is None:
+                failed_count += 1
+                continue
+            try:
+                if upload_activity_file_to_garmin(file_path):
+                    mark_uploaded_to_garmin(str(activity_id))
+                    uploaded_count += 1
+                else:
+                    failed_count += 1
+            except Exception as e:
+                logger.error(f"Failed to upload {file_path} to Garmin Connect: {e}")
+                failed_count += 1
+
+    logger.info(f"Sync complete, uploaded {uploaded_count}, failed {failed_count}")
+    return uploaded_count, failed_count
 
 if __name__ == "__main__":
     sync_virtual_rides()
