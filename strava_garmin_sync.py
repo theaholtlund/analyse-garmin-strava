@@ -36,15 +36,6 @@ def sync_virtual_rides():
         logger.info(f"Using temporary download directory: {tmp_download_dir}")
         downloaded_files = download_multiple_activities(df_to_download, download_dir=tmp_download_dir)
 
-        # Record successful downloads in the database
-        for activity_id, file_path in zip(df_to_download['id'], downloaded_files):
-            if file_path is not None:
-                mark_uploaded_to_garmin(str(activity_id))
-
-        downloaded_count = sum(1 for f in downloaded_files if f is not None)
-        failed_count = len(downloaded_files) - downloaded_count
-        logger.info(f"Download complete, successfully downloaded: {downloaded_count}, failed: {failed_count}")
-
         # Upload the activity to Garmin Connect
         logger.info("Starting Garmin Connect upload for downloaded activities")
         for activity_id, file_path in zip(df_to_download['id'], downloaded_files):
