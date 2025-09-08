@@ -2,6 +2,8 @@
 import sys
 import types
 
+# Define lightweight, fake Garmin class instead of calling real Garmin Connect API
+# Simulate login, fetch activities and upload files in a predictable, testable way
 class MockGarmin:
     def __init__(self, user, pw):
         self.user, self.pw = user, pw
@@ -26,3 +28,8 @@ class MockGarmin:
         if "fail" in str(file_path):
             raise Exception("Upload failed")
         return True
+
+
+# Define fake Garmin exceptions, needed because Garmin Connect script imports them
+class DummyError(Exception):
+    pass
