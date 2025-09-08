@@ -1,3 +1,7 @@
+# Import required libraries
+import sys
+import types
+
 class MockGarmin:
     def __init__(self, user, pw):
         self.user, self.pw = user, pw
@@ -16,3 +20,9 @@ class MockGarmin:
             "duration": 1800,  # 30 minutes
             "averageHR": 140   # Beats per minute
         }]
+
+    def upload_activity(self, file_path):
+        # Simulate upload success unless file name contains "fail"
+        if "fail" in str(file_path):
+            raise Exception("Upload failed")
+        return True
