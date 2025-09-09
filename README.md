@@ -85,3 +85,10 @@ The file holds functions related to keeping track of activities synchronised fro
 ```bash
 python strava_garmin_sync.py
 ```
+
+Testing:
+The project has a tests directory. Currently, it only contains a test script for Garmin Connect functionality. It uses pytest with mocked APIs, so no there are no real Garmin Connect calls.
+
+```bash
+pytest -v tests/test_garmin_connect.py
+```
