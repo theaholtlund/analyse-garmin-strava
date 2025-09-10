@@ -43,3 +43,21 @@ sys.modules['garminconnect'] = types.SimpleNamespace(
     GarminConnectConnectionError=DummyError,
     GarminConnectTooManyRequestsError=DummyError,
 )
+
+# After patching, the module can safely be imported
+import garmin_connect
+
+
+# The actual unit tests start here
+def test_fetch_data_returns_dataframe(tmp_path):
+    """
+    GIVEN valid Garmin credentials
+    WHEN fetch_data() is called
+    THEN it should return a non-empty DataFrame
+         containing expected activity fields.
+    """
+    creds = {"GARMIN_USER": "u", "GARMIN_PASS": "p"}
+    _, df = garmin_connect.fetch_data("2024-01-01", "2024-01-02", creds)
+
+    assert not df.empty, "Expected at least one activity in DataFrame"
+    assert "activityId" in df.columns, "Missing expected column from activity data"
