@@ -61,3 +61,14 @@ def test_fetch_data_returns_dataframe(tmp_path):
 
     assert not df.empty, "Expected at least one activity in DataFrame"
     assert "activityId" in df.columns, "Missing expected column from activity data"
+
+
+def test_upload_activity_success(tmp_path):
+    """
+    GIVEN valid Garmin credentials
+    WHEN upload_activity_file_to_garmin() is called with a 'good' file
+    THEN it should return True, meaning upload succeeded.
+    """
+    creds = {"GARMIN_USER": "u", "GARMIN_PASS": "p"}
+    assert garmin_connect.upload_activity_file_to_garmin("good.fit", creds) is True
+
