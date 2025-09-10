@@ -72,3 +72,13 @@ def test_upload_activity_success(tmp_path):
     creds = {"GARMIN_USER": "u", "GARMIN_PASS": "p"}
     assert garmin_connect.upload_activity_file_to_garmin("good.fit", creds) is True
 
+
+def test_upload_activity_failure(tmp_path):
+    """
+    GIVEN valid Garmin credentials
+    WHEN upload_activity_file_to_garmin() is called with a 'bad' file
+         (filename contains 'fail', which our mock simulates as error)
+    THEN it should return False, meaning upload failed gracefully.
+    """
+    creds = {"GARMIN_USER": "u", "GARMIN_PASS": "p"}
+    assert garmin_connect.upload_activity_file_to_garmin("fail.fit", creds) is False
