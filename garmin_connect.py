@@ -125,9 +125,12 @@ def upload_activity_file_to_garmin(file_path, creds):
         api = Garmin(creds["GARMIN_USER"], creds["GARMIN_PASS"])
         api.login()
         logger.info("Authenticated for Garmin Connect API")
-        api.upload_activity(file_path)
-        logger.info(f"Successfully uploaded activity file: {file_path}")
-        return True
+        success = api.upload_activity(file_path)
+        if success:
+            logger.info(f"Successfully uploaded activity file: {file_path}")
+        else:
+            logger.error(f"Failed to upload activity file: {file_path}")
+        return success
     except (GarminConnectAuthenticationError, GarminConnectConnectionError, GarminConnectTooManyRequestsError) as e:
         logger.error(f"Failed to upload activity to Garmin Connect: {e}", exc_info=True)
         return False
