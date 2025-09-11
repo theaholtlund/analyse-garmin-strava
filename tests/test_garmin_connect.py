@@ -19,7 +19,9 @@ def test_fetch_data_returns_dataframe(tmp_path):
          containing expected activity fields.
     """
     creds = {"GARMIN_USER": "u", "GARMIN_PASS": "p"}
-    _, df = garmin_connect.fetch_data("2024-01-01", "2024-01-02", creds)
+    start = datetime.date(2024, 1, 1)
+    end = datetime.date(2024, 1, 2)
+    _, df = garmin_connect.fetch_data(start, end, creds)
 
     assert not df.empty, "Expected at least one activity in DataFrame"
     assert "activityId" in df.columns, "Missing expected column from activity data"
