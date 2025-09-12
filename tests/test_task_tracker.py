@@ -15,3 +15,14 @@ def temp_db(monkeypatch, tmp_path):
     db_file = tmp_path / "test_sync_tracker.db"
     monkeypatch.setattr(task_tracker, "DB_PATH", str(db_file))
     return db_file
+
+def test_task_creation_and_upload_tracking(temp_db):
+    task_tracker.init_db()
+
+    assert not task_tracker.task_exists("123")
+    task_tracker.mark_task_created("123")
+    assert task_tracker.task_exists("123")
+
+    assert not task_tracker.is_uploaded_to_garmin("abc")
+    task_tracker.mark_uploaded_to_garmin("abc")
+    assert task_tracker.is_uploaded_to_garmin("abc")
