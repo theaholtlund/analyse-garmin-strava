@@ -17,12 +17,15 @@ def temp_db(monkeypatch, tmp_path):
     return db_file
 
 def test_task_creation_and_upload_tracking(temp_db):
+    # Initialise a clean temporary DB
     task_tracker.init_db()
 
+    # Create tasks for Garmin Connect activities
     assert not task_tracker.task_exists("123")
     task_tracker.mark_task_created("123")
     assert task_tracker.task_exists("123")
 
+    # Strava to Garmin Connect upload tracking
     assert not task_tracker.is_uploaded_to_garmin("abc")
     task_tracker.mark_uploaded_to_garmin("abc")
     assert task_tracker.is_uploaded_to_garmin("abc")
