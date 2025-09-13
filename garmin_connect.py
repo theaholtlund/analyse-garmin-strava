@@ -13,7 +13,7 @@ from task_tracker import init_db, task_exists, mark_task_created
 
 def translate_activity_type(type_key):
     """Return the Norwegian activity name for a given Garmin Connect type key."""
-    return ACTIVITY_TYPE_TRANSLATIONS.get(type_key.lower())
+    return ACTIVITY_TYPE_TRANSLATIONS.get(type_key.lower(), "annet")
 
 
 def fetch_data(start_date, end_date, creds):
@@ -59,7 +59,7 @@ def prepare_dataframe(df):
             df[column] = None
     df = df[columns].copy()
     df['activityTypeKey'] = df['activityType'].apply(lambda x: (x or {}).get('typeKey', 'unknown'))
-    df['activityTypeNameNo'] = df['activityTypeKey'].apply(lambda k: translate_activity_type(k) or 'annet')
+    df['activityTypeNameNo'] = df['activityTypeKey'].apply(translate_activity_type)
     df['startTimeLocal'] = pd.to_datetime(df['startTimeLocal'], errors="coerce", utc=True).dt.tz_convert(None)
     df['duration_hr'] = df['duration'].fillna(0) / 3600
     return df
