@@ -27,9 +27,9 @@ def create_todoist_task(content, due_string="today"):
             due_string=due_string,
             labels=["Garmin Connect App"]
         )
-        logger.info(f"Created the Todoist task: {task.content}")
+        logger.info("Created the Todoist task: %s", task.content)
         return task
     except Exception as error:
         # Log exception with traceback for debugging
-        logger.error(f"Error creating Todoist task: {error}", exc_info=True)
+        logger.error("Error creating Todoist task: %s", error, exc_info=True)
         return None
