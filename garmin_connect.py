@@ -52,12 +52,13 @@ def prepare_dataframe(df):
     if df.empty:
         return df
 
-    # Keep only expected columns if present, handle missing keys safely
-    columns = ['activityId', 'activityType', 'startTimeLocal', 'duration', 'averageHR']
-    for column in columns:
+    # Ensure that the required columns exist
+    required_columns = ['activityId', 'activityType', 'startTimeLocal', 'duration', 'averageHR']
+    for column in required_columns:
         if column not in df.columns:
             df[column] = None
-    df = df[columns].copy()
+
+    df = df[required_columns].copy()
     df['activityTypeKey'] = df['activityType'].apply(lambda x: (x or {}).get('typeKey', 'unknown'))
     df['activityTypeNameNo'] = df['activityTypeKey'].apply(translate_activity_type)
     df['startTimeLocal'] = pd.to_datetime(df['startTimeLocal'], errors="coerce", utc=True).dt.tz_convert(None)
