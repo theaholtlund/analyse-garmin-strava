@@ -42,7 +42,7 @@ def insert_logo(fig):
         logo_ax.imshow(logo_img)
         logo_ax.axis('off')
     except FileNotFoundError:
-        logger.warning("Logo not found at graphics folder")
+        logger.warning("Logo not found at path: %s", LOGO_PATH)
     except Exception as e:
         logger.warning("Failed to insert logo: %s", e)
 
