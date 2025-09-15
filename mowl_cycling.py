@@ -1,4 +1,4 @@
-def intelligent_cycling_login():
+def mowl_cycling_login():
     # Import required libraries
     from selenium import webdriver
     from selenium.webdriver.common.by import By

@@ -6,7 +6,7 @@ import pandas as pd
 from config import logger
 from garmin_connect import fetch_data
 from strava import get_latest_activities
-from mowl_cycling import intelligent_cycling_login
+from mowl_cycling import mowl_cycling_login
 
 
 def normalise_garmin(df):
@@ -56,7 +56,7 @@ def main():
 
     # Login to MOWL Cycling profile for proof of concept
     try:
-        intelligent_cycling_login()
+        mowl_cycling_login()
         logger.info("The login for MOWL Cycling was successful")
     except Exception as e:
         logger.error(f"The login for MOWL Cycling failed: {e}", exc_info=True)
