@@ -69,7 +69,7 @@ Intelligent Cycling:
 The file holds functions related to Intelligent Cycling operations. No main script logic.
 
 ```bash
-python intelligent_cycling.py
+python mowl_cycling.py
 ```
 
 Comparison between Strava and Garmin:

@@ -6,7 +6,7 @@ import pandas as pd
 from config import logger
 from garmin_connect import fetch_data
 from strava import get_latest_activities
-from intelligent_cycling import intelligent_cycling_login
+from mowl_cycling import intelligent_cycling_login
 
 
 def normalise_garmin(df):
