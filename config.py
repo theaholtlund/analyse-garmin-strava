@@ -92,7 +92,7 @@ def check_garmin_credentials():
 
 
 def get_ic_credentials():
-    """Return the credentials needed for Intelligent Cycling functionality."""
+    """Return the credentials needed for MOWL Cycling functionality."""
     return {
         "IC_USER": load_env("IC_USER"),
         "IC_PASS": load_env("IC_PASS")
@@ -100,11 +100,11 @@ def get_ic_credentials():
 
 
 def check_ic_credentials():
-    """Check if Intelligent Cycling credentials are set and log a warning if any are missing."""
+    """Check if MOWL Cycling credentials are set and log a warning if any are missing."""
     creds = get_ic_credentials()
     missing = [k for k, v in creds.items() if not v]
     if missing:
-        logger.warning(f"Missing credential for Intelligent Cycling: {missing}")
+        logger.warning(f"Missing credential for MOWL Cycling: {missing}")
     return creds
 
 

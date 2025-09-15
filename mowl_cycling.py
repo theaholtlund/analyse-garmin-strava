@@ -37,11 +37,11 @@ def intelligent_cycling_login():
         login_button = driver.find_element(By.CLASS_NAME, "btn.btn-ca-signup")
         login_button.click()
 
-        logger.info("Successfully logged in to Intelligent Cycling")
+        logger.info("Successfully logged in to MOWL Cycling")
         driver.implicitly_wait(10)
 
     except Exception as e:
-        logger.error(f"Error during Intelligent Cycling login: {e}", exc_info=True)
+        logger.error(f"Error during MOWL Cycling login: {e}", exc_info=True)
         raise
     finally:
         logger.info("Closing the browser")

@@ -65,8 +65,8 @@ The file holds functions related to Strava operations, and running the script wi
 python strava.py
 ```
 
-Intelligent Cycling:
-The file holds functions related to Intelligent Cycling operations. No main script logic.
+MOWL Cycling:
+The file holds functions related to MOWL Cycling operations. No main script logic.
 
 ```bash
 python mowl_cycling.py

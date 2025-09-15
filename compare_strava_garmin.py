@@ -54,12 +54,12 @@ def main():
     else:
         print("All activities from Garmin Connect are present on Strava")
 
-    # Login to Intelligent Cycling profile for proof of concept
+    # Login to MOWL Cycling profile for proof of concept
     try:
         intelligent_cycling_login()
-        logger.info("The login for Intelligent Cycling was successful")
+        logger.info("The login for MOWL Cycling was successful")
     except Exception as e:
-        logger.error(f"The login for Intelligent Cycling failed: {e}", exc_info=True)
+        logger.error(f"The login for MOWL Cycling failed: {e}", exc_info=True)
 
 if __name__ == "__main__":
     main()
