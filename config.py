@@ -94,8 +94,8 @@ def check_garmin_credentials():
 def get_mowl_credentials():
     """Return the credentials needed for MOWL Cycling functionality."""
     return {
-        "IC_USER": load_env("IC_USER"),
-        "IC_PASS": load_env("IC_PASS")
+        "MOWL_USER": load_env("MOWL_USER"),
+        "MOWL_PASS": load_env("MOWL_PASS")
     }
 
 

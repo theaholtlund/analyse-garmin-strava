@@ -37,8 +37,8 @@ pip install -r requirements.txt
 Set the following environment variables, as they will be needed to run the project scripts:
 
 ```bash
-IC_USER="YOUR-IC-EMAIL"
-IC_PASS="YOUR-IC-PASSWORD"
+MOWL_USER="YOUR-WOWL-EMAIL"
+MOWL_PASS="YOUR-MOWL-PASSWORD"
 GARMIN_USER="YOUR-GC-EMAIL"
 GARMIN_PASS="YOUR-GC-PASSWORD"
 STRAVA_CLIENT_ID="YOUR-CLIENT-ID"

@@ -9,8 +9,8 @@ def mowl_cycling_login():
 
     # Get credentials and run credentials check
     creds = check_mowl_credentials()
-    IC_USER = creds["IC_USER"]
-    IC_PASS = creds["IC_PASS"]
+    MOWL_USER = creds["MOWL_USER"]
+    MOWL_PASS = creds["MOWL_PASS"]
 
     # Configure options for Chrome driver
     chrome_options = Options()
@@ -28,10 +28,10 @@ def mowl_cycling_login():
         driver.implicitly_wait(10)
 
         logger.info("Entering username")
-        driver.find_element(By.ID, "Email").send_keys(IC_USER)
+        driver.find_element(By.ID, "Email").send_keys(MOWL_USER)
 
         logger.info("Entering password")
-        driver.find_element(By.ID, "Password").send_keys(IC_PASS)
+        driver.find_element(By.ID, "Password").send_keys(MOWL_PASS)
 
         logger.info("Submitting the login form")
         login_button = driver.find_element(By.CLASS_NAME, "btn.btn-ca-signup")
