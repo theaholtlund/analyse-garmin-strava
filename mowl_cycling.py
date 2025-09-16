@@ -5,10 +5,10 @@ def mowl_cycling_login():
     from selenium.webdriver.chrome.options import Options
 
     # Import shared configuration and functions from other scripts
-    from config import logger, check_ic_credentials
+    from config import logger, check_mowl_credentials
 
     # Get credentials and run credentials check
-    creds = check_ic_credentials()
+    creds = check_mowl_credentials()
     IC_USER = creds["IC_USER"]
     IC_PASS = creds["IC_PASS"]
 

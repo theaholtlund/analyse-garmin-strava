@@ -91,7 +91,7 @@ def check_garmin_credentials():
     return creds
 
 
-def get_ic_credentials():
+def get_mowl_credentials():
     """Return the credentials needed for MOWL Cycling functionality."""
     return {
         "IC_USER": load_env("IC_USER"),
@@ -99,9 +99,9 @@ def get_ic_credentials():
     }
 
 
-def check_ic_credentials():
+def check_mowl_credentials():
     """Check if MOWL Cycling credentials are set and log a warning if any are missing."""
-    creds = get_ic_credentials()
+    creds = get_mowl_credentials()
     missing = [k for k, v in creds.items() if not v]
     if missing:
         logger.warning(f"Missing credential for MOWL Cycling: {missing}")
