@@ -87,8 +87,10 @@ python strava_garmin_sync.py
 ```
 
 Testing:
-The project has a tests directory. Currently, it only contains a test script for Garmin Connect functionality. It uses pytest with mocked APIs, so no there are no real Garmin Connect calls.
+The project has a tests directory. It uses pytest with mocked APIs, so no there are no real API calls.
 
 ```bash
 pytest -v tests/test_garmin_connect.py
+pytest -v tests/test_task_tracker.py
+pytest -v tests/test_todoist_integration.py
 ```
