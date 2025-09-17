@@ -13,7 +13,7 @@ def sync_virtual_rides():
     init_db()
 
     # Get virtual ride activities from Strava within the defined date range
-    logger.info(f"Fetching virtual ride activities from Strava for the last {ACTIVITY_DAYS_RANGE} days")
+    logger.info("Fetching virtual ride activities from Strava for the last %s days", ACTIVITY_DAYS_RANGE)
     df = get_virtual_ride_activities(days=ACTIVITY_DAYS_RANGE)
 
     if df.empty:
@@ -26,14 +26,14 @@ def sync_virtual_rides():
         logger.info("All virtual ride activities have already been synced.")
         return
 
-    logger.info(f"Starting bulk download of {len(df_to_download)} virtual ride activities")
+    logger.info("Starting bulk download of %d virtual ride activities", len(df_to_download))
 
     uploaded_count = 0
     failed_count = 0
 
     # Use a temporary directory for downloads
     with tempfile.TemporaryDirectory() as tmp_download_dir:
-        logger.info(f"Using temporary download directory: {tmp_download_dir}")
+        logger.info("Using temporary download directory: %s", tmp_download_dir)
         downloaded_files = download_multiple_activities(df_to_download, download_dir=tmp_download_dir)
 
         # Upload the activity to Garmin Connect

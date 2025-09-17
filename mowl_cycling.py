@@ -41,7 +41,7 @@ def mowl_cycling_login():
         driver.implicitly_wait(10)
 
     except Exception as e:
-        logger.error(f"Error during MOWL Cycling login: {e}", exc_info=True)
+        logger.error("Error during MOWL Cycling login: %s", e, exc_info=True)
         raise
     finally:
         logger.info("Closing the browser")
