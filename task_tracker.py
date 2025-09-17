@@ -44,9 +44,7 @@ def init_db():
 def task_exists(activity_id):
     """Check if a Garmin Connect task already exists for the given activity ID."""
     with get_connection() as conn:
-        cursor = conn.cursor()
-        cursor.execute("SELECT 1 FROM garmin_tasks WHERE activity_id = ?", (activity_id,))
-        return cursor.fetchone() is not None
+        return conn.execute("SELECT 1 FROM garmin_tasks WHERE activity_id = ?", (activity_id,)).fetchone() is not None
 
 
 def mark_task_created(activity_id):
