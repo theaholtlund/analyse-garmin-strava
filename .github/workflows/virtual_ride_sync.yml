@@ -16,12 +16,12 @@ jobs:
       - name: Set up Python # Make Python available in GitHub runner environment
         uses: actions/setup-python@v5
         with:
-          python-version: 3.11
+          python-version: "3.11"
 
       - name: Install project dependencies # Install required packages for script to run
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          pip install --requirement requirements.txt
 
       - name: Installing package list
         run: apt list --installed
