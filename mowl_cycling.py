@@ -16,7 +16,7 @@ def mowl_cycling_login():
     chrome_options = Options()
     chrome_options.add_argument("--start-maximized")
     chrome_options.add_argument("--disable-extensions")
-    chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--headless=new")
 
     # Initialise the Chrome web driver
     driver = webdriver.Chrome(options=chrome_options)
