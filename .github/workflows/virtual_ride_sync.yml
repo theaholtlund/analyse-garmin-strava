@@ -23,10 +23,8 @@ jobs:
           python -m pip install --upgrade pip
           pip install --requirement requirements.txt
 
-      - name: Installing package list
-        run: apt list --installed
-      - name: Removing previous chrome instances on runner
-        run: sudo apt purge google-chrome-stable
+      - name: Remove any pre-installed Chrome
+        run: sudo apt purge -y google-chrome-stable || true
 
         # Need to fetch reqs if needed
       - name: Installing all necessary packages
