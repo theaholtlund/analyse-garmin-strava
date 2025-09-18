@@ -50,8 +50,7 @@ def task_exists(activity_id):
 def mark_task_created(activity_id):
     """Mark a Garmin Connect task as created for the specified activity ID."""
     with get_connection() as conn:
-        cursor = conn.cursor()
-        cursor.execute("INSERT OR IGNORE INTO garmin_tasks (activity_id) VALUES (?)", (activity_id,))
+        conn.execute("INSERT OR IGNORE INTO garmin_tasks (activity_id) VALUES (?)", (activity_id,))
         conn.commit()
 
 
