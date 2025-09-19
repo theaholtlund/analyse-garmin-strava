@@ -26,11 +26,11 @@ jobs:
       - name: Remove any pre-installed Chrome
         run: sudo apt purge -y google-chrome-stable || true
 
-        # Need to fetch reqs if needed
+      - name: Install required system packages
+        run: sudo apt-get update && sudo apt-get install -y xvfb
+
       - name: Installing all necessary packages
         run: pip install chromedriver-autoinstaller selenium pyvirtualdisplay
-      - name: Install xvfb
-        run: sudo apt-get install xvfb
 
       - name: Restore the activity sync cache # Restore database file from cache if available, track synced activities
         uses: actions/cache@v4
@@ -40,7 +40,7 @@ jobs:
           restore-keys: |
             strava-garmin-sync-db-
 
-      - name: Create temporary downloads folder # Ensure a clean temporary folder for FIT file downloads
+      - name: Prepare temporary downloads directory # Ensure a clean temporary folder for FIT file downloads
         run: mkdir -p /tmp/strava_downloads
 
       - name: Run Strava to Garmin Connect sync # Execute main script for syncing virtual ride activities
