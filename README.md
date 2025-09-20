@@ -34,19 +34,10 @@ pip install -r requirements.txt
 
 ## Configure Environment Variables
 
-Set the following environment variables, as they will be needed to run the project scripts:
+Copy the environment template to an environment file, and fill in the variables needed to run the project scripts:
 
 ```bash
-MOWL_USER="YOUR-WOWL-EMAIL"
-MOWL_PASS="YOUR-MOWL-PASSWORD"
-GARMIN_USER="YOUR-GC-EMAIL"
-GARMIN_PASS="YOUR-GC-PASSWORD"
-STRAVA_CLIENT_ID="YOUR-CLIENT-ID"
-STRAVA_CLIENT_SECRET="YOUR-CLIENT-SECRET"
-STRAVA_REDIRECT_URI="http://localhost"
-TODOIST_SECTION_ID="TODOIST-SECTION-ID"
-TODOIST_PROJECT_ID="TODOIST-PROJECT-ID"
-TODOIST_API_TOKEN="YOUR-TODOIST-TOKEN"
+cp .env.template .env
 ```
 
 ## Run the Project Files
