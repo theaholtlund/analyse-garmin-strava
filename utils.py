@@ -1,10 +1,9 @@
 # Import required libraries
 from pathlib import Path
-import logging
+import json
 
-# Set up logging for information
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+# Import shared configuration and functions from other scripts
+from config import logger
 
 
 def ensure_dir(path):
