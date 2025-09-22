@@ -87,7 +87,7 @@ def check_garmin_credentials():
     creds = get_garmin_credentials()
     missing = [k for k, v in creds.items() if not v]
     if missing:
-        logger.warning(f"Missing credential for Garmin Connect: {missing}")
+        logger.warning("Missing credential for Garmin Connect: %s", missing)
     return creds
 
 
@@ -104,7 +104,7 @@ def check_mowl_credentials():
     creds = get_mowl_credentials()
     missing = [k for k, v in creds.items() if not v]
     if missing:
-        logger.warning(f"Missing credential for MOWL Cycling: {missing}")
+        logger.warning("Missing credential for MOWL Cycling: %s", missing)
     return creds
 
 
@@ -122,5 +122,5 @@ def check_todoist_credentials():
     creds = get_todoist_credentials()
     missing = [k for k, v in creds.items() if not v]
     if missing:
-        logger.warning(f"Missing credential for Todoist: {missing}")
+        logger.warning("Missing credential for Todoist: %s", missing)
     return creds
