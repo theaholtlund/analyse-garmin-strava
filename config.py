@@ -17,7 +17,7 @@ RUNNING_THROUGH_GITHUB = os.getenv("GITHUB_ACTIONS", "").lower() == "true"
 LOGO_PATH = "graphics/app-logo-1.png"
 
 # Set how many days back to fetch activities
-ACTIVITY_DAYS_RANGE = 7
+ACTIVITY_DAYS_RANGE = int(os.getenv("ACTIVITY_DAYS_RANGE", 7))
 
 # Mapping the Garmin Connect activity types to Norwegian names
 ACTIVITY_TYPE_TRANSLATIONS = {
