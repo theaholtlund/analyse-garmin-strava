@@ -23,6 +23,7 @@ def safe_json_write(path, data, indent=2):
 
 
 def human_readable_duration(seconds):
+    """Return a short human-readable duration string in hours and minutes."""
     try:
         seconds = int(seconds or 0)
     except Exception:
