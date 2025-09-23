@@ -128,7 +128,7 @@ def upload_activity_file_to_garmin(file_path, creds):
         logger.info("Authenticated for Garmin Connect API")
         success = api.upload_activity(file_path)
         if success:
-            logger.info(f"Successfully uploaded activity file: {file_path}")
+            logger.info("Successfully uploaded activity file: %s", file_path)
         else:
             logger.error(f"Failed to upload activity file: {file_path}")
         return success
@@ -171,12 +171,12 @@ def main():
         activity_type_no = row['activityTypeNameNo']
 
         if task_exists(activity_id):
-            logger.info(f"Task already created for activity {activity_type_key} ({activity_id}), skipping.")
+            logger.info("Task already created for activity %s (%s), skipping.", activity_type_key, activity_id)
             continue
 
         task_content = f"Oppdatere notater i kalenderhendelse for {activity_type_no}"
         create_todoist_task(content=task_content, due_string="today")
-        logger.info(f"Created task for Garmin activity {activity_type_key} ({activity_id})")
+        logger.info("Created task for Garmin activity %s (%s)", activity_type_key, activity_id)
         mark_task_created(activity_id)
 
 if __name__ == "__main__":
