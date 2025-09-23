@@ -20,3 +20,17 @@ def safe_json_write(path, data, indent=2):
         json.dump(data, f, indent=indent, ensure_ascii=False)
     tmp.replace(p)
     return p
+
+
+def human_readable_duration(seconds):
+    try:
+        seconds = int(seconds or 0)
+    except Exception:
+        return "0s"
+    hours, rem = divmod(seconds, 3600)
+    minutes, _ = divmod(rem, 60)
+    if hours:
+        return f"{hours}h{minutes:02d}m"
+    if minutes:
+        return f"{minutes}m"
+    return f"{seconds}s"
