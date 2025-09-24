@@ -13,12 +13,14 @@ def ensure_dir(path):
 
 
 def safe_json_write(path, data, indent=2):
+    """Write JSON safely (atomic-ish) to a file path."""
     p = Path(path)
     ensure_dir(p.parent)
     tmp = p.with_suffix(p.suffix + ".tmp")
     with open(tmp, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=indent, ensure_ascii=False)
     tmp.replace(p)
+    logger.info("Wrote JSON to %s", p)
     return p
 
 
