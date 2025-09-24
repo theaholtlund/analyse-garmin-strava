@@ -16,6 +16,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
 
 # Import shared configuration and functions
+from utils import safe_json_write
 from config import logger, check_strava_credentials, ACTIVITY_DAYS_RANGE
 
 # Token storage path
@@ -32,8 +33,7 @@ STRAVA_REDIRECT_URI = creds["STRAVA_REDIRECT_URI"]
 
 def save_tokens(token_data):
     """Save Strava API tokens to a local JSON file."""
-    with open(TOKEN_PATH, "w") as file:
-        json.dump(token_data, file)
+    safe_json_write(TOKEN_PATH, token_data)
 
 
 def authenticate():
