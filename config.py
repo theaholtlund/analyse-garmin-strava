@@ -2,9 +2,13 @@
 import os
 import logging
 from dotenv import load_dotenv
+from pathlib import Path
 
 # Load environment variables from environment file
 load_dotenv()
+
+# Ensure project directories exist
+Path("graphics").mkdir(exist_ok=True)
 
 # Set up logging for information
 logging.basicConfig(level=logging.INFO)
