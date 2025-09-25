@@ -12,6 +12,7 @@ def get_connection():
     """Provide a transactional scope around SQLite DB operations."""
     conn = sqlite3.connect(DB_PATH)
     try:
+        # Enable write-ahead logging for concurrency and durability
         conn.execute("PRAGMA journal_mode=WAL;")
         yield conn
     finally:
