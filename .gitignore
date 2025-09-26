@@ -2,6 +2,7 @@
 .venv
 .vscode
 .DS_Store
+outputs
 downloads
 sync_tracker.db
 strava_tokens.json
