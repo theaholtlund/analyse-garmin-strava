@@ -2,9 +2,6 @@
 from pathlib import Path
 import json
 
-# Import shared configuration and functions from other scripts
-from config import logger
-
 
 def ensure_dir(path):
     """Ensure directory exists."""
@@ -12,7 +9,7 @@ def ensure_dir(path):
     return Path(path)
 
 
-def safe_json_write(given_path, data, indent=2):
+def safe_json_write(given_path, data, logger, indent=2):
     """Write JSON safely (atomic-ish) to a file path."""
     path = Path(given_path)
     ensure_dir(path.parent)

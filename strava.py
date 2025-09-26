@@ -33,7 +33,7 @@ STRAVA_REDIRECT_URI = creds["STRAVA_REDIRECT_URI"]
 
 def save_tokens(token_data):
     """Save Strava API tokens to a local JSON file."""
-    safe_json_write(TOKEN_PATH, token_data)
+    safe_json_write(TOKEN_PATH, token_data, logger)
 
 
 def authenticate():
