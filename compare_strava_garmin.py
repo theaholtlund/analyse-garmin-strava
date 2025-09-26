@@ -44,7 +44,7 @@ def main():
     strava_times = set(strava_df['start_date_local'].dropna())
 
     missing_times = garmin_times - strava_times
-    logger.info(f"Garmin Connect activity times not found on Strava: {missing_times}")
+    logger.info("Garmin Connect activity times not found on Strava: %s", missing_times)
 
     if missing_times:
         print("The following activities are available Garmin Connect, but not in Strava:")
@@ -59,7 +59,7 @@ def main():
         mowl_cycling_login()
         logger.info("The login for MOWL Cycling was successful")
     except Exception as e:
-        logger.error(f"The login for MOWL Cycling failed: {e}", exc_info=True)
+        logger.error("The login for MOWL Cycling failed: %s", e, exc_info=True)
 
 if __name__ == "__main__":
     main()
