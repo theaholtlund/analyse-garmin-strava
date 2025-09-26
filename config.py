@@ -7,7 +7,7 @@ from pathlib import Path
 # Load environment variables from environment file
 load_dotenv()
 
-# Ensure project directories exist
+# Ensure project graphics directory exists
 Path("graphics").mkdir(exist_ok=True)
 
 # Set up logging for information

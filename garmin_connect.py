@@ -4,11 +4,15 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 from garminconnect import Garmin, GarminConnectAuthenticationError, GarminConnectConnectionError, GarminConnectTooManyRequestsError
+from pathlib import Path
 
 # Import shared configuration and functions from other scripts
 from config import logger, check_garmin_credentials, ACTIVITY_DAYS_RANGE, ACTIVITY_TYPE_TRANSLATIONS, RUNNING_THROUGH_GITHUB, LOGO_PATH
 from todoist_integration import create_todoist_task
 from task_tracker import init_db, task_exists, mark_task_created
+
+# Ensure project graphics directory exists
+Path("graphics").mkdir(exist_ok=True)
 
 
 def translate_activity_type(type_key):
