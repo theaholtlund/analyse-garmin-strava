@@ -2,13 +2,16 @@
 import os
 import logging
 from dotenv import load_dotenv
-from pathlib import Path
 
 # Load environment variables from environment file
 load_dotenv()
 
-# Ensure project graphics directory exists
-Path("graphics").mkdir(exist_ok=True)
+# Import shared configuration and functions from other scripts
+from utils import ensure_dir
+
+# Ensure project graphics directory exist
+PLOTS_DIR = "graphics"
+ensure_dir(PLOTS_DIR)
 
 # Set up logging for information
 logging.basicConfig(level=logging.INFO)

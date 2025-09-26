@@ -10,9 +10,11 @@ from pathlib import Path
 from config import logger, check_garmin_credentials, ACTIVITY_DAYS_RANGE, ACTIVITY_TYPE_TRANSLATIONS, RUNNING_THROUGH_GITHUB, LOGO_PATH
 from todoist_integration import create_todoist_task
 from task_tracker import init_db, task_exists, mark_task_created
+from utils import ensure_dir
 
-# Ensure project graphics directory exists
-Path("graphics").mkdir(exist_ok=True)
+# Ensure project graphics directory exist
+PLOTS_DIR = "graphics"
+ensure_dir(PLOTS_DIR)
 
 
 def translate_activity_type(type_key):
