@@ -77,7 +77,7 @@ def check_strava_credentials():
     creds = get_strava_credentials()
     missing = [k for k, v in creds.items() if not v]
     if missing:
-        logger.warning(f"Missing credential for Strava: {missing}")
+        logger.warning("Missing credential for Strava: %s", missing)
     return creds
 
 
