@@ -4,6 +4,12 @@ import pandas as pd
 # Import shared configuration and functions from other scripts
 from config import logger
 from garmin_connect import prepare_dataframe
+from utils import ensure_dir
+
+# Ensure outputs directory exists
+PLOTS_DIR = "outputs"
+ensure_dir(PLOTS_DIR)
+
 
 def filter_running_activities(df):
     if df.empty:
