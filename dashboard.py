@@ -2,6 +2,7 @@
 import datetime
 import pandas as pd
 import matplotlib.pyplot as plt
+import seaborn as sns
 
 # Import shared configuration and functions from other scripts
 from config import logger, check_garmin_credentials, RUNNING_THROUGH_GITHUB
@@ -11,6 +12,12 @@ from utils import ensure_dir
 # Ensure outputs directory exists
 PLOTS_DIR = "outputs"
 ensure_dir(PLOTS_DIR)
+
+# Orange colour palette
+ORANGE_PALETTE = ["#FF8C42", "#FF6700", "#FF9505", "#FFA347", "#FFB366", "#FFC680", "#FFD699"]
+
+sns.set_style("whitegrid")
+plt.rcParams.update({'figure.facecolor': 'white'})
 
 
 def filter_running_activities(df):
