@@ -6,3 +6,4 @@ matplotlib>=3.4
 selenium
 todoist-api-python
 pytest
+seaborn
