@@ -29,8 +29,12 @@ ACTIVITY_DAYS_RANGE = int(os.getenv("ACTIVITY_DAYS_RANGE", 7))
 # Mapping the Garmin Connect activity types to Norwegian names
 ACTIVITY_TYPE_TRANSLATIONS = {
     "running": "løping",
+    "indoor_running": "innendørsløping",
     "treadmill_running": "løping på tredemølle",
     "track_running": "baneløping",
+    "street_running": "gateløp",
+    "obstacle_run": "hinderløp",
+    "ultra_run": "ultraløp",
     "trail_running": "terrengløping",
     "road_biking": "landeveissykling",
     "indoor_cycling": "innendørssykling",
