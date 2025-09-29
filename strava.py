@@ -143,6 +143,10 @@ def get_latest_activities(days=ACTIVITY_DAYS_RANGE):
 def get_stream(activity_id, types=("heartrate", "cadence", "distance", "time")):
     """Fetch detailed data streams for a given Strava activity."""
     token = load_tokens()
+    current_timestamp = datetime.datetime.now(datetime.timezone.utc).timestamp()
+    if token.get("expires_at", 0) < current_timestamp:
+        token = refresh_access(token)
+
     headers = {"Authorization": f"Bearer {token['access_token']}"}
     response = requests.get(
         f"https://www.strava.com/api/v3/activities/{activity_id}/streams",
