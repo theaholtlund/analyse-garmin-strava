@@ -252,7 +252,7 @@ def download_multiple_activities(activities_df, download_dir=None):
             activity_name = row["name"]
             
             try:
-                logger.info(f"Downloading activity {index + 1}/{len(activities_df)}: {activity_name} (ID: {activity_id})")
+                logger.info("Downloading activity %d/%d: %s (ID: %s)", index + 1, len(activities_df), activity_name, activity_id)
                 
                 # Navigate to activity page
                 activity_url = f"https://www.strava.com/activities/{activity_id}"
