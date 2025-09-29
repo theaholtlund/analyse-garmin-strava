@@ -4,8 +4,10 @@ Work in progress. Project working with Strava and Garmin Connect data in various
 
 ## Ideas for Later, Components to Implement
 
-- Add to task in Todoist if one already exists, instead of making new one?
-- Fix and complete GitHub workflow to upload activities to Garmin Connect?
+- Implement working functionality for dashboard on total distance ran this year, including runs from multisport activities?
+- Include total distance for other activity types in dashboard too?
+- Add to task in Todoist if one already exists, instead of creating new one?
+- Implement working functionality in GitHub workflow to upload cycling activities to Garmin Connect?
 - Remove default gear when uploading virtual ride activities to Garmin Connect?
 - Implement functionality to update calendar notes using AppleScript?
 - Implement functionality to create Todoist task suggesting updating gear in Garmin Connect if calendar description contains certain words, such as for a speed run?
