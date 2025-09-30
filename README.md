@@ -86,3 +86,7 @@ pytest -v tests/test_garmin_connect.py
 pytest -v tests/test_task_tracker.py
 pytest -v tests/test_todoist_integration.py
 ```
+
+## Useful External Resources
+
+- [Garmin API Integration for Developers](https://help.validic.com/space/VCS/1681490020/Garmin+API+Integration+for+Developers): Contains list with the names of all Garmon Connect activities
