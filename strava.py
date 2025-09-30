@@ -203,7 +203,7 @@ def download_multiple_activities(activities_df, download_dir=None):
             cookie_accept.click()
             logger.info("Cookie banner accepted")
             time.sleep(1)
-        except:
+        except Exception:
             logger.info("No cookie banner found or already accepted")
 
         # Enter e-mail for the login page
@@ -291,13 +291,13 @@ def download_multiple_activities(activities_df, download_dir=None):
                     logger.info(f"Successfully downloaded: {file_path}")
                 else:
                     downloaded_files.append(None)
-                    logger.warning(f"Failed to download activity {activity_id}")
+                    logger.warning("Failed to download activity %s", activity_id)
                 
                 # Add short delay between downloads
                 time.sleep(2)
                 
             except Exception as e:
-                logger.error(f"Error downloading activity {activity_id}: {e}")
+                logger.error("Error downloading activity %s: %s", activity_id, e, exc_info=True)
                 downloaded_files.append(None)
         
         return downloaded_files
