@@ -55,5 +55,6 @@ def sync_virtual_rides():
     logger.info(f"Sync complete, uploaded {uploaded_count}, failed {failed_count}")
     return uploaded_count, failed_count
 
+
 if __name__ == "__main__":
     sync_virtual_rides()

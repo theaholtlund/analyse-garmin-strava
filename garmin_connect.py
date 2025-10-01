@@ -22,7 +22,7 @@ def translate_activity_type(type_key):
     return ACTIVITY_TYPE_TRANSLATIONS.get(type_key.lower(), "annet")
 
 
-def fetch_data(start_date, end_date, creds):
+def fetch_data(start_date, end_date, creds=None):
     """Fetch activities from Garmin Connect for a given date range."""
     try:
         api = Garmin(creds["GARMIN_USER"], creds["GARMIN_PASS"])
@@ -184,6 +184,7 @@ def main():
         create_todoist_task(content=task_content, due_string="today")
         logger.info("Created task for Garmin activity %s (%s)", activity_type_key, activity_id)
         mark_task_created(activity_id)
+
 
 if __name__ == "__main__":
     main()

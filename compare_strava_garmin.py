@@ -61,5 +61,6 @@ def main():
     except Exception as e:
         logger.error("The login for MOWL Cycling failed: %s", e, exc_info=True)
 
+
 if __name__ == "__main__":
     main()

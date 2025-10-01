@@ -317,6 +317,7 @@ def get_virtual_ride_activities(days=ACTIVITY_DAYS_RANGE):
         return pd.DataFrame()
     return df[df['type'] == 'VirtualRide'].copy()
 
+
 if __name__ == "__main__":
     logger.info(f"Fetching activities from the past {ACTIVITY_DAYS_RANGE} days")
     df = get_latest_activities()
