@@ -36,6 +36,7 @@ ACTIVITY_TYPE_TRANSLATIONS = {
     "obstacle_run": "hinderløp",
     "ultra_run": "ultraløp",
     "trail_running": "terrengløping",
+    "virtual_run": "virtuell løpetur",
     "road_biking": "landeveissykling",
     "indoor_cycling": "innendørssykling",
     "strength_training": "styrketrening",
