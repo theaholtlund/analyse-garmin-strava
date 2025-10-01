@@ -25,6 +25,8 @@ def translate_activity_type(type_key):
 def fetch_data(start_date, end_date, creds=None):
     """Fetch activities from Garmin Connect for a given date range."""
     try:
+        if creds is None:
+            creds = check_garmin_credentials()
         api = Garmin(creds["GARMIN_USER"], creds["GARMIN_PASS"])
         api.login()
         logger.info("Authenticated as %s", creds["GARMIN_USER"])
