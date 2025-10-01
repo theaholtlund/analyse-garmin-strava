@@ -136,10 +136,10 @@ def upload_activity_file_to_garmin(file_path, creds):
         if success:
             logger.info("Successfully uploaded activity file: %s", file_path)
         else:
-            logger.error(f"Failed to upload activity file: {file_path}")
+            logger.error("Failed to upload activity file: %s", file_path)
         return success
     except (GarminConnectAuthenticationError, GarminConnectConnectionError, GarminConnectTooManyRequestsError) as e:
-        logger.error(f"Failed to upload activity to Garmin Connect: {e}", exc_info=True)
+        logger.error("Failed to upload activity to Garmin Connect: %s", e, exc_info=True)
         return False
     except AssertionError:
         logger.error("Token or cache error for Garmin", exc_info=True)
