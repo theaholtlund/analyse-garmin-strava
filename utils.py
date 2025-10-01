@@ -19,18 +19,3 @@ def safe_json_write(given_path, data, logger, indent=2):
     tmp.replace(path)
     logger.info("Wrote JSON to %s", path)
     return path
-
-
-def human_readable_duration(seconds):
-    """Return a short human-readable duration string in hours and minutes."""
-    try:
-        seconds = int(seconds or 0)
-    except Exception:
-        return "0s"
-    hours, rem = divmod(seconds, 3600)
-    minutes, _ = divmod(rem, 60)
-    if hours:
-        return f"{hours}h{minutes:02d}m"
-    if minutes:
-        return f"{minutes}m"
-    return f"{seconds}s"
