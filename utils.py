@@ -22,7 +22,7 @@ def safe_json_write(given_path, data, logger, indent=2):
     logger.info("Wrote JSON to %s", path)
     return path
 
-def save_debug_screenshot():
+def save_debug_screenshot(driver, logger, label="screenshot"):
     ts = int(time.time())
     filename = f"{label}_{ts}.png"
     path = os.path.join(os.getcwd(), filename)
