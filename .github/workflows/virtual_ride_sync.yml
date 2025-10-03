@@ -58,5 +58,13 @@ jobs:
           STRAVA_DOWNLOAD_DIR: /tmp/strava_downloads
         run: python strava_garmin_sync.py
 
+      - name: Upload screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: strava-screenshots
+          path: ./*.png
+          if-no-files-found: ignore
+
       - name: Cleanup downloaded files # Remove temporary folder after upload
         run: rm -rf /tmp/strava_downloads
