@@ -58,7 +58,7 @@ jobs:
           STRAVA_DOWNLOAD_DIR: /tmp/strava_downloads
         run: python strava_garmin_sync.py
 
-      - name: Upload screenshots for debugging Strava
+      - name: Upload screenshots for debugging Strava # Upload screenshots for debugging as artifacts, set always() to enable
         if: false
         uses: actions/upload-artifact@v4
         with:
