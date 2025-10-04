@@ -197,7 +197,7 @@ def download_multiple_activities(activities_df, download_dir=None):
         # Handle cookie banner if present
         try:
             logger.info("Checking for cookie banner")
-            save_debug_screenshot(driver, logger, "before_cookie_banner")
+            # save_debug_screenshot(driver, logger, "before_cookie_banner")
             cookie_accept = WebDriverWait(driver, 5).until(
                 EC.element_to_be_clickable((By.CSS_SELECTOR, "button[data-cy='accept-cookies'], .CookieBanner button, button[id*='cookie'], button[class*='cookie']"))
             )
@@ -216,7 +216,7 @@ def download_multiple_activities(activities_df, download_dir=None):
 
         # Click the login button to proceed to password stage
         logger.info("Sending e-mail on Strava login page")
-        save_debug_screenshot(driver, logger, "before_username_submit")
+        # save_debug_screenshot(driver, logger, "before_username_submit")
         login_button_email_stage = WebDriverWait(driver, 20).until(
             EC.element_to_be_clickable((By.ID, "mobile-login-button"))
         )
@@ -224,7 +224,7 @@ def download_multiple_activities(activities_df, download_dir=None):
 
         # Wait for the OTP page to load and click button to use password instead
         logger.info("Waiting for OTP page and clicking button to use password instead")
-        save_debug_screenshot(driver, logger, "before_use_password")
+        # save_debug_screenshot(driver, logger, "before_use_password")
         use_password_btn = WebDriverWait(driver, 20).until(
             EC.element_to_be_clickable((By.CSS_SELECTOR, "[data-testid='use-password-cta'] button"))
         )
