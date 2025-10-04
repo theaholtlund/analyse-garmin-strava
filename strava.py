@@ -291,7 +291,7 @@ def download_multiple_activities(activities_df, download_dir=None):
 
                 if file_path:
                     downloaded_files.append(file_path)
-                    logger.info(f"Successfully downloaded: {file_path}")
+                    logger.info("Successfully downloaded: %s", file_path)
                 else:
                     downloaded_files.append(None)
                     logger.warning("Failed to download activity %s", activity_id)
@@ -322,7 +322,7 @@ def get_virtual_ride_activities(days=ACTIVITY_DAYS_RANGE):
 
 
 if __name__ == "__main__":
-    logger.info(f"Fetching activities from the past {ACTIVITY_DAYS_RANGE} days")
+    logger.info("Fetching activities from the past %s days", ACTIVITY_DAYS_RANGE)
     df = get_latest_activities()
 
     if df.empty:
