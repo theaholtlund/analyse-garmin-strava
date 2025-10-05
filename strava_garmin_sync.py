@@ -7,8 +7,7 @@ from task_tracker import init_db, is_uploaded_to_garmin, mark_uploaded_to_garmin
 from strava import get_virtual_ride_activities, download_multiple_activities
 from garmin_connect import upload_activity_file_to_garmin
 
-
-def sync_virtual_rides():
+def sync_virtual_rides(dry_run=False):
     """Synchronise activities of the type virtual ride from Strava to Garmin Connect."""
     init_db()
 
@@ -42,6 +41,11 @@ def sync_virtual_rides():
             if file_path is None:
                 failed_count += 1
                 continue
+
+            if dry_run:
+                uploaded_count += 1
+                continue
+
             try:
                 if upload_activity_file_to_garmin(file_path):
                     mark_uploaded_to_garmin(str(activity_id))
@@ -57,4 +61,8 @@ def sync_virtual_rides():
 
 
 if __name__ == "__main__":
-    sync_virtual_rides()
+    parser = argparse.ArgumentParser(description="Sync virtual rides from Strava to Garmin Connect")
+    parser.add_argument("--dry-run", action="store_true", help="Do not perform uploads, just simulate")
+    args = parser.parse_args()
+
+    sync_virtual_rides(dry_run=args.dry_run)
