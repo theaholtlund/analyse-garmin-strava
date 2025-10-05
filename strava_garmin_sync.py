@@ -1,5 +1,6 @@
 # Import required libraries
 import tempfile
+import argparse
 
 # Import shared configuration and functions from other scripts
 from config import logger, ACTIVITY_DAYS_RANGE
@@ -7,7 +8,7 @@ from task_tracker import init_db, is_uploaded_to_garmin, mark_uploaded_to_garmin
 from strava import get_virtual_ride_activities, download_multiple_activities
 from garmin_connect import upload_activity_file_to_garmin
 
-def sync_virtual_rides(dry_run=False):
+def sync_virtual_rides(dry_run=False, limit=None):
     """Synchronise activities of the type virtual ride from Strava to Garmin Connect."""
     init_db()
 
@@ -24,6 +25,9 @@ def sync_virtual_rides(dry_run=False):
     if df_to_download.empty:
         logger.info("All virtual ride activities have already been synced.")
         return
+
+    if limit:
+        df_to_download = df_to_download.head(limit)
 
     logger.info("Starting bulk download of %d virtual ride activities", len(df_to_download))
 
@@ -64,6 +68,7 @@ def sync_virtual_rides(dry_run=False):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Sync virtual rides from Strava to Garmin Connect")
     parser.add_argument("--dry-run", action="store_true", help="Do not perform uploads, just simulate")
+    parser.add_argument("--limit", type=int, help="Limit number of activities to sync")
     args = parser.parse_args()
 
-    sync_virtual_rides(dry_run=args.dry_run)
+    sync_virtual_rides(dry_run=args.dry_run, limit=args.limit)
