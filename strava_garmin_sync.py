@@ -43,6 +43,7 @@ def sync_virtual_rides(dry_run=False):
                 continue
 
             if dry_run:
+                logger.info("Dry run enabled: Would upload %s (activity %s)", file_path, activity_id)
                 uploaded_count += 1
                 continue
 
