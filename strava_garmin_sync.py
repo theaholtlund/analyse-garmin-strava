@@ -61,7 +61,7 @@ def sync_virtual_rides(dry_run=False, limit=None):
                 logger.error(f"Failed to upload {file_path} to Garmin Connect: {e}")
                 failed_count += 1
 
-    logger.info(f"Sync complete, uploaded {uploaded_count}, failed {failed_count}")
+    logger.info("Sync complete, uploaded %d, failed %d", uploaded_count, failed_count)
     return uploaded_count, failed_count
 
 
