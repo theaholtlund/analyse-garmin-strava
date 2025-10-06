@@ -3,7 +3,7 @@ import datetime
 import pandas as pd
 
 # Import shared configuration and functions from other scripts
-from config import logger
+from config import logger, ACTIVITY_DAYS_RANGE
 from garmin_connect import fetch_data
 from strava import get_latest_activities
 from mowl_cycling import mowl_cycling_login
@@ -27,7 +27,7 @@ def normalise_strava(df):
     return df
 
 
-def main(days=14):
+def main(days=ACTIVITY_DAYS_RANGE):
     """Compare activities from Garmin Connect to Strava by start time and report missing items."""
     # Fetch the activities from Garmin
     end_date = datetime.date.today()
