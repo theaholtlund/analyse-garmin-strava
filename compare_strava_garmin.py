@@ -27,16 +27,16 @@ def normalise_strava(df):
     return df
 
 
-def main():
+def main(days=14):
     """Compare activities from Garmin Connect to Strava by start time and report missing items."""
     # Fetch the activities from Garmin
     end_date = datetime.date.today()
-    start_date = end_date - datetime.timedelta(days=14)
+    start_date = end_date - datetime.timedelta(days=days)
     _, garmin_df = fetch_data(start_date, end_date)
     garmin_df = normalise_garmin(garmin_df)
 
     # Fetch the activities from Strava
-    strava_df = get_latest_activities(days=14)
+    strava_df = get_latest_activities(days=days)
     strava_df = normalise_strava(strava_df)
 
     # Compare by start time only
