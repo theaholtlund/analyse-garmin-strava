@@ -58,7 +58,7 @@ def sync_virtual_rides(dry_run=False, limit=None, headless=True):
                 else:
                     failed_count += 1
             except Exception as e:
-                logger.error(f"Failed to upload {file_path} to Garmin Connect: {e}")
+                logger.error("Failed to upload %s to Garmin Connect: %s", file_path, e)
                 failed_count += 1
 
     logger.info("Sync complete, uploaded %d, failed %d", uploaded_count, failed_count)
