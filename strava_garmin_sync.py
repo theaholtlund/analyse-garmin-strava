@@ -6,7 +6,7 @@ import argparse
 from config import logger, ACTIVITY_DAYS_RANGE
 from task_tracker import init_db, is_uploaded_to_garmin, mark_uploaded_to_garmin
 from strava import get_virtual_ride_activities, download_multiple_activities
-from garmin_connect import upload_activity_file_to_garmin
+from garmin_connect import upload_activity_file_to_garmin, check_garmin_credentials
 
 def sync_virtual_rides(dry_run=False, limit=None, headless=True):
     """Synchronise activities of the type virtual ride from Strava to Garmin Connect."""
@@ -41,6 +41,7 @@ def sync_virtual_rides(dry_run=False, limit=None, headless=True):
 
         # Upload the activity to Garmin Connect
         logger.info("Starting Garmin Connect upload for downloaded activities")
+        garmin_creds = check_garmin_credentials()
         for activity_id, file_path in zip(df_to_download['id'], downloaded_files):
             if file_path is None:
                 failed_count += 1
