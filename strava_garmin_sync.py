@@ -8,7 +8,7 @@ from task_tracker import init_db, is_uploaded_to_garmin, mark_uploaded_to_garmin
 from strava import get_virtual_ride_activities, download_multiple_activities
 from garmin_connect import upload_activity_file_to_garmin
 
-def sync_virtual_rides(dry_run=False, limit=None):
+def sync_virtual_rides(dry_run=False, limit=None, headless=True):
     """Synchronise activities of the type virtual ride from Strava to Garmin Connect."""
     init_db()
 
@@ -69,6 +69,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Sync virtual rides from Strava to Garmin Connect")
     parser.add_argument("--dry-run", action="store_true", help="Do not perform uploads, just simulate")
     parser.add_argument("--limit", type=int, help="Limit number of activities to sync")
+    parser.add_argument("--headless", action="store_true", help="Run browser in headless mode (default)")
     args = parser.parse_args()
 
-    sync_virtual_rides(dry_run=args.dry_run, limit=args.limit)
+    sync_virtual_rides(dry_run=args.dry_run, limit=args.limit, headless=args.headless)
