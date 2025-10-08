@@ -130,6 +130,8 @@ def process_and_plot(df):
 
 def upload_activity_file_to_garmin(file_path, creds):
     """Upload an activity FIT file to Garmin Connect."""
+    if creds is None:
+        creds = check_garmin_credentials()
     try:
         api = Garmin(creds["GARMIN_USER"], creds["GARMIN_PASS"])
         api.login()
