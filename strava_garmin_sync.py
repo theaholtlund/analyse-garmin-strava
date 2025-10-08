@@ -53,7 +53,7 @@ def sync_virtual_rides(dry_run=False, limit=None, headless=True):
                 continue
 
             try:
-                if upload_activity_file_to_garmin(file_path):
+                if upload_activity_file_to_garmin(file_path, creds=garmin_creds):
                     mark_uploaded_to_garmin(str(activity_id))
                     uploaded_count += 1
                 else:
