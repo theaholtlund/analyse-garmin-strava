@@ -18,13 +18,13 @@ def sync_virtual_rides(dry_run=False, limit=None, headless=True):
 
     if df.empty:
         logger.info("No new virtual ride activities found on Strava.")
-        return
+        return 0, 0
 
     # Filter out already synced activities
     df_to_download = df[~df['id'].astype(str).apply(is_uploaded_to_garmin)]
     if df_to_download.empty:
         logger.info("All virtual ride activities have already been synced.")
-        return
+        return 0, 0
 
     if limit:
         df_to_download = df_to_download.head(limit)
