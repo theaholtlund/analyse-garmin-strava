@@ -20,6 +20,15 @@ sns.set_style("whitegrid")
 plt.rcParams.update({'figure.facecolor': 'white'})
 
 
+def extract_multisport_running(df):
+    df = prepare_dataframe(df)
+    df_multisport = df[df['activityTypeKey'] == 'multisport'].copy()
+
+    for _, row in df_multisport.iterrows():
+        running_distance = 0
+        laps = row.get('laps', [])
+
+
 def filter_running_activities(df):
     if df.empty:
         logger.info("Received empty dataframe in filter_running_activities")
