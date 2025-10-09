@@ -128,7 +128,7 @@ def process_and_plot(df):
           }).to_string(index=False))
 
 
-def upload_activity_file_to_garmin(file_path, creds):
+def upload_activity_file_to_garmin(file_path, creds=None):
     """Upload an activity FIT file to Garmin Connect."""
     if creds is None:
         creds = check_garmin_credentials()
