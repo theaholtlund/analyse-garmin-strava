@@ -42,6 +42,7 @@ def filter_running_activities(df):
 
 def generate_dashboard():
     """Fetch activities from Garmin Connect and generate running dashboard."""
+    logger.info("Starting dashboard generation")
     garmin_creds = check_garmin_credentials()
 
     today = datetime.date.today()
@@ -50,6 +51,7 @@ def generate_dashboard():
 
     _, df_all = fetch_data(start_of_year, today, garmin_creds)
     if df_all.empty:
+        logger.warning("No activities fetched from Garmin Connect")
         return
 
     df_running = filter_running_activities(df_all)
