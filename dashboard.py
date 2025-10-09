@@ -23,10 +23,21 @@ plt.rcParams.update({'figure.facecolor': 'white'})
 def extract_multisport_running(df):
     df = prepare_dataframe(df)
     df_multisport = df[df['activityTypeKey'] == 'multisport'].copy()
+    running_records = []
 
     for _, row in df_multisport.iterrows():
         running_distance = 0
         laps = row.get('laps', [])
+
+        for lap in laps:
+            lap_type = lap.get('activityTypeKey') or lap.get('activityType', '').lower()
+            if lap_type == 'running':
+                running_distance += lap.get('distance', 0)
+
+    df_running_multisport = pd.DataFrame(running_records)
+    df_running_multisport['distance_km'] = df_running_multisport['distance'] / 1000
+    df_running_multisport['month'] = df_running_multisport['startTimeLocal'].dt.to_period('M')
+    return df_running_multisport
 
 
 def filter_running_activities(df):
