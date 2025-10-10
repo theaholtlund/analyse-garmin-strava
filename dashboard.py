@@ -21,6 +21,7 @@ plt.rcParams.update({'figure.facecolor': 'white'})
 
 
 def extract_multisport_running(df):
+    """Extract running distances from multisport activities and assign to correct month."""
     df = prepare_dataframe(df)
     df_multisport = df[df['activityTypeKey'] == 'multisport'].copy()
     running_records = []
