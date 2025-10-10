@@ -60,6 +60,10 @@ def filter_running_activities(df):
     df_running['distance_km'] = df_running['distance'] / 1000
     df_running['month'] = df_running['startTimeLocal'].dt.to_period('M')
 
+    df_multisport_running = extract_multisport_running(df)
+    if not df_multisport_running.empty:
+        df_running = pd.concat([df_running, df_multisport_running], ignore_index=True)
+
     logger.info("Filtered %d running activities (including multisport legs) out of %d total", len(df_running), len(df))
     return df_running
 
