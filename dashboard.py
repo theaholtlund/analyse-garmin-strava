@@ -82,9 +82,11 @@ def generate_dashboard():
     if df_all.empty:
         logger.warning("No activities fetched from Garmin Connect")
         return
+    logger.info("Fetched %d total activities", len(df_all))
 
     df_running = filter_running_activities(df_all)
     if df_running.empty:
+        logger.warning("No running activities found for this year")
         return
 
     fig = plt.figure(constrained_layout=True, figsize=(14, 10))
