@@ -56,6 +56,7 @@ def filter_running_activities(df):
         "street_running", "obstacle_run", "ultra_run", "trail_running", "virtual_run"
     ]
 
+    # Standard running activities
     df_running = df[df['activityTypeKey'].isin(running_keys)].copy()
     df_running['distance_km'] = df_running['distance'] / 1000
     df_running['month'] = df_running['startTimeLocal'].dt.to_period('M')
