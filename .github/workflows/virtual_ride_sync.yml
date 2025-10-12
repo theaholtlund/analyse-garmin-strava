@@ -50,6 +50,8 @@ jobs:
           STRAVA_EXPIRES_AT: ${{ secrets.STRAVA_EXPIRES_AT }}
           GARMIN_USER: ${{ secrets.GARMIN_USER }}
           GARMIN_PASS: ${{ secrets.GARMIN_PASS }}
+          DEBUG_SCREENSHOTS: ${{ vars.DEBUG_SCREENSHOTS }}
+          ACTIVITY_DAYS_RANGE: ${{ vars.ACTIVITY_DAYS_RANGE }}
           STRAVA_DOWNLOAD_DIR: /tmp/strava_downloads
         run: python strava_garmin_sync.py
 
