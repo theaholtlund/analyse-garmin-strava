@@ -89,6 +89,7 @@ pytest -v tests/test_todoist_integration.py
 
 ## GitHub Actions Workflows
 
+- [![Garmin Connect to Todoist Task](https://github.com/theaholtlund/analyse-garmin-strava/actions/workflows/garmin_task.yml/badge.svg)](https://github.com/theaholtlund/analyse-garmin-strava/actions/workflows/garmin_task.yml)
 - [![Sync Cycling to Garmin Connect](https://github.com/theaholtlund/analyse-garmin-strava/actions/workflows/virtual_ride_sync.yml/badge.svg)](https://github.com/theaholtlund/analyse-garmin-strava/actions/workflows/virtual_ride_sync.yml)
 
 ## Useful External Resources
