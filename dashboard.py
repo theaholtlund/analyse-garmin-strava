@@ -96,6 +96,14 @@ def generate_dashboard():
     type_counts = df_running['activityTypeKey'].value_counts()
 
     fig = plt.figure(constrained_layout=True, figsize=(14, 10))
+    gs = fig.add_gridspec(3, 2)
+    ax_total = fig.add_subplot(gs[0, 0])
+    sns.barplot(x=["Total km run"], y=[total_km], palette=ORANGE_PALETTE[:1], ax=ax_total)
+
+    ax_monthly = fig.add_subplot(gs[1, :])
+    sns.barplot(x=monthly_distances.index.astype(str), y=monthly_distances.values,
+                palette=ORANGE_PALETTE, ax=ax_monthly)
+
 
     dashboard_path = PLOTS_DIR + "/run_distance.png"
     fig.savefig(dashboard_path, dpi=150)
