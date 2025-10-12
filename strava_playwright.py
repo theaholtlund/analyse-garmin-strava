@@ -214,16 +214,26 @@ def download_multiple_activities(activities_df, download_dir=None, headless=True
             logger.info("Sending e-mail on Strava login page")
             save_playwright_screenshot(page, logger, DEBUG_SCREENSHOTS, "before_username_submit")
             login_button_email_stage = page.locator("#mobile-login-button").first
+            
+            # Click and wait for navigation or network idle
             login_button_email_stage.click()
+            time.sleep(3)  # Give time for any dynamic changes
+            save_playwright_screenshot(page, logger, DEBUG_SCREENSHOTS, "after_email_submit")
 
             # Wait for the OTP page to load and click button to use password instead
             logger.info("Waiting for OTP page and clicking button to use password instead")
             save_playwright_screenshot(page, logger, DEBUG_SCREENSHOTS, "before_use_password")
-            # Wait 5 seconds
-            save_playwright_screenshot(page, logger, DEBUG_SCREENSHOTS, "before_use_password_after_wait")
-            use_password_btn = page.locator("[data-testid='use-password-cta'] button").first
-            use_password_btn.wait_for(state="visible", timeout=20000)
-            use_password_btn.click()
+            
+            # Try to find the use password button with a longer timeout
+            try:
+                use_password_btn = page.locator("[data-testid='use-password-cta'] button").first
+                use_password_btn.wait_for(state="visible", timeout=30000)
+                save_playwright_screenshot(page, logger, DEBUG_SCREENSHOTS, "found_use_password_btn")
+                use_password_btn.click()
+            except PlaywrightTimeoutError:
+                logger.error("Could not find 'use password' button after 30 seconds")
+                save_playwright_screenshot(page, logger, DEBUG_SCREENSHOTS, "timeout_waiting_for_password_btn")
+                raise
 
             # Enter the password to log in to Strava
             logger.info("Entering password on login page")
