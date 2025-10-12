@@ -219,6 +219,8 @@ def download_multiple_activities(activities_df, download_dir=None, headless=True
             # Wait for the OTP page to load and click button to use password instead
             logger.info("Waiting for OTP page and clicking button to use password instead")
             save_playwright_screenshot(page, logger, DEBUG_SCREENSHOTS, "before_use_password")
+            # Wait 5 seconds
+            save_playwright_screenshot(page, logger, DEBUG_SCREENSHOTS, "before_use_password_after_wait")
             use_password_btn = page.locator("[data-testid='use-password-cta'] button").first
             use_password_btn.wait_for(state="visible", timeout=20000)
             use_password_btn.click()

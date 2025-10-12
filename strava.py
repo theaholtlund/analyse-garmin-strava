@@ -210,7 +210,7 @@ def download_multiple_activities(activities_df, download_dir=None):
         # Enter e-mail for the login page
         logger.info("Entering e-mail on Strava login page")
         email_field = WebDriverWait(driver, 20).until(
-            EC.presence_of_element_located((By.ID, "mobile-email"))
+            EC.presence_of_element_located((By.CSS_SELECTOR, "#mobile-email:first-of-type"))
         )
         email_field.send_keys(STRAVA_USER)
 
@@ -218,7 +218,7 @@ def download_multiple_activities(activities_df, download_dir=None):
         logger.info("Sending e-mail on Strava login page")
         save_debug_screenshot(driver, logger, DEBUG_SCREENSHOTS, "before_username_submit")
         login_button_email_stage = WebDriverWait(driver, 20).until(
-            EC.element_to_be_clickable((By.ID, "mobile-login-button"))
+            EC.element_to_be_clickable((By.CSS_SELECTOR, "#mobile-login-button:first-of-type"))
         )
         driver.execute_script("arguments[0].click();", login_button_email_stage)
 
@@ -226,21 +226,21 @@ def download_multiple_activities(activities_df, download_dir=None):
         logger.info("Waiting for OTP page and clicking button to use password instead")
         save_debug_screenshot(driver, logger, DEBUG_SCREENSHOTS, "before_use_password")
         use_password_btn = WebDriverWait(driver, 20).until(
-            EC.element_to_be_clickable((By.CSS_SELECTOR, "[data-testid='use-password-cta'] button"))
+            EC.element_to_be_clickable((By.CSS_SELECTOR, "[data-testid='use-password-cta'] button:first-of-type"))
         )
         driver.execute_script("arguments[0].click();", use_password_btn)
 
         # Enter the password to log in to Strava
         logger.info("Entering password on login page")
         password_field = WebDriverWait(driver, 20).until(
-            EC.presence_of_element_located((By.CSS_SELECTOR, "input[data-cy='password']"))
+            EC.presence_of_element_located((By.CSS_SELECTOR, "input[data-cy='password']:first-of-type"))
         )
         password_field.send_keys(STRAVA_PASS)
 
         # Click the final login button
         logger.info("Clicking final login button")
         login_button_password_stage = WebDriverWait(driver, 20).until(
-            EC.element_to_be_clickable((By.CSS_SELECTOR, "button[type='submit'].Button_primary___8ywh"))
+            EC.element_to_be_clickable((By.CSS_SELECTOR, "button[type='submit'].Button_primary___8ywh:first-of-type"))
         )
         driver.execute_script("arguments[0].click();", login_button_password_stage)
         
@@ -263,14 +263,14 @@ def download_multiple_activities(activities_df, download_dir=None):
                 
                 # Click dropdown menu to reveal export options
                 dropdown_button = WebDriverWait(driver, 15).until(
-                    EC.element_to_be_clickable((By.CSS_SELECTOR, "button.slide-menu.drop-down-menu"))
+                    EC.element_to_be_clickable((By.CSS_SELECTOR, "button.slide-menu.drop-down-menu:first-of-type"))
                 )
                 ActionChains(driver).move_to_element(dropdown_button).click().perform()
                 
                 # Click the export file button
                 export_link = WebDriverWait(driver, 15).until(
                     EC.element_to_be_clickable(
-                        (By.XPATH, f"//a[contains(@href, '/activities/{activity_id}/export_original')]")
+                        (By.XPATH, f"(//a[contains(@href, '/activities/{activity_id}/export_original')])[1]")
                     )
                 )
                 ActionChains(driver).move_to_element(export_link).click().perform()
