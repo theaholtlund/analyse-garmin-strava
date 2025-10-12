@@ -90,6 +90,11 @@ def generate_dashboard():
         logger.warning("No running activities found for this year")
         return
 
+    total_km = df_running['distance_km'].sum()
+    monthly_distances = df_running.groupby('month')['distance_km'].sum()
+    cumulative_distances = monthly_distances.cumsum()
+    type_counts = df_running['activityTypeKey'].value_counts()
+
     fig = plt.figure(constrained_layout=True, figsize=(14, 10))
 
     dashboard_path = PLOTS_DIR + "/run_distance.png"
