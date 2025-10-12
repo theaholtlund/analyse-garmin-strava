@@ -23,9 +23,11 @@ def safe_json_write(given_path, data, logger, indent=2):
     return path
 
 def save_debug_screenshot(driver, logger, label="screenshot"):
-    """Capture a screenshot with Selenium and save it to the current directory."""
-    ts = int(time.time())
-    filename = f"{label}_{ts}.png"
+    """Capture screenshot with Selenium and save to current directory, if activated."""
+    if os.getenv("DEBUG_SCREENSHOTS") != "ON":
+        return
+
+    filename = f"{label}_{int(time.time())}.png"
     path = os.path.join(os.getcwd(), filename)
     driver.save_screenshot(path)
     logger.info("Saved screenshot: %s", path)

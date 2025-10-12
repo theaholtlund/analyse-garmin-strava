@@ -23,6 +23,9 @@ RUNNING_THROUGH_GITHUB = os.getenv("GITHUB_ACTIONS", "").lower() == "true"
 # Path to logo used in plots
 LOGO_PATH = "graphics/app-logo-1.png"
 
+# Choose whether to include debugging screenshots
+ACTIVITY_DAYS_RANGE = int(os.getenv("DEBUG_SCREENSHOTS", "OFF"))
+
 # Set how many days back to fetch activities
 ACTIVITY_DAYS_RANGE = int(os.getenv("ACTIVITY_DAYS_RANGE", 7))
 
