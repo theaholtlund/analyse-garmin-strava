@@ -5,12 +5,22 @@
 After installing the Python dependencies, you need to install the Playwright browsers:
 
 ```bash
-# Install Python dependencies
+# Install Python dependencies (includes playwright-stealth for anti-bot detection)
 pip install -r requirements.txt
 
 # Install Playwright browsers (Chromium)
 python -m playwright install chromium
 ```
+
+## Anti-Bot Detection Features
+
+The Playwright implementation includes several features to avoid bot detection:
+
+- **playwright-stealth**: Hides automation indicators
+- **Human-like delays**: Random delays between actions (0.5-2 seconds)
+- **Realistic typing**: Types characters individually with random delays (50-150ms per character)
+- **Browser fingerprint**: Uses realistic mobile user agent and settings
+- **Disabled automation flags**: Removes Playwright detection markers
 
 Alternatively, to install all Playwright browsers with system dependencies:
 

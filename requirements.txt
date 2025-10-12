@@ -5,6 +5,7 @@ python-dotenv
 matplotlib>=3.4
 selenium
 playwright
+playwright-stealth
 todoist-api-python
 pytest
 seaborn

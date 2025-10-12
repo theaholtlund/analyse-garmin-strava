@@ -1,6 +1,7 @@
 # Import required libraries
 import os
 import time
+import random
 import webbrowser
 import datetime
 import pandas as pd
@@ -9,6 +10,7 @@ import json
 import tempfile
 import shutil
 from playwright.sync_api import sync_playwright, TimeoutError as PlaywrightTimeoutError
+from playwright_stealth import stealth_sync
 
 # Import shared configuration and functions
 from utils import safe_json_write, save_debug_screenshot
@@ -163,6 +165,12 @@ def save_playwright_screenshot(page, logger, debug_enabled, name):
             logger.warning("Failed to save screenshot %s: %s", name, e)
 
 
+def human_delay(min_seconds=0.5, max_seconds=2.0):
+    """Add a realistic human-like delay."""
+    delay = random.uniform(min_seconds, max_seconds)
+    time.sleep(delay)
+
+
 def download_multiple_activities(activities_df, download_dir=None, headless=True):
     """Download multiple FIT files from Strava using Playwright with a single login session."""
     if not STRAVA_USER or not STRAVA_PASS:
@@ -171,26 +179,38 @@ def download_multiple_activities(activities_df, download_dir=None, headless=True
     downloaded_files = []
     
     with sync_playwright() as p:
-        # Launch browser with mobile emulation
+        # Launch browser with mobile emulation and stealth settings
         browser = p.chromium.launch(
             headless=headless,
-            args=['--no-sandbox', '--disable-dev-shm-usage']
+            args=[
+                '--no-sandbox',
+                '--disable-dev-shm-usage',
+                '--disable-blink-features=AutomationControlled',
+                '--disable-features=IsolateOrigins,site-per-process'
+            ]
         )
         
-        # Create context with mobile viewport and user agent
+        # Create context with mobile viewport and realistic user agent
         context = browser.new_context(
             viewport={'width': 390, 'height': 844},
-            user_agent='Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) '
-                      'AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.0 Mobile/15E148 Safari/604.1',
-            accept_downloads=True
+            user_agent='Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) '
+                      'AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Mobile/15E148 Safari/604.1',
+            accept_downloads=True,
+            locale='en-US',
+            timezone_id='America/New_York',
+            permissions=['geolocation']
         )
         
         page = context.new_page()
+        
+        # Apply stealth mode to hide automation
+        stealth_sync(page)
         
         try:
             # Log in to Strava profile
             logger.info("Opening the Strava login page")
             page.goto("https://www.strava.com/login", wait_until="domcontentloaded")
+            human_delay(1, 2)  # Wait like a human would
 
             # Handle cookie banner if present
             try:
@@ -198,9 +218,10 @@ def download_multiple_activities(activities_df, download_dir=None, headless=True
                 save_playwright_screenshot(page, logger, DEBUG_SCREENSHOTS, "before_cookie_banner")
                 cookie_button = page.locator("button[data-cy='accept-cookies'], .CookieBanner button, button[id*='cookie'], button[class*='cookie']").first
                 if cookie_button.is_visible(timeout=5000):
+                    human_delay(0.3, 0.8)
                     cookie_button.click()
                     logger.info("Cookie banner accepted")
-                    time.sleep(1)
+                    human_delay(0.5, 1.5)
             except PlaywrightTimeoutError:
                 logger.info("No cookie banner found or already accepted")
 
@@ -208,16 +229,23 @@ def download_multiple_activities(activities_df, download_dir=None, headless=True
             logger.info("Entering e-mail on Strava login page")
             email_field = page.locator("#mobile-email").first
             email_field.wait_for(state="visible", timeout=20000)
-            email_field.fill(STRAVA_USER)
+            human_delay(0.5, 1.0)
+            
+            # Type email character by character like a human
+            email_field.click()
+            human_delay(0.2, 0.5)
+            for char in STRAVA_USER:
+                email_field.type(char, delay=random.uniform(50, 150))
+            human_delay(0.5, 1.5)
 
             # Click the login button to proceed to password stage
             logger.info("Sending e-mail on Strava login page")
             save_playwright_screenshot(page, logger, DEBUG_SCREENSHOTS, "before_username_submit")
             login_button_email_stage = page.locator("#mobile-login-button").first
             
-            # Click and wait for navigation or network idle
+            # Click normally first (more human-like)
             login_button_email_stage.click()
-            time.sleep(3)  # Give time for any dynamic changes
+            human_delay(2, 4)  # Wait for page transition
             save_playwright_screenshot(page, logger, DEBUG_SCREENSHOTS, "after_email_submit")
 
             # Wait for the OTP page to load and click button to use password instead
@@ -229,7 +257,9 @@ def download_multiple_activities(activities_df, download_dir=None, headless=True
                 use_password_btn = page.locator("[data-testid='use-password-cta'] button").first
                 use_password_btn.wait_for(state="visible", timeout=30000)
                 save_playwright_screenshot(page, logger, DEBUG_SCREENSHOTS, "found_use_password_btn")
+                human_delay(0.5, 1.5)
                 use_password_btn.click()
+                human_delay(1, 2)
             except PlaywrightTimeoutError:
                 logger.error("Could not find 'use password' button after 30 seconds")
                 save_playwright_screenshot(page, logger, DEBUG_SCREENSHOTS, "timeout_waiting_for_password_btn")
@@ -239,12 +269,20 @@ def download_multiple_activities(activities_df, download_dir=None, headless=True
             logger.info("Entering password on login page")
             password_field = page.locator("input[data-cy='password']").first
             password_field.wait_for(state="visible", timeout=20000)
-            password_field.fill(STRAVA_PASS)
+            human_delay(0.5, 1.0)
+            
+            # Type password character by character like a human
+            password_field.click()
+            human_delay(0.2, 0.5)
+            for char in STRAVA_PASS:
+                password_field.type(char, delay=random.uniform(50, 150))
+            human_delay(0.8, 1.5)
 
             # Click the final login button
             logger.info("Clicking final login button")
             login_button_password_stage = page.locator("button[type='submit'].Button_primary___8ywh").first
             login_button_password_stage.click()
+            human_delay(1, 2)
             
             # Wait for the login to complete
             logger.info("Waiting for login to complete")
