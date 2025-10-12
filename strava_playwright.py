@@ -10,7 +10,7 @@ import json
 import tempfile
 import shutil
 from playwright.sync_api import sync_playwright, TimeoutError as PlaywrightTimeoutError
-from playwright_stealth import stealth_sync
+from playwright_stealth import Stealth
 
 # Import shared configuration and functions
 from utils import safe_json_write, save_debug_screenshot
@@ -178,6 +178,9 @@ def download_multiple_activities(activities_df, download_dir=None, headless=True
 
     downloaded_files = []
     
+    # Create stealth instance
+    stealth = Stealth()
+    
     with sync_playwright() as p:
         # Launch browser with mobile emulation and stealth settings
         browser = p.chromium.launch(
@@ -198,13 +201,17 @@ def download_multiple_activities(activities_df, download_dir=None, headless=True
             accept_downloads=True,
             locale='en-US',
             timezone_id='America/New_York',
-            permissions=['geolocation']
+            permissions=['geolocation'],
+            # Extra stealth settings
+            extra_http_headers={
+                'Accept-Language': 'en-US,en;q=0.9',
+            }
         )
         
-        page = context.new_page()
+        # Apply stealth to entire context (all pages from this context will have stealth)
+        stealth.apply_stealth_sync(context)
         
-        # Apply stealth mode to hide automation
-        stealth_sync(page)
+        page = context.new_page()
         
         try:
             # Log in to Strava profile
