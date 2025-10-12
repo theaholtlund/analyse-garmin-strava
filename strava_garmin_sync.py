@@ -3,7 +3,7 @@ import tempfile
 import argparse
 
 # Import shared configuration and functions from other scripts
-from config import logger, ACTIVITY_DAYS_RANGE, DEBUG_SCREENSHOTS
+from config import logger, ACTIVITY_DAYS_RANGE
 from task_tracker import init_db, is_uploaded_to_garmin, mark_uploaded_to_garmin
 from strava import get_virtual_ride_activities, download_multiple_activities
 from garmin_connect import upload_activity_file_to_garmin, check_garmin_credentials
