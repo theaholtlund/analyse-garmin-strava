@@ -2,7 +2,7 @@ name: Sync Cycling to Garmin Connect
 
 on:
   schedule:
-    - cron: "0 6-21/2 * * *" # Run workflow every two hours from 06:00 to 21:00 every day
+    - cron: "0 6-21/2 * * *" # Run workflow every two hours between 06:00 and 21:00 daily
   workflow_dispatch: # Allow manual trigger
 
 jobs:
@@ -24,10 +24,10 @@ jobs:
           pip install -r requirements.txt
           pip install chromedriver-autoinstaller selenium pyvirtualdisplay
 
-      - name: Remove any pre-installed Chrome
+      - name: Remove any pre-installed Chrome # Avoid version mismatch
         run: sudo apt purge -y google-chrome-stable || true
 
-      - name: Install required system packages
+      - name: Install system packages
         run: sudo apt-get update && sudo apt-get install -y xvfb
 
       - name: Restore the activity sync cache # Restore database file from cache if available, track synced activities
@@ -64,5 +64,5 @@ jobs:
           path: ./*.png
           if-no-files-found: ignore
 
-      - name: Cleanup downloaded files # Remove temporary folder after upload
+      - name: Clean up downloaded files # Remove temporary folder after upload
         run: rm -rf /tmp/strava_downloads
