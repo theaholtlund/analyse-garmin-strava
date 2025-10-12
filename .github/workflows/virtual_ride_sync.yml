@@ -24,9 +24,6 @@ jobs:
           pip install -r requirements.txt
           pip install chromedriver-autoinstaller selenium pyvirtualdisplay
 
-      # - name: Remove any pre-installed Chrome # Avoid version mismatch
-      #  run: sudo apt purge -y google-chrome-stable || true
-
       - name: Install system packages
         run: sudo apt-get update && sudo apt-get install -y xvfb
 
