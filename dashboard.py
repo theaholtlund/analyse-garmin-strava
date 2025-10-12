@@ -99,11 +99,15 @@ def generate_dashboard():
     gs = fig.add_gridspec(3, 2)
     ax_total = fig.add_subplot(gs[0, 0])
     sns.barplot(x=["Total km run"], y=[total_km], palette=ORANGE_PALETTE[:1], ax=ax_total)
+    ax_total.set_ylabel("Distance (km)")
+    ax_total.set_title(f"Total running distance in {today.year}", fontsize=14)
 
     ax_monthly = fig.add_subplot(gs[1, :])
     sns.barplot(x=monthly_distances.index.astype(str), y=monthly_distances.values,
                 palette=ORANGE_PALETTE, ax=ax_monthly)
-
+    ax_monthly.set_ylabel("Distance (km)")
+    ax_monthly.set_xlabel("Month")
+    ax_monthly.set_title("Monthly running distance", fontsize=14)
 
     dashboard_path = PLOTS_DIR + "/run_distance.png"
     fig.savefig(dashboard_path, dpi=150)
