@@ -42,6 +42,7 @@ def extract_multisport_running(df):
         df_running_multisport = pd.DataFrame(running_records)
         df_running_multisport['distance_km'] = df_running_multisport['distance'] / 1000
         df_running_multisport['month'] = df_running_multisport['startTimeLocal'].dt.to_period('M')
+        logger.info("Extracted running distances from %d multisport activities", len(df_running_multisport))
         return df_running_multisport
     else:
         return pd.DataFrame()
@@ -94,6 +95,7 @@ def generate_dashboard():
         return
 
     total_km = df_running['distance_km'].sum()
+    logger.info("Total running distance this year: %.2f km", total_km)
     monthly_distances = df_running.groupby('month')['distance_km'].sum()
     cumulative_distances = monthly_distances.cumsum()
     type_counts = df_running['activityTypeKey'].value_counts()
@@ -115,6 +117,7 @@ def generate_dashboard():
     dashboard_path = PLOTS_DIR + "/run_distance.png"
     fig.savefig(dashboard_path, dpi=150)
     plt.show()
+    logger.info("Dashboard saved to %s", dashboard_path)
 
 
 if __name__ == "__main__":
