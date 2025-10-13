@@ -38,10 +38,13 @@ def extract_multisport_running(df):
             if lap_type == 'running':
                 running_distance += lap.get('distance', 0)
 
-    df_running_multisport = pd.DataFrame(running_records)
-    df_running_multisport['distance_km'] = df_running_multisport['distance'] / 1000
-    df_running_multisport['month'] = df_running_multisport['startTimeLocal'].dt.to_period('M')
-    return df_running_multisport
+    if running_records:
+        df_running_multisport = pd.DataFrame(running_records)
+        df_running_multisport['distance_km'] = df_running_multisport['distance'] / 1000
+        df_running_multisport['month'] = df_running_multisport['startTimeLocal'].dt.to_period('M')
+        return df_running_multisport
+    else:
+        return pd.DataFrame()
 
 
 def filter_running_activities(df):
