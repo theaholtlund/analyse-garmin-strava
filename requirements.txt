@@ -4,6 +4,8 @@ garminconnect==0.2.28
 python-dotenv
 matplotlib>=3.4
 selenium
+playwright
+playwright-stealth
 todoist-api-python
 pytest
 seaborn

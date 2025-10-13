@@ -1,0 +1,66 @@
+name: Sync Cycling to Garmin Connect (Playwright)
+
+on:
+  schedule:
+    - cron: "0 6-21/2 * * *" # Run workflow every two hours between 06:00 and 21:00 daily
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  sync-strava-to-garmin:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout the repo # Ensure the workflow has access to the code
+        uses: actions/checkout@v4
+
+      - name: Set up Python # Make Python available in GitHub runner environment
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install project dependencies # Install required Python packages
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Install Playwright browsers # Install Chromium browser for Playwright
+        run: playwright install --with-deps chromium
+
+      - name: Restore the activity sync cache # Restore database file from cache if available, track synced activities
+        uses: actions/cache@v4
+        with:
+          path: sync_tracker.db
+          key: strava-garmin-sync-db-${{ github.run_id }} # Use unique cache key per run to force saving updated database
+          restore-keys: |
+            strava-garmin-sync-db-
+
+      - name: Prepare temporary downloads directory # Ensure a clean temporary folder for FIT file downloads
+        run: mkdir -p /tmp/strava_downloads
+
+      - name: Run Strava to Garmin Connect sync # Execute main script for syncing virtual ride activities
+        env:
+          STRAVA_USER: ${{ secrets.STRAVA_USER }}
+          STRAVA_PASS: ${{ secrets.STRAVA_PASS }}
+          STRAVA_CLIENT_ID: ${{ secrets.STRAVA_CLIENT_ID }}
+          STRAVA_CLIENT_SECRET: ${{ secrets.STRAVA_CLIENT_SECRET }}
+          STRAVA_REDIRECT_URI: ${{ secrets.STRAVA_REDIRECT_URI }}
+          STRAVA_ACCESS_TOKEN: ${{ secrets.STRAVA_ACCESS_TOKEN }}
+          STRAVA_REFRESH_TOKEN: ${{ secrets.STRAVA_REFRESH_TOKEN }}
+          STRAVA_EXPIRES_AT: ${{ secrets.STRAVA_EXPIRES_AT }}
+          GARMIN_USER: ${{ secrets.GARMIN_USER }}
+          GARMIN_PASS: ${{ secrets.GARMIN_PASS }}
+          DEBUG_SCREENSHOTS: ${{ vars.DEBUG_SCREENSHOTS }}
+          ACTIVITY_DAYS_RANGE: ${{ vars.ACTIVITY_DAYS_RANGE }}
+          STRAVA_DOWNLOAD_DIR: /tmp/strava_downloads
+        run: python strava_garmin_sync_playwright.py
+
+      - name: Upload screenshots for debugging Strava # Upload screenshots for debugging as artifacts if activated
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: strava-screenshots
+          path: ./*.png
+          if-no-files-found: ignore
+
+      - name: Clean up downloaded files # Remove temporary folder after upload
+        run: rm -rf /tmp/strava_downloads
