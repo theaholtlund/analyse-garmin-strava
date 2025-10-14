@@ -38,6 +38,13 @@ def extract_multisport_running(df):
             if lap_type == 'running':
                 running_distance += lap.get('distance', 0)
 
+        if running_distance > 0:
+            running_records.append({
+                'startTimeLocal': row['startTimeLocal'],
+                'distance': running_distance,
+                'activityTypeKey': 'running'
+            })
+
     if running_records:
         df_running_multisport = pd.DataFrame(running_records)
         df_running_multisport['distance_km'] = df_running_multisport['distance'] / 1000
