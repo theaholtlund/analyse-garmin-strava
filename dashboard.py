@@ -94,14 +94,19 @@ def generate_dashboard():
         logger.warning("No running activities found for this year")
         return
 
+    # Total km count
     total_km = df_running['distance_km'].sum()
     logger.info("Total running distance this year: %.2f km", total_km)
+
+    # Monthly summary
     monthly_distances = df_running.groupby('month')['distance_km'].sum()
     cumulative_distances = monthly_distances.cumsum()
     type_counts = df_running['activityTypeKey'].value_counts()
 
     fig = plt.figure(constrained_layout=True, figsize=(14, 10))
     gs = fig.add_gridspec(3, 2)
+
+    # Total km bar
     ax_total = fig.add_subplot(gs[0, 0])
     sns.barplot(x=["Total km run"], y=[total_km], palette=ORANGE_PALETTE[:1], ax=ax_total)
     ax_total.set_ylabel("Distance (km)")
