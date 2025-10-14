@@ -111,6 +111,9 @@ def generate_dashboard():
     sns.barplot(x=["Total km run"], y=[total_km], palette=ORANGE_PALETTE[:1], ax=ax_total)
     ax_total.set_ylabel("Distance (km)")
     ax_total.set_title(f"Total running distance in {today.year}", fontsize=14)
+    for p in ax_total.patches:
+        ax_total.annotate(f"{p.get_height():.1f} km", (p.get_x() + p.get_width() / 2., p.get_height()),
+                          ha='center', va='bottom', fontsize=12, fontweight='bold')
 
     ax_monthly = fig.add_subplot(gs[1, :])
     sns.barplot(x=monthly_distances.index.astype(str), y=monthly_distances.values,
