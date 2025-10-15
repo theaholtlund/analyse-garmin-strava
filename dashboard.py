@@ -135,7 +135,10 @@ def generate_dashboard():
                             ha='center', va='bottom', fontsize=10)
     ax_monthly.tick_params(axis='x', rotation=45)
 
-
+    ax_cum = fig.add_subplot(gs[2, 0])
+    sns.lineplot(x=cumulative_distances.index.astype(str), y=cumulative_distances.values,
+                 marker="o", color="#FF6700", linewidth=2.5, ax=ax_cum)
+  
     dashboard_path = PLOTS_DIR + "/run_distance.png"
     fig.savefig(dashboard_path, dpi=150)
     plt.show()
