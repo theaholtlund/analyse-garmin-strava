@@ -33,6 +33,7 @@ def extract_multisport_running(df):
         running_distance = 0
         laps = row.get('laps', [])
 
+        # Sum distance of laps that are running
         for lap in laps:
             lap_type = lap.get('activityTypeKey') or lap.get('activityType', '').lower()
             if lap_type == 'running':
@@ -73,6 +74,7 @@ def filter_running_activities(df):
     df_running['distance_km'] = df_running['distance'] / 1000
     df_running['month'] = df_running['startTimeLocal'].dt.to_period('M')
 
+    # Include running from multisport
     df_multisport_running = extract_multisport_running(df)
     if not df_multisport_running.empty:
         df_running = pd.concat([df_running, df_multisport_running], ignore_index=True)
