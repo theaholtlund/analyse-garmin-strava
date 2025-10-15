@@ -130,6 +130,11 @@ def generate_dashboard():
     ax_monthly.set_ylabel("Distance (km)")
     ax_monthly.set_xlabel("Month")
     ax_monthly.set_title("Monthly running distance", fontsize=14)
+    for p in ax_monthly.patches:
+        ax_monthly.annotate(f"{p.get_height():.1f}", (p.get_x() + p.get_width() / 2., p.get_height()),
+                            ha='center', va='bottom', fontsize=10)
+    ax_monthly.tick_params(axis='x', rotation=45)
+
 
     dashboard_path = PLOTS_DIR + "/run_distance.png"
     fig.savefig(dashboard_path, dpi=150)
