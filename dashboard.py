@@ -124,6 +124,7 @@ def generate_dashboard():
         ax_total.annotate(f"{p.get_height():.1f} km", (p.get_x() + p.get_width() / 2., p.get_height()),
                           ha='center', va='bottom', fontsize=12, fontweight='bold')
 
+    # Monthly distance bar
     ax_monthly = fig.add_subplot(gs[1, :])
     sns.barplot(x=monthly_distances.index.astype(str), y=monthly_distances.values,
                 palette=ORANGE_PALETTE, ax=ax_monthly)
@@ -135,6 +136,7 @@ def generate_dashboard():
                             ha='center', va='bottom', fontsize=10)
     ax_monthly.tick_params(axis='x', rotation=45)
 
+    # Cumulative distance line
     ax_cum = fig.add_subplot(gs[2, 0])
     sns.lineplot(x=cumulative_distances.index.astype(str), y=cumulative_distances.values,
                  marker="o", color="#FF6700", linewidth=2.5, ax=ax_cum)
@@ -146,6 +148,7 @@ def generate_dashboard():
     for x, y in zip(cumulative_distances.index.astype(str), cumulative_distances.values):
         ax_cum.text(x, y + 5, f"{y:.1f}", ha='center', va='bottom', fontsize=10, fontweight='bold')
 
+    # Pie chart of run types
     ax_pie = fig.add_subplot(gs[2, 1])
     type_counts.plot.pie(ax=ax_pie, autopct='%1.1f%%', startangle=140, colors=ORANGE_PALETTE,
                          wedgeprops=dict(width=0.5, edgecolor='w'))
@@ -153,6 +156,7 @@ def generate_dashboard():
     ax_pie.set_title("Distribution of run types", fontsize=14)
     ax_pie.legend([k.replace("_", " ").title() for k in type_counts.index], bbox_to_anchor=(1, 0.5))
 
+    # Save and show
     dashboard_path = PLOTS_DIR + "/run_distance.png"
     fig.savefig(dashboard_path, dpi=150)
     plt.show()
