@@ -138,7 +138,14 @@ def generate_dashboard():
     ax_cum = fig.add_subplot(gs[2, 0])
     sns.lineplot(x=cumulative_distances.index.astype(str), y=cumulative_distances.values,
                  marker="o", color="#FF6700", linewidth=2.5, ax=ax_cum)
-  
+    ax_cum.set_ylabel("Cumulative distance (km)")
+    ax_cum.set_xlabel("Month")
+    ax_cum.set_title("Cumulative distance over the year", fontsize=14)
+    ax_cum.grid(True)
+    ax_cum.tick_params(axis='x', rotation=45)
+    for x, y in zip(cumulative_distances.index.astype(str), cumulative_distances.values):
+        ax_cum.text(x, y + 5, f"{y:.1f}", ha='center', va='bottom', fontsize=10, fontweight='bold')
+
     dashboard_path = PLOTS_DIR + "/run_distance.png"
     fig.savefig(dashboard_path, dpi=150)
     plt.show()
