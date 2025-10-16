@@ -146,6 +146,13 @@ def generate_dashboard():
     for x, y in zip(cumulative_distances.index.astype(str), cumulative_distances.values):
         ax_cum.text(x, y + 5, f"{y:.1f}", ha='center', va='bottom', fontsize=10, fontweight='bold')
 
+    ax_pie = fig.add_subplot(gs[2, 1])
+    type_counts.plot.pie(ax=ax_pie, autopct='%1.1f%%', startangle=140, colors=ORANGE_PALETTE,
+                         wedgeprops=dict(width=0.5, edgecolor='w'))
+    ax_pie.set_ylabel("")
+    ax_pie.set_title("Distribution of run types", fontsize=14)
+    ax_pie.legend([k.replace("_", " ").title() for k in type_counts.index], bbox_to_anchor=(1, 0.5))
+
     dashboard_path = PLOTS_DIR + "/run_distance.png"
     fig.savefig(dashboard_path, dpi=150)
     plt.show()
