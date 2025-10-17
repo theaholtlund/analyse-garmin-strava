@@ -178,13 +178,14 @@ def download_multiple_activities(activities_df, download_dir=None):
         "AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.0 Mobile/15E148 Safari/604.1"
     )
 
-    # Configure automatic downloads
-    options.add_experimental_option("prefs", {
+    # Configure download preferences
+    prefs = {
         "download.default_directory": download_dir,
         "download.prompt_for_download": False,
         "download.directory_upgrade": True,
         "safebrowsing.enabled": True
-    })
+    }
+    options.add_experimental_option("prefs", prefs)
 
     driver = webdriver.Chrome(options=options)
     downloaded_files = []
