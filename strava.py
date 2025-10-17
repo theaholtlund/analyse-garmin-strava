@@ -123,7 +123,7 @@ def get_latest_activities(days=ACTIVITY_DAYS_RANGE):
     while True:
         params = {"after": after, "page": page, "per_page": per_page}
         response = requests.get("https://www.strava.com/api/v3/athlete/activities",
-                         headers=headers, params=params)
+                                headers=headers, params=params)
         response.raise_for_status()
         page_data = response.json()
 
@@ -188,7 +188,7 @@ def download_multiple_activities(activities_df, download_dir=None):
 
     driver = webdriver.Chrome(options=options)
     downloaded_files = []
-    
+
     try:
         # Log in to Strava profile
         logger.info("Opening the Strava login page")
@@ -243,12 +243,12 @@ def download_multiple_activities(activities_df, download_dir=None):
             EC.element_to_be_clickable((By.CSS_SELECTOR, "button[type='submit'].Button_primary___8ywh"))
         )
         driver.execute_script("arguments[0].click();", login_button_password_stage)
-        
+
         # Wait for the login to complete
         logger.info("Waiting for login to complete")
         WebDriverWait(driver, 30).until(EC.url_contains("dashboard"))
         logger.info("Login successful, starting activity downloads")
-        
+
         # Download each relevant activity file
         for index, row in activities_df.iterrows():
             activity_id = row["id"]
@@ -256,17 +256,17 @@ def download_multiple_activities(activities_df, download_dir=None):
             
             try:
                 logger.info("Downloading activity %d/%d: %s (ID: %s)", index + 1, len(activities_df), activity_name, activity_id)
-                
+
                 # Navigate to activity page
                 activity_url = f"https://www.strava.com/activities/{activity_id}"
                 driver.get(activity_url)
-                
+
                 # Click dropdown menu to reveal export options
                 dropdown_button = WebDriverWait(driver, 15).until(
                     EC.element_to_be_clickable((By.CSS_SELECTOR, "button.slide-menu.drop-down-menu"))
                 )
                 ActionChains(driver).move_to_element(dropdown_button).click().perform()
-                
+
                 # Click the export file button
                 export_link = WebDriverWait(driver, 15).until(
                     EC.element_to_be_clickable(
@@ -274,7 +274,7 @@ def download_multiple_activities(activities_df, download_dir=None):
                     )
                 )
                 ActionChains(driver).move_to_element(export_link).click().perform()
-                
+
                 # Wait for file to download
                 download_start_time = time.time()
                 file_path = None
@@ -295,14 +295,14 @@ def download_multiple_activities(activities_df, download_dir=None):
                 else:
                     downloaded_files.append(None)
                     logger.warning("Failed to download activity %s", activity_id)
-                
+
                 # Add short delay between downloads
                 time.sleep(2)
-                
+
             except Exception as e:
                 logger.error("Error downloading activity %s: %s", activity_id, e, exc_info=True)
                 downloaded_files.append(None)
-        
+
         return downloaded_files
 
     finally:
@@ -324,7 +324,7 @@ def get_virtual_ride_activities(days=ACTIVITY_DAYS_RANGE):
 if __name__ == "__main__":
     logger.info("Fetching activities from the past %s days", ACTIVITY_DAYS_RANGE)
     df = get_latest_activities()
-
+    
     if df.empty:
         print("No activities found")
     else:
