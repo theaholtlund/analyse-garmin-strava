@@ -64,7 +64,7 @@ ACTIVITY_TYPE_TRANSLATIONS = {
 def load_env(var_name, default=None):
     """Load an environment variable, log a warning if it is not set and return its value."""
     value = os.getenv(var_name, default)
-    if value in (None, ""):
+    if value in (None, "") and default is None:
         logger.warning("Environment variable '%s' is not set", var_name)
     return value
 
