@@ -39,6 +39,8 @@ def fetch_data(start_date, end_date, creds=None):
         logger.error("API error: %s", e, exc_info=True)
     except AssertionError:
         logger.error("Token or cache error for Garmin", exc_info=True)
+    except Exception as e:
+        logger.error("Unexpected error fetching Garmin data: %s", e, exc_info=True)
     return None, pd.DataFrame()
 
 
