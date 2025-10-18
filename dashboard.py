@@ -31,7 +31,7 @@ def extract_multisport_running(df):
 
     for _, row in df_multisport.iterrows():
         running_distance = 0
-        laps = row.get('laps', [])
+        laps = row.get('laps', []) or []
 
         # Sum distance of laps that are running
         for lap in laps:
@@ -151,7 +151,7 @@ def generate_dashboard():
     # Pie chart of run types
     ax_pie = fig.add_subplot(gs[2, 1])
     type_counts.plot.pie(ax=ax_pie, autopct='%1.1f%%', startangle=140, colors=ORANGE_PALETTE,
-                         wedgeprops=dict(width=0.5, edgecolor='w'))
+                        wedgeprops=dict(width=0.5, edgecolor='w'))
     ax_pie.set_ylabel("")
     ax_pie.set_title("Distribution of run types", fontsize=14)
     ax_pie.legend([k.replace("_", " ").title() for k in type_counts.index], bbox_to_anchor=(1, 0.5))

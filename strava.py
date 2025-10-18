@@ -325,7 +325,7 @@ def get_virtual_ride_activities(days=ACTIVITY_DAYS_RANGE):
 if __name__ == "__main__":
     logger.info("Fetching activities from the past %s days", ACTIVITY_DAYS_RANGE)
     df = get_latest_activities()
-    
+
     if df.empty:
         print("No activities found")
     else:
