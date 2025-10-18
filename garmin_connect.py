@@ -62,7 +62,10 @@ def prepare_dataframe(df):
     if df.empty:
         return df
 
-    # Ensure that the required columns exist
+    # Work on a copy but keep existing columns
+    df = df.copy()
+
+    # Ensure that the required columns exist, but do not remove others
     required_columns = ['activityId', 'activityType', 'startTimeLocal', 'duration', 'averageHR']
     for column in required_columns:
         if column not in df.columns:
