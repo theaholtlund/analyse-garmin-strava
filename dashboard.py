@@ -108,7 +108,11 @@ def generate_dashboard():
     logger.info("Total running distance this year: %.2f km", total_km)
 
     # Monthly summary
-    monthly_distances = df_running.groupby('month')['distance_km'].sum()
+    monthly_distances = df_running.groupby('month')['distance_km'].sum().sort_index()
+    if monthly_distances.empty:
+        logger.warning("No monthly distance data to plot")
+        return
+
     cumulative_distances = monthly_distances.cumsum()
     type_counts = df_running['activityTypeKey'].value_counts()
 
