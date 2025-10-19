@@ -153,6 +153,9 @@ def upload_activity_file_to_garmin(file_path, creds=None):
     except AssertionError:
         logger.error("Token or cache error for Garmin", exc_info=True)
         return False
+    except Exception as e:
+        logger.error("Unexpected error during upload: %s", e, exc_info=True)
+        return False
 
 
 def main():
