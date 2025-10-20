@@ -28,6 +28,7 @@ def safe_json_write(given_path, data, logger, indent=2):
                 tmp.unlink()
         except Exception:
             pass
+        logger.error("Failed to write JSON to %s: %s", path, e, exc_info=True)
         raise
 
 
