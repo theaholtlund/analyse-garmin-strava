@@ -23,6 +23,7 @@ def safe_json_write(given_path, data, logger, indent=2):
         logger.info("Wrote JSON to %s", path)
         return path
     except Exception as e:
+        # Clean up temporary file if something goes wrong
         try:
             if tmp.exists():
                 tmp.unlink()
