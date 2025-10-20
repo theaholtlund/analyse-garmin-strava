@@ -16,11 +16,20 @@ def safe_json_write(given_path, data, logger, indent=2):
     path = Path(given_path)
     ensure_dir(path.parent)
     tmp = path.with_suffix(path.suffix + ".tmp")
-    with open(tmp, "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=indent, ensure_ascii=False)
-    tmp.replace(path)
-    logger.info("Wrote JSON to %s", path)
-    return path
+    try:
+        with open(tmp, "w", encoding="utf-8") as f:
+            json.dump(data, f, indent=indent, ensure_ascii=False)
+        tmp.replace(path)
+        logger.info("Wrote JSON to %s", path)
+        return path
+    except Exception as e:
+        try:
+            if tmp.exists():
+                tmp.unlink()
+        except Exception:
+            pass
+        raise
+
 
 def save_debug_screenshot(driver, logger, DEBUG_SCREENSHOTS, label="screenshot"):
     """Capture screenshot with Selenium and save to current directory, if activated."""
