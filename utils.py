@@ -42,6 +42,8 @@ def save_debug_screenshot(driver, logger, DEBUG_SCREENSHOTS, label="screenshot")
         filename = f"{label}_{int(time.time())}.png"
         path = os.path.join(os.getcwd(), filename)
         driver.save_screenshot(path)
+        logger.info("Saved screenshot: %s", path)
         return path
     except Exception as e:
+        logger.warning("Failed to save debug screenshot: %s", e, exc_info=True)
         return None
