@@ -38,8 +38,10 @@ def save_debug_screenshot(driver, logger, DEBUG_SCREENSHOTS, label="screenshot")
     if str(DEBUG_SCREENSHOTS).upper() != "ON":
         return None
 
-    filename = f"{label}_{int(time.time())}.png"
-    path = os.path.join(os.getcwd(), filename)
-    driver.save_screenshot(path)
-    logger.info("Saved screenshot: %s", path)
-    return path
+    try:
+        filename = f"{label}_{int(time.time())}.png"
+        path = os.path.join(os.getcwd(), filename)
+        driver.save_screenshot(path)
+        return path
+    except Exception as e:
+        return None
