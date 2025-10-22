@@ -149,8 +149,10 @@ def generate_dashboard():
     ax_cum.set_title("Cumulative distance over the year", fontsize=14)
     ax_cum.grid(True)
     ax_cum.tick_params(axis='x', rotation=45)
+
+    offset = max(total_km * 0.01, 0.1)
     for x, y in zip(cumulative_distances.index.astype(str), cumulative_distances.values):
-        ax_cum.text(x, y + 5, f"{y:.1f}", ha='center', va='bottom', fontsize=10, fontweight='bold')
+        ax_cum.text(x, y + offset, f"{y:.1f}", ha='center', va='bottom', fontsize=10, fontweight='bold')
 
     # Pie chart of run types
     ax_pie = fig.add_subplot(gs[2, 1])
