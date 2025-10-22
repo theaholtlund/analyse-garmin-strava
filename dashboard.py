@@ -25,6 +25,7 @@ def extract_multisport_running(df):
     if df.empty:
         return pd.DataFrame()
 
+    # Normalise dataframe columns and add derived fields
     df = prepare_dataframe(df)
     df_multisport = df[df['activityTypeKey'] == 'multisport'].copy()
     running_records = []
@@ -150,6 +151,7 @@ def generate_dashboard():
     ax_cum.grid(True)
     ax_cum.tick_params(axis='x', rotation=45)
 
+    # Annotate with small offset based on total
     offset = max(total_km * 0.01, 0.1)
     for x, y in zip(cumulative_distances.index.astype(str), cumulative_distances.values):
         ax_cum.text(x, y + offset, f"{y:.1f}", ha='center', va='bottom', fontsize=10, fontweight='bold')
