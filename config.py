@@ -17,15 +17,15 @@ ensure_dir(PLOTS_DIR)
 OUTPUTS_DIR = "outputs"
 ensure_dir(OUTPUTS_DIR)
 
+# Path to logo used in plots
+LOGO_PATH = os.path.join(PLOTS_DIR, "app-logo-1.png")
+
 # Set up logging for information
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Detect whether running inside GitHub Actions
 RUNNING_THROUGH_GITHUB = os.getenv("GITHUB_ACTIONS", "").lower() == "true"
-
-# Path to logo used in plots
-LOGO_PATH = os.path.join(PLOTS_DIR, "app-logo-1.png")
 
 # Choose whether to include debugging screenshots
 DEBUG_SCREENSHOTS = os.getenv("DEBUG_SCREENSHOTS", "OFF")
