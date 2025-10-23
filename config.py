@@ -13,6 +13,10 @@ from utils import ensure_dir
 PLOTS_DIR = "graphics"
 ensure_dir(PLOTS_DIR)
 
+# Ensure project outputs directory exist
+OUTPUTS_DIR = "outputs"
+ensure_dir(OUTPUTS_DIR)
+
 # Set up logging for information
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
