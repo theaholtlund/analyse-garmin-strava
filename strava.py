@@ -8,6 +8,7 @@ import requests
 import json
 import tempfile
 import shutil
+from pathlib import Path
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
@@ -20,7 +21,7 @@ from utils import safe_json_write, save_debug_screenshot
 from config import logger, check_strava_credentials, ACTIVITY_DAYS_RANGE, DEBUG_SCREENSHOTS
 
 # Token storage path
-TOKEN_PATH = "strava_tokens.json"
+TOKEN_PATH = Path("strava_tokens.json")
 
 # Retrieve credentials and check at the same time
 creds = check_strava_credentials()
