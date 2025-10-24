@@ -100,7 +100,7 @@ def plot_line(df):
 
 def process_and_plot(df):
     """Process activities dataframe and produce plots and optional sensitive output."""
-    if df.empty:
+    if df is None or df.empty:
         print("No activities found in date range")
         return
 
@@ -175,7 +175,7 @@ def main():
 
     # Fetch today's activities for task creation
     _, df_today = fetch_data(today, today, garmin_creds)
-    if df_today.empty:
+    if df_today is None or df_today.empty:
         logger.info("No activities from Garmin found for today")
         return
 
