@@ -54,13 +54,6 @@ def main(days=ACTIVITY_DAYS_RANGE):
     else:
         print("All activities from Garmin Connect are present on Strava")
 
-    # Login to MOWL Cycling profile for proof of concept
-    try:
-        mowl_cycling_login()
-        logger.info("The login for MOWL Cycling was successful")
-    except Exception as e:
-        logger.error("The login for MOWL Cycling failed: %s", e, exc_info=True)
-
 
 if __name__ == "__main__":
     main()
