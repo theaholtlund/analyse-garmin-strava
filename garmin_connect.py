@@ -58,8 +58,8 @@ def insert_logo(fig):
 
 def prepare_dataframe(df):
     """Normalise dataframe columns and add derived fields used for plotting and tasks."""
-    if df.empty:
-        return df
+    if df is None or df.empty:
+        return pd.DataFrame() if df is None else df
 
     # Work on a copy but keep existing columns
     df = df.copy()
