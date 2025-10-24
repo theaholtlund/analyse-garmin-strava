@@ -85,10 +85,6 @@ pytest -v tests/test_task_tracker.py
 pytest -v tests/test_todoist_integration.py
 ```
 
-## GitHub Actions Workflows
-
-- [![Garmin Connect to Todoist Task](https://github.com/theaholtlund/analyse-garmin-strava/actions/workflows/garmin_task.yml/badge.svg)](https://github.com/theaholtlund/analyse-garmin-strava/actions/workflows/garmin_task.yml)
-
 ## Useful External Resources
 
 - [Garmin API Integration for Developers](https://help.validic.com/space/VCS/1681490020/Garmin+API+Integration+for+Developers): Contains list with the names of all Garmon Connect activities
