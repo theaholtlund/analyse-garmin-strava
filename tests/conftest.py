@@ -29,11 +29,9 @@ class MockGarmin:
             return False
         return True
 
-
 # Define fake Garmin exceptions, needed because Garmin Connect script imports them
 class DummyError(Exception):
     pass
-
 
 # Garmin Connect script imports Garmin and related exceptions from the Garmin Connect package
 # To avoid using real package, mock versions are injected so that test doubles are used instead on import

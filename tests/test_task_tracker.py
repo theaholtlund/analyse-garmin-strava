@@ -17,7 +17,7 @@ def temp_db(monkeypatch, tmp_path):
     return db_file
 
 def test_task_creation_and_upload_tracking(temp_db):
-    # Initialise a clean temporary DB
+    # Initialise a clean temporary database
     task_tracker.init_db()
 
     # Create tasks for Garmin Connect activities

@@ -23,6 +23,6 @@ def mock_todoist(monkeypatch):
     monkeypatch.setattr("todoist_integration.TodoistAPI", MockTodoistAPI)
 
 def test_create_task(mock_todoist):
-    task = create_todoist_task("Test Task")
+    task = create_todoist_task("Test task for Garmin Connect")
     assert task is not None
-    assert task.content == "Test Task"
+    assert task.content == "Test task for Garmin Connect"

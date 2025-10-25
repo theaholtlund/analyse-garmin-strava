@@ -9,11 +9,10 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")
 # Import modules after patching
 import garmin_connect
 
-
 # The actual unit tests start here
 def test_fetch_data_returns_dataframe(tmp_path):
     """
-    GIVEN valid Garmin credentials
+    GIVEN valid Garmi Connect credentials
     WHEN fetch_data() is called
     THEN it should return a non-empty DataFrame
          containing expected activity fields.
@@ -29,7 +28,7 @@ def test_fetch_data_returns_dataframe(tmp_path):
 
 def test_upload_activity_success(tmp_path):
     """
-    GIVEN valid Garmin credentials
+    GIVEN valid Garmin Connect credentials
     WHEN upload_activity_file_to_garmin() is called with a 'good' file
     THEN it should return True, meaning upload succeeded.
     """
