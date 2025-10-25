@@ -6,7 +6,6 @@ import pandas as pd
 from config import logger, ACTIVITY_DAYS_RANGE
 from garmin_connect import fetch_data
 from strava import get_latest_activities
-from mowl_cycling import mowl_cycling_login
 
 
 def normalise_garmin(df):
