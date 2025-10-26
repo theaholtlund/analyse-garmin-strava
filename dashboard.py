@@ -18,7 +18,7 @@ plt.rcParams.update({'figure.facecolor': 'white'})
 
 def extract_multisport_running(df):
     """Extract running distances from multisport activities and assign to correct month."""
-    if df.empty:
+    if df is None or df.empty:
         return pd.DataFrame()
 
     # Normalise dataframe columns and add derived fields
