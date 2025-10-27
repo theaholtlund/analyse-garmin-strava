@@ -214,6 +214,7 @@ def download_multiple_activities(activities_df, download_dir=None):
         email_field = WebDriverWait(driver, 20).until(
             EC.presence_of_element_located((By.ID, "mobile-email"))
         )
+        email_field.clear()
         email_field.send_keys(STRAVA_USER)
 
         # Click the login button to proceed to password stage
@@ -237,6 +238,7 @@ def download_multiple_activities(activities_df, download_dir=None):
         password_field = WebDriverWait(driver, 20).until(
             EC.presence_of_element_located((By.CSS_SELECTOR, "input[data-cy='password']"))
         )
+        password_field.clear()
         password_field.send_keys(STRAVA_PASS)
 
         # Click the final login button
