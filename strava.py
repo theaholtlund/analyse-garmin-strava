@@ -34,7 +34,7 @@ STRAVA_REDIRECT_URI = creds["STRAVA_REDIRECT_URI"]
 
 def save_tokens(token_data):
     """Save Strava API tokens to a local JSON file."""
-    safe_json_write(TOKEN_PATH, token_data, logger)
+    safe_json_write(str(TOKEN_PATH), token_data, logger)
 
 
 def authenticate():
@@ -144,7 +144,7 @@ def get_latest_activities(days=ACTIVITY_DAYS_RANGE):
 def get_stream(activity_id, types=("heartrate", "cadence", "distance", "time")):
     """Fetch detailed data streams for a given Strava activity."""
     token = load_tokens()
-    current_timestamp = datetime.datetime.now(datetime.timezone.utc).timestamp()
+    current_timestamp = int(datetime.datetime.now(datetime.timezone.utc).timestamp())
     if token.get("expires_at", 0) < current_timestamp:
         token = refresh_access(token)
 
