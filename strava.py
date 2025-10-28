@@ -179,6 +179,13 @@ def download_multiple_activities(activities_df, download_dir=None):
         "AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.0 Mobile/15E148 Safari/604.1"
     )
 
+    if download_dir is None:
+        download_dir = tempfile.mkdtemp()
+        cleanup_download_dir = True
+    else:
+        os.makedirs(download_dir, exist_ok=True)
+        cleanup_download_dir = False
+
     # Configure download preferences
     prefs = {
         "download.default_directory": download_dir,
