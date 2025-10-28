@@ -28,7 +28,7 @@ logger = logging.getLogger(__name__)
 RUNNING_THROUGH_GITHUB = os.getenv("GITHUB_ACTIONS", "").lower() == "true"
 
 # Choose whether to include debugging screenshots
-DEBUG_SCREENSHOTS = os.getenv("DEBUG_SCREENSHOTS", "OFF")
+DEBUG_SCREENSHOTS = os.getenv("DEBUG_SCREENSHOTS", "OFF").upper() == "ON"
 
 # Set how many days back to fetch activities
 ACTIVITY_DAYS_RANGE = int(os.getenv("ACTIVITY_DAYS_RANGE", 7))
