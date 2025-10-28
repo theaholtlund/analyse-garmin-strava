@@ -207,7 +207,7 @@ def download_multiple_activities(activities_df, download_dir=None):
             logger.info("Cookie banner accepted")
             time.sleep(1)
         except Exception:
-            logger.info("No cookie banner found or already accepted")
+            logger.debug("No cookie banner found or already accepted")
 
         # Enter e-mail for the login page
         logger.info("Entering e-mail on Strava login page")
