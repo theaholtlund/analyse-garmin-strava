@@ -313,7 +313,7 @@ def download_multiple_activities(activities_df, download_dir=None):
                     logger.warning("Failed to download activity %s", activity_id)
 
                 # Add short delay between downloads
-                time.sleep(2)
+                time.sleep(1.5)
 
             except Exception as e:
                 logger.error("Error downloading activity %s: %s", activity_id, e, exc_info=True)
