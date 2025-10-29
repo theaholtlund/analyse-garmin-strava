@@ -217,7 +217,7 @@ def download_multiple_activities(activities_df, download_dir=None):
             )
             cookie_accept.click()
             logger.info("Cookie banner accepted")
-            time.sleep(1)
+            time.sleep(2)
         except Exception:
             logger.debug("No cookie banner found or already accepted")
 
@@ -303,7 +303,7 @@ def download_multiple_activities(activities_df, download_dir=None):
                             break
                     if file_path or time.time() - download_start_time > 60:
                         break
-                    time.sleep(1)
+                    time.sleep(2)
 
                 if file_path:
                     downloaded_files.append(file_path)
