@@ -183,6 +183,7 @@ def download_multiple_activities(activities_df, download_dir=None):
         "AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.0 Mobile/15E148 Safari/604.1"
     )
 
+    # Prepare download directory
     if download_dir is None:
         download_dir = tempfile.mkdtemp()
         cleanup_download_dir = True
@@ -267,7 +268,7 @@ def download_multiple_activities(activities_df, download_dir=None):
         # Download each relevant activity file
         for index, row in activities_df.iterrows():
             activity_id = row["id"]
-            activity_name = row["name"]
+            activity_name = row.get("name", "")
             
             try:
                 logger.info("Downloading activity %d/%d: %s (ID: %s)", index + 1, len(activities_df), activity_name, activity_id)
