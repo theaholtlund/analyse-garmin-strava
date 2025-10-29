@@ -327,6 +327,11 @@ def download_multiple_activities(activities_df, download_dir=None):
             shutil.rmtree(user_data_dir, ignore_errors=True)
         except Exception as e:
             logger.warning("Could not remove temp Chrome profile: %s", e)
+        if cleanup_download_dir:
+            try:
+                shutil.rmtree(download_dir, ignore_errors=True)
+            except Exception:
+                pass
 
 
 def get_virtual_ride_activities(days=ACTIVITY_DAYS_RANGE):
