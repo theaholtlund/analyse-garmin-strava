@@ -81,9 +81,13 @@ def load_tokens():
             }
 
     # Use local token file if it exists
-    if os.path.exists(TOKEN_PATH):
-        with open(TOKEN_PATH) as f:
-            return json.load(f)
+    if TOKEN_PATH.exists():
+        try:
+            with TOKEN_PATH.open() as f:
+                return json.load(f)
+        except Exception:
+            logger.warning("Failed to parse token file, re-authenticating")
+            return authenticate()
 
     # Fallback to interactive authenticate, only works locally
     return authenticate()
