@@ -21,7 +21,9 @@ ensure_dir(OUTPUTS_DIR)
 LOGO_PATH = os.path.join(PLOTS_DIR, "app-logo-1.png")
 
 # Set up logging for information
-logging.basicConfig(level=logging.INFO)
+LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO").upper()
+numeric_level = getattr(logging, LOG_LEVEL, logging.INFO)
+logging.basicConfig(level=numeric_level)
 logger = logging.getLogger(__name__)
 
 # Detect whether running inside GitHub Actions
