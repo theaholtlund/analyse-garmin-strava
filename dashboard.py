@@ -128,7 +128,7 @@ def generate_dashboard():
     # Monthly distance bar
     ax_monthly = fig.add_subplot(gs[1, :])
     sns.barplot(x=monthly_distances.index.astype(str), y=monthly_distances.values,
-                palette=ORANGE_PALETTE[:len(monthly_distances)], ax=ax_monthly)
+                palette=ORANGE_PALETTE[:max(1, len(monthly_distances))], ax=ax_monthly)
     ax_monthly.set_ylabel("Distance (km)")
     ax_monthly.set_xlabel("Month")
     ax_monthly.set_title("Monthly running distance", fontsize=14)
