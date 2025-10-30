@@ -46,6 +46,7 @@ def extract_multisport_running(df):
     if running_records:
         df_running_multisport = pd.DataFrame(running_records)
         df_running_multisport['distance_km'] = df_running_multisport['distance'] / 1000
+        df_running_multisport['startTimeLocal'] = pd.to_datetime(df_running_multisport['startTimeLocal'], errors='coerce')
         df_running_multisport['month'] = df_running_multisport['startTimeLocal'].dt.to_period('M')
         logger.info("Extracted running distances from %d multisport activities", len(df_running_multisport))
         return df_running_multisport
