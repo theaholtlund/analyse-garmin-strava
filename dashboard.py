@@ -162,8 +162,8 @@ def generate_dashboard():
     ax_pie.legend([k.replace("_", " ").title() for k in type_counts.index], bbox_to_anchor=(1, 0.5))
 
     # Save and show
-    dashboard_path = PLOTS_DIR + "/run_distance.png"
-    fig.savefig(dashboard_path, dpi=150)
+    dashboard_path = str(OUTPUTS_DIR / "run_distance.png")
+    fig.savefig(dashboard_path, dpi=150, bbox_inches='tight')
     plt.show()
     logger.info("Dashboard saved to %s", dashboard_path)
 
