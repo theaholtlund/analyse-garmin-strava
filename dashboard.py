@@ -56,7 +56,7 @@ def extract_multisport_running(df):
 
 def filter_running_activities(df):
     """Filter all running activities including running segments from multisport."""
-    if df.empty:
+    if df is None or df.empty:
         logger.info("Received empty dataframe in filter_running_activities")
         return pd.DataFrame()
 
