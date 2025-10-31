@@ -81,7 +81,7 @@ def filter_running_activities(df):
     return df_running
 
 
-def generate_dashboard():
+def generate_dashboard(show_plot=True):
     """Fetch activities from Garmin Connect and generate running dashboard."""
     logger.info("Starting dashboard generation")
     garmin_creds = check_garmin_credentials()
@@ -164,7 +164,9 @@ def generate_dashboard():
     # Save and show
     dashboard_path = str(OUTPUTS_DIR / "run_distance.png")
     fig.savefig(dashboard_path, dpi=150, bbox_inches='tight')
-    plt.show()
+    if show_plot and not RUNNING_THROUGH_GITHUB:
+        plt.show()
+    plt.close(fig)
     logger.info("Dashboard saved to %s", dashboard_path)
 
 
