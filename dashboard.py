@@ -164,14 +164,11 @@ def generate_dashboard(show_plot=True):
     # Save and show
     dashboard_path = str(OUTPUTS_DIR / "run_distance.png")
     fig.savefig(dashboard_path, dpi=150, bbox_inches='tight')
-    if show_plot and not RUNNING_THROUGH_GITHUB:
+    if show_plot:
         plt.show()
     plt.close(fig)
     logger.info("Dashboard saved to %s", dashboard_path)
 
 
 if __name__ == "__main__":
-    if RUNNING_THROUGH_GITHUB:
-        logger.warning("Dashboard not generated when running in GitHub Actions")
-    else:
         generate_dashboard()
