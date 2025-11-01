@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 # Import shared configuration and functions from other scripts
-from config import logger, check_garmin_credentials, RUNNING_THROUGH_GITHUB, OUTPUTS_DIR
+from config import logger, check_garmin_credentials, OUTPUTS_DIR
 from garmin_connect import fetch_data, prepare_dataframe
 
 
