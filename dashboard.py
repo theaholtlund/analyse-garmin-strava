@@ -101,11 +101,11 @@ def generate_dashboard(show_plot=True):
         logger.warning("No running activities found for this year")
         return
 
-    # Total km count
+    # Total kilometer count
     total_km = df_running['distance_km'].sum()
     logger.info("Total running distance this year: %.2f km", total_km)
 
-    # Monthly summary
+    # Monthly kilometer summary
     monthly_distances = df_running.groupby('month')['distance_km'].sum().sort_index()
     if monthly_distances.empty:
         logger.warning("No monthly distance data to plot")
@@ -117,7 +117,7 @@ def generate_dashboard(show_plot=True):
     fig = plt.figure(constrained_layout=True, figsize=(14, 10))
     gs = fig.add_gridspec(3, 2)
 
-    # Total km bar
+    # Total kilometer bar
     ax_total = fig.add_subplot(gs[0, 0])
     sns.barplot(x=["Total km run"], y=[total_km], palette=ORANGE_PALETTE[:1], ax=ax_total)
     ax_total.set_ylabel("Distance (km)")
@@ -161,7 +161,7 @@ def generate_dashboard(show_plot=True):
     ax_pie.set_title("Distribution of run types", fontsize=14)
     ax_pie.legend([k.replace("_", " ").title() for k in type_counts.index], bbox_to_anchor=(1, 0.5))
 
-    # Save and show
+    # Save and show the plot
     dashboard_path = str(OUTPUTS_DIR / "run_distance.png")
     fig.savefig(dashboard_path, dpi=150, bbox_inches='tight')
     if show_plot:
