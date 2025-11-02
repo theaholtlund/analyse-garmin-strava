@@ -10,7 +10,6 @@ import seaborn as sns
 from config import logger, check_garmin_credentials, OUTPUTS_DIR
 from garmin_connect import fetch_data, prepare_dataframe
 
-
 # Orange colour palette
 ORANGE_PALETTE = ["#FF8C42", "#FF6700", "#FF9505", "#FFA347", "#FFB366", "#FFC680", "#FFD699"]
 
@@ -158,7 +157,7 @@ def generate_dashboard(show_plot=True):
     # Pie chart of run types
     ax_pie = fig.add_subplot(gs[2, 1])
     type_counts.plot.pie(ax=ax_pie, autopct='%1.1f%%', startangle=140, colors=ORANGE_PALETTE,
-                        wedgeprops=dict(width=0.5, edgecolor='w'))
+                         wedgeprops=dict(width=0.5, edgecolor='w'))
     ax_pie.set_ylabel("")
     ax_pie.set_title("Distribution of run types", fontsize=14)
     ax_pie.legend([k.replace("_", " ").title() for k in type_counts.index], bbox_to_anchor=(1, 0.5))
