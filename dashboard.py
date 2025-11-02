@@ -1,3 +1,5 @@
+# NB: Currently does not include running distance from multisport activities, working to fix this
+
 # Import required libraries
 import datetime
 import pandas as pd
