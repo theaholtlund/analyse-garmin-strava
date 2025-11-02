@@ -1,6 +1,7 @@
 # Import required libraries
 import os
 import logging
+from pathlib import Path
 from dotenv import load_dotenv
 
 # Load environment variables from environment file
@@ -14,7 +15,7 @@ PLOTS_DIR = "graphics"
 ensure_dir(PLOTS_DIR)
 
 # Ensure project outputs directory exist
-OUTPUTS_DIR = "outputs"
+OUTPUTS_DIR = Path("outputs")
 ensure_dir(OUTPUTS_DIR)
 
 # Path to logo used in plots
