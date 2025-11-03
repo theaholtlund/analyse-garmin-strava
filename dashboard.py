@@ -33,9 +33,14 @@ def extract_multisport_running(df):
 
         # Sum distance of laps that are running
         for lap in laps:
-            lap_type = lap.get('activityTypeKey') or lap.get('activityType', '').lower()
-            if lap_type == 'running':
-                running_distance += lap.get('distance', 0)
+            lap_type = None
+            if isinstance(lap.get('activityType'), dict):
+                lap_type = lap.get('activityType', {}).get('typeKey')
+            else:
+                lap_type = lap.get('activityTypeKey') or (str(lap.get('activityType') or "")).lower()
+
+            if lap_type == 'running' or (isinstance(lap_type, str) and lap_type.lower() == 'running'):
+                running_distance += lap.get('distance', 0) or 0
 
         if running_distance > 0:
             running_records.append({
