@@ -134,15 +134,20 @@ def generate_dashboard(show_plot=True):
 
     # Monthly distance bar
     ax_monthly = fig.add_subplot(gs[1, :])
-    sns.barplot(x=monthly_distances.index.astype(str), y=monthly_distances.values,
-                palette=ORANGE_PALETTE[:max(1, len(monthly_distances))], ax=ax_monthly)
+    x_vals = list(range(len(monthly_distances)))
+    y_vals = monthly_distances.values
+    month_labels = [m.strftime('%b') for m in monthly_distances.index.to_timestamp()]
+    colors = ORANGE_PALETTE * ((len(monthly_distances) // len(ORANGE_PALETTE)) + 1)
+    colors = colors[:len(monthly_distances)]
+
+    ax_monthly.bar(x_vals, y_vals, color=colors)
+    ax_monthly.set_xticks(x_vals)
+    ax_monthly.set_xticklabels(month_labels, rotation=45)
     ax_monthly.set_ylabel("Distance (km)")
     ax_monthly.set_xlabel("Month")
     ax_monthly.set_title("Monthly running distance", fontsize=14)
-    for p in ax_monthly.patches:
-        ax_monthly.annotate(f"{p.get_height():.1f}", (p.get_x() + p.get_width() / 2., p.get_height()),
-                            ha='center', va='bottom', fontsize=10)
-    ax_monthly.tick_params(axis='x', rotation=45)
+    for x, y in zip(x_vals, y_vals):
+        ax_monthly.text(x, y, f"{y:.1f}", ha='center', va='bottom', fontsize=10)
 
     # Cumulative distance line
     ax_cum = fig.add_subplot(gs[2, 0])
