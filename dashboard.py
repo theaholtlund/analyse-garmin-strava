@@ -151,13 +151,15 @@ def generate_dashboard(show_plot=True):
 
     # Cumulative distance line
     ax_cum = fig.add_subplot(gs[2, 0])
-    sns.lineplot(x=cumulative_distances.index.astype(str), y=cumulative_distances.values,
-                 marker="o", color="#FF6700", linewidth=2.5, ax=ax_cum)
+    x_cum = x_vals
+    y_cum = cumulative_distances.values
+    ax_cum.plot(x_cum, y_cum, marker="o", color="#FF6700", linewidth=2.5)
+    ax_cum.set_xticks(x_cum)
+    ax_cum.set_xticklabels(month_labels, rotation=45)
     ax_cum.set_ylabel("Cumulative distance (km)")
     ax_cum.set_xlabel("Month")
     ax_cum.set_title("Cumulative distance over the year", fontsize=14)
     ax_cum.grid(True)
-    ax_cum.tick_params(axis='x', rotation=45)
 
     # Annotate with small offset based on total
     offset = max(total_km * 0.01, 0.1)
