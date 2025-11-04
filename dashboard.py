@@ -163,7 +163,7 @@ def generate_dashboard(show_plot=True):
 
     # Annotate with small offset based on total
     offset = max(total_km * 0.01, 0.1)
-    for x, y in zip(cumulative_distances.index.astype(str), cumulative_distances.values):
+    for x, y in zip(x_cum, y_cum):
         ax_cum.text(x, y + offset, f"{y:.1f}", ha='center', va='bottom', fontsize=10, fontweight='bold')
 
     # Pie chart of run types
