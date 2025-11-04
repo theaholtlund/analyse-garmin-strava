@@ -79,7 +79,10 @@ def filter_running_activities(df):
     # Some rows might miss distance, ensure column exists
     df_running['distance'] = df_running.get('distance', 0).fillna(0)
     df_running['distance_km'] = df_running['distance'] / 1000
-    df_running['month'] = df_running['startTimeLocal'].dt.to_period('M')
+
+    # Defensive parse of startTimeLocal to month
+    if 'startTimeLocal' in df_running.columns:
+        df_running['month'] = df_running['startTimeLocal'].dt.to_period('M')
 
     # Include running from multisport
     df_multisport_running = extract_multisport_running(df)
