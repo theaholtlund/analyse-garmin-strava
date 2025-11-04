@@ -75,6 +75,9 @@ def filter_running_activities(df):
 
     # Standard running activities
     df_running = df[df['activityTypeKey'].isin(running_keys)].copy()
+
+    # Some rows might miss distance, ensure column exists
+    df_running['distance'] = df_running.get('distance', 0).fillna(0)
     df_running['distance_km'] = df_running['distance'] / 1000
     df_running['month'] = df_running['startTimeLocal'].dt.to_period('M')
 
