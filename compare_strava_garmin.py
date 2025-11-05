@@ -28,6 +28,8 @@ def normalise_strava(df):
 
 def main(days=ACTIVITY_DAYS_RANGE):
     """Compare activities from Garmin Connect to Strava by start time and report missing items."""
+    logger.info("Comparing activities from Garmin Connect to Strava for the past %d days", days)
+    
     # Fetch the activities from Garmin
     end_date = datetime.date.today()
     start_date = end_date - datetime.timedelta(days=days)
