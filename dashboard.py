@@ -82,7 +82,9 @@ def filter_running_activities(df):
 
     # Defensive parse of startTimeLocal to month
     if 'startTimeLocal' in df_running.columns:
-        df_running['month'] = df_running['startTimeLocal'].dt.to_period('M')
+        df_running['month'] = pd.to_datetime(df_running['startTimeLocal'], errors='coerce').dt.to_period('M')
+    else:
+        df_running['month'] = pd.NaT
 
     # Include running from multisport
     df_multisport_running = extract_multisport_running(df)
