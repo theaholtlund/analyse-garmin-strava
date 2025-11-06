@@ -76,7 +76,7 @@ The file holds functions related to keeping track of activities synchronised fro
 python strava_garmin_sync.py
 ```
 
-Dashboard for running from Garmin Connect:
+Dashboard for running metrics from Garmin Connect:
 Running this script will display a dashboard with various metrics related to running activities, distances and statistics for the current year so far.
 
 ```bash
