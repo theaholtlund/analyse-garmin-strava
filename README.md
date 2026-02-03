@@ -5,7 +5,7 @@ Work in progress. Project working with Strava and Garmin Connect data in various
 ## Ideas for Later, Components to Implement
 
 - Implement functionality for dashboard on total distance ran this year, including from multisport activities?
-- Allow user to send some report regarding total distance ran this year so far at given time intervals, for example every morning?
+- Allow user to send some report regarding total distance ran this year so far at given time intervals, for example every morning? Include average per day that year so far, as well as total (helpful in terms of personal goal)?
 - Include total distance for other activity types in dashboard too?
 - Add to task in Todoist if one already exists, instead of creating new one?
 - Implement working functionality in GitHub workflow to upload cycling activities to Garmin Connect?
