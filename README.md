@@ -17,6 +17,7 @@ Work in progress. Project working with Strava and Garmin Connect data in various
 
 - Python ≥ 3.10, as this is required by GarminConnect
 - ChromeDriver, which can be installed for example via Homebrew
+- Create a Google Account app password for sending e-mails via Google Account → Security → App passwords
 - Strava developer app, created at <https://www.strava.com/settings/api>
 
 ## Create a Virtual Environment
