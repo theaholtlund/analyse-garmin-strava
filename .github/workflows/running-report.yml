@@ -1,0 +1,6 @@
+name: Weekly Running Report
+
+on:
+  # schedule:
+  # - cron: "0 8 * * 0" # 09:00 Oslo
+  workflow_dispatch:
