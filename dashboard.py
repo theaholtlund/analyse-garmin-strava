@@ -103,6 +103,26 @@ def generate_weekly_running_status():
     today = datetime.date.today()
     start_of_year = datetime.date(today.year, 1, 1)
 
+    _, df_all = fetch_data(start_of_year, today, garmin_creds)
+    df_running = filter_running_activities(df_all)
+    total_km = df_running['distance_km'].sum()
+
+    weeks_passed = max(today.isocalendar().week, 1)
+    expected_km_by_now = (goal_km / 52) * weeks_passed
+    delta_km = total_km - expected_km_by_now
+
+    status = {
+        "date": today.isoformat(),
+        "year": today.year,
+        "total_km": round(total_km, 1),
+        "goal_km": goal_km,
+        "expected_km_by_now": round(expected_km_by_now, 1),
+        "delta_km": round(delta_km, 1),
+        "weeks_passed": weeks_passed
+    }
+
+    return status
+
 
 def generate_dashboard(show_plot=True):
     """Fetch activities from Garmin Connect and generate running dashboard."""
