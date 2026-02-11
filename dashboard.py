@@ -105,6 +105,10 @@ def generate_weekly_running_status():
 
     _, df_all = fetch_data(start_of_year, today, garmin_creds)
     df_running = filter_running_activities(df_all)
+    if df_running.empty:
+        logger.warning("No running activities found for weekly report")
+        return None
+
     total_km = df_running['distance_km'].sum()
 
     weeks_passed = max(today.isocalendar().week, 1)
