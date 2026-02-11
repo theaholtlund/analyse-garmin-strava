@@ -95,6 +95,15 @@ def filter_running_activities(df):
     return df_running
 
 
+def generate_weekly_running_status():
+    logger.info("Generating weekly running status report")
+
+    garmin_creds = check_garmin_credentials()
+
+    today = datetime.date.today()
+    start_of_year = datetime.date(today.year, 1, 1)
+
+
 def generate_dashboard(show_plot=True):
     """Fetch activities from Garmin Connect and generate running dashboard."""
     logger.info("Starting dashboard generation")
