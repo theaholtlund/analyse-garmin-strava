@@ -12,3 +12,8 @@ def send_email(subject, body):
     smtp_port = int(load_env("SMTP_PORT", 587))
     smtp_user = load_env("SMTP_USER")
     smtp_pass = load_env("SMTP_PASS")
+
+    with smtplib.SMTP(smtp_host, smtp_port) as server:
+        server.starttls()
+        server.login(smtp_user, smtp_pass)
+        server.send_message(msg)
