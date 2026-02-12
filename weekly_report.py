@@ -17,3 +17,20 @@ def send_email(subject, body):
         server.starttls()
         server.login(smtp_user, smtp_pass)
         server.send_message(msg)
+
+
+def main():
+
+    status = generate_weekly_running_status()
+
+    body = f"""
+    Weekly running status – {status['year']}
+
+    Total distance so far: {status['total_km']} km
+    Yearly goal: {status['goal_km']} km
+
+    Expected by now: {status['expected_km_by_now']} km
+    Difference: {status['delta_km']} km
+
+    Weeks completed: {status['weeks_passed']}
+    """
