@@ -96,6 +96,7 @@ def filter_running_activities(df):
 
 
 def generate_weekly_running_status():
+    """Generate a weekly status report for yearly running progress, intended to be sent every Sunday."""
     logger.info("Generating weekly running status report")
 
     garmin_creds = check_garmin_credentials()
