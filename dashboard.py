@@ -104,6 +104,9 @@ def generate_weekly_running_status():
     start_of_year = datetime.date(today.year, 1, 1)
 
     _, df_all = fetch_data(start_of_year, today, garmin_creds)
+    if df_all is None or df_all.empty:
+        return None
+
     df_running = filter_running_activities(df_all)
     if df_running.empty:
         logger.warning("No running activities found for weekly report")
