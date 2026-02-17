@@ -34,3 +34,8 @@ def main():
 
     Weeks completed: {status['weeks_passed']}
     """
+
+    send_email(
+        subject=f"Running status week {status['weeks_passed']}",
+        body=body.strip()
+    )
