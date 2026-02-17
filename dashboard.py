@@ -130,6 +130,11 @@ def generate_weekly_running_status(goal_km=3650):
         "weeks_passed": weeks_passed
     }
 
+    logger.info(
+        "Weekly status: %.1f km run, %.1f km vs plan",
+        status["total_km"], status["delta_km"]
+    )
+
     return status
 
 
