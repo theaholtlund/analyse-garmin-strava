@@ -95,7 +95,7 @@ def filter_running_activities(df):
     return df_running
 
 
-def generate_weekly_running_status():
+def generate_weekly_running_status(goal_km=3650):
     """Generate a weekly status report for yearly running progress, intended to be sent every Sunday."""
     logger.info("Generating weekly running status report")
 
