@@ -1,3 +1,5 @@
+# Import required libraries
+import smtplib
 from email.message import EmailMessage
 from config import load_env
 
