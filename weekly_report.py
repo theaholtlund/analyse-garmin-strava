@@ -21,6 +21,8 @@ def send_email(subject, body):
         server.login(smtp_user, smtp_pass)
         server.send_message(msg)
 
+    logger.info("Weekly running report email sent")
+
 
 def main():
 
