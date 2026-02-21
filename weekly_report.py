@@ -28,6 +28,8 @@ def send_email(subject, body):
 def main():
     """Generate weekly running status and e-mail it to configured recipient."""
     status = generate_weekly_running_status()
+    if not status:
+        return
 
     body = f"""
     Weekly running status – {status['year']}
