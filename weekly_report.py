@@ -1,7 +1,8 @@
 # Import required libraries
 import smtplib
 from email.message import EmailMessage
-from config import load_env
+from config import logger, load_env
+
 
 def send_email(subject, body):
     """Send plain-text e-mail using SMTP credentials from environment variables."""
