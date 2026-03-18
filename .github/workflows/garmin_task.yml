@@ -11,10 +11,10 @@ jobs:
 
     steps:
       - name: Checkout the repo # Ensure the workflow has access to the code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up Python # Make sure Python is available in GitHub runner environment
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.11"
 
@@ -24,7 +24,7 @@ jobs:
           pip install --requirement requirements.txt
 
       - name: Restore the task tracker cache # Restore database file from cache if available, track tasks already created
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: sync_tracker.db
           key: garmin-tasks-db-${{ github.run_id }} # Use unique cache key per run to force saving updated database
