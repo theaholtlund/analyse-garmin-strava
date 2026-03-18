@@ -1,9 +1,12 @@
 # Import required libraries
+import contextlib
+import os
 import time
 import datetime
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
+from requests.exceptions import RetryError
 from garminconnect import Garmin, GarminConnectAuthenticationError, GarminConnectConnectionError, GarminConnectTooManyRequestsError
 
 # Import shared configuration and functions from other scripts
@@ -15,6 +18,11 @@ from utils import ensure_dir
 # Define global variable for API
 API = None
 
+GARMIN_LOGIN_MAX_ATTEMPTS = int(os.getenv("GARMIN_LOGIN_MAX_ATTEMPTS", "6"))
+GARMIN_LOGIN_BACKOFF_SECONDS = int(os.getenv("GARMIN_LOGIN_BACKOFF_SECONDS", "30"))
+GARMIN_LOGIN_MAX_BACKOFF_SECONDS = int(os.getenv("GARMIN_LOGIN_MAX_BACKOFF_SECONDS", "900"))
+GARMIN_TOKENSTORE_ENV = "GARMINTOKENS"
+
 # Ensure project graphics directory exist
 PLOTS_DIR = "graphics"
 ensure_dir(PLOTS_DIR)
@@ -23,6 +31,128 @@ ensure_dir(PLOTS_DIR)
 def translate_activity_type(type_key):
     """Return the Norwegian activity name for a given Garmin Connect type key."""
     return ACTIVITY_TYPE_TRANSLATIONS.get(type_key.lower(), "annet")
+
+
+def _exception_chain(exc):
+    """Yield an exception and its chained causes/contexts once each."""
+    current = exc
+    seen = set()
+    while current is not None and id(current) not in seen:
+        yield current
+        seen.add(id(current))
+        current = current.__cause__ or current.__context__
+
+
+def _is_rate_limit_error(exc):
+    """Return True when Garmin or Requests surfaced a 429/rate limit failure."""
+    if isinstance(exc, GarminConnectTooManyRequestsError):
+        return True
+
+    indicators = ("429", "too many requests", "too many 429", "rate limit")
+    return any(any(token in str(item).lower() for token in indicators) for item in _exception_chain(exc))
+
+
+def _get_tokenstore_path():
+    """Return the configured Garmin token directory if it points to a filesystem path."""
+    tokenstore = os.getenv(GARMIN_TOKENSTORE_ENV)
+    if not tokenstore or len(tokenstore) > 512:
+        return None
+    return os.path.expanduser(tokenstore)
+
+
+def _has_tokenstore_files(tokenstore_path):
+    """Return True when both Garmin token files exist in the cache directory."""
+    if not tokenstore_path:
+        return False
+
+    oauth1_path = os.path.join(tokenstore_path, "oauth1_token.json")
+    oauth2_path = os.path.join(tokenstore_path, "oauth2_token.json")
+    return os.path.isfile(oauth1_path) and os.path.isfile(oauth2_path)
+
+
+@contextlib.contextmanager
+def _without_tokenstore_env():
+    """Temporarily disable Garmin token loading from the environment."""
+    original = os.environ.pop(GARMIN_TOKENSTORE_ENV, None)
+    try:
+        yield
+    finally:
+        if original is not None:
+            os.environ[GARMIN_TOKENSTORE_ENV] = original
+
+
+def _persist_tokenstore(api, tokenstore_path):
+    """Persist Garmin auth tokens to disk when a token store path is configured."""
+    if not tokenstore_path:
+        return
+
+    try:
+        ensure_dir(tokenstore_path)
+        api.garth.dump(tokenstore_path)
+        logger.info("Persisted Garmin token cache to %s", tokenstore_path)
+    except Exception as exc:
+        logger.warning("Failed to persist Garmin token cache to %s: %s", tokenstore_path, exc)
+
+
+def _login_with_retry(api, username):
+    """Authenticate with Garmin, backing off when Garmin rate limits login."""
+    tokenstore_path = _get_tokenstore_path()
+    use_cached_tokens = _has_tokenstore_files(tokenstore_path)
+
+    for attempt in range(1, GARMIN_LOGIN_MAX_ATTEMPTS + 1):
+        try:
+            if use_cached_tokens:
+                api.login()
+            else:
+                with _without_tokenstore_env():
+                    api.login()
+
+            _persist_tokenstore(api, tokenstore_path)
+            logger.info("Authenticated as %s", username)
+            return
+        except (
+            AssertionError,
+            FileNotFoundError,
+            GarminConnectConnectionError,
+            GarminConnectAuthenticationError,
+        ) as exc:
+            if use_cached_tokens:
+                logger.warning(
+                    "Cached Garmin tokens could not be reused. Falling back to password login: %s",
+                    exc,
+                )
+                use_cached_tokens = False
+                continue
+            raise
+        except Exception as exc:
+            if use_cached_tokens and not _is_rate_limit_error(exc):
+                logger.warning(
+                    "Cached Garmin tokens were rejected. Falling back to password login: %s",
+                    exc,
+                )
+                use_cached_tokens = False
+                continue
+
+            if not _is_rate_limit_error(exc):
+                raise
+
+            if attempt == GARMIN_LOGIN_MAX_ATTEMPTS:
+                raise RuntimeError(
+                    "Garmin Connect login is rate limited (HTTP 429). "
+                    "Retry later or reuse cached Garmin tokens."
+                ) from exc
+
+            sleep_time = min(
+                GARMIN_LOGIN_BACKOFF_SECONDS * (2 ** (attempt - 1)),
+                GARMIN_LOGIN_MAX_BACKOFF_SECONDS,
+            )
+            logger.warning(
+                "Garmin login rate limited (attempt %s/%s). Sleeping %s seconds before retrying.",
+                attempt,
+                GARMIN_LOGIN_MAX_ATTEMPTS,
+                sleep_time,
+            )
+            time.sleep(sleep_time)
 
 
 def get_api(creds=None):
@@ -36,19 +166,9 @@ def get_api(creds=None):
         creds = check_garmin_credentials()
 
     api = Garmin(creds["GARMIN_USER"], creds["GARMIN_PASS"])
-
-    for i in range(5):
-        try:
-            api.login()
-            logger.info("Authenticated as %s", creds["GARMIN_USER"])
-            API = api
-            return api
-        except GarminConnectTooManyRequestsError:
-            sleep_time = 2 ** i
-            logger.warning("Rate limited. Sleeping %s seconds...", sleep_time)
-            time.sleep(sleep_time)
-
-    raise Exception("Failed to login after retries")
+    _login_with_retry(api, creds["GARMIN_USER"])
+    API = api
+    return api
 
 
 def fetch_data(start_date, end_date, creds=None):
@@ -63,8 +183,15 @@ def fetch_data(start_date, end_date, creds=None):
         df = pd.DataFrame(activities)
         return api, df
 
-    except (GarminConnectAuthenticationError, GarminConnectConnectionError, GarminConnectTooManyRequestsError) as e:
-        if "429" in str(e):
+    except RuntimeError:
+        raise
+    except (
+        GarminConnectAuthenticationError,
+        GarminConnectConnectionError,
+        GarminConnectTooManyRequestsError,
+        RetryError,
+    ) as e:
+        if _is_rate_limit_error(e):
             raise RuntimeError("Garmin Connect API rate limit exceeded, 429 error") from e
         raise RuntimeError("Error related to Garmin Connect connection or authentication occurred") from e
     except Exception as e:
@@ -165,16 +292,22 @@ def upload_activity_file_to_garmin(file_path, creds=None):
     if creds is None:
         creds = check_garmin_credentials()
     try:
-        api = Garmin(creds["GARMIN_USER"], creds["GARMIN_PASS"])
-        api.login()
-        logger.info("Authenticated for Garmin Connect API")
+        api = get_api(creds)
         success = api.upload_activity(file_path)
         if success:
             logger.info("Successfully uploaded activity file: %s", file_path)
         else:
             logger.error("Failed to upload activity file: %s", file_path)
         return success
-    except (GarminConnectAuthenticationError, GarminConnectConnectionError, GarminConnectTooManyRequestsError) as e:
+    except RuntimeError as e:
+        logger.error("Failed to upload activity to Garmin Connect: %s", e, exc_info=True)
+        return False
+    except (
+        GarminConnectAuthenticationError,
+        GarminConnectConnectionError,
+        GarminConnectTooManyRequestsError,
+        RetryError,
+    ) as e:
         logger.error("Failed to upload activity to Garmin Connect: %s", e, exc_info=True)
         return False
     except AssertionError:
