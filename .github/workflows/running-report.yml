@@ -1,6 +1,11 @@
 name: Weekly Running Report
 
 on:
-  # schedule:
-  # - cron: "0 8 * * 0" # 09:00 Oslo
-  workflow_dispatch:
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Test message
+        run: echo "this is a test"
