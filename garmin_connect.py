@@ -63,12 +63,14 @@ def fetch_data(start_date, end_date, creds=None):
         df = pd.DataFrame(activities)
         return api, df
 
-    except AssertionError:
-        logger.error("Token or cache error for Garmin", exc_info=True)
+    except (GarminConnectAuthenticationError, GarminConnectConnectionError, GarminConnectTooManyRequestsError) as e:
+        if "429" in str(e):
+            raise RuntimeError("Garmin Connect API rate limit exceeded, 429 error") from e
+        raise RuntimeError("Error related to Garmin Connect connection or authentication occurred") from e
     except Exception as e:
         logger.error("Unexpected error fetching Garmin data: %s", e, exc_info=True)
-    return None, pd.DataFrame()
-
+        raise RuntimeError(f"Unexpected error fetching Garmin data: {e}") from e
+    
 
 def insert_logo(fig):
     """Insert application logo into the given figure if available."""
