@@ -1,4 +1,5 @@
 # Import required libraries
+import time
 import datetime
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -11,6 +12,9 @@ from todoist_integration import create_todoist_task
 from task_tracker import init_db, task_exists, mark_task_created
 from utils import ensure_dir
 
+# Define global variable for API
+API = None
+
 # Ensure project graphics directory exist
 PLOTS_DIR = "graphics"
 ensure_dir(PLOTS_DIR)
@@ -21,21 +25,44 @@ def translate_activity_type(type_key):
     return ACTIVITY_TYPE_TRANSLATIONS.get(type_key.lower(), "annet")
 
 
+def get_api(creds=None):
+    """Return a cached Garmin API instance, to only login once per run."""
+    global API
+
+    if API is not None:
+        return API
+
+    if creds is None:
+        creds = check_garmin_credentials()
+
+    api = Garmin(creds["GARMIN_USER"], creds["GARMIN_PASS"])
+
+    for i in range(5):
+        try:
+            api.login()
+            logger.info("Authenticated as %s", creds["GARMIN_USER"])
+            API = api
+            return api
+        except GarminConnectTooManyRequestsError:
+            sleep_time = 2 ** i
+            logger.warning("Rate limited. Sleeping %s seconds...", sleep_time)
+            time.sleep(sleep_time)
+
+    raise Exception("Failed to login after retries")
+
+
 def fetch_data(start_date, end_date, creds=None):
     """Fetch activities from Garmin Connect for a given date range."""
     try:
         if creds is None:
             creds = check_garmin_credentials()
-        api = Garmin(creds["GARMIN_USER"], creds["GARMIN_PASS"])
-        api.login()
+        api = get_api(creds)
         logger.info("Authenticated as %s", creds["GARMIN_USER"])
 
         activities = api.get_activities_by_date(start_date.isoformat(), end_date.isoformat())
         df = pd.DataFrame(activities)
         return api, df
 
-    except (GarminConnectAuthenticationError, GarminConnectConnectionError, GarminConnectTooManyRequestsError) as e:
-        logger.error("API error: %s", e, exc_info=True)
     except AssertionError:
         logger.error("Token or cache error for Garmin", exc_info=True)
     except Exception as e:
