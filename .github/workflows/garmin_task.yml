@@ -32,7 +32,7 @@ jobs:
             | # Restore most recent database between runs to prevent duplicate task creation
             garmin-tasks-db-
 
-      - name: Restore Garmin token cache # Persist Garmin auth tokens so scheduled runs avoid repeated SSO logins
+      - name: Restore the Garmin Connect token cache # Persist authorisation tokens so scheduled runs avoid repeated SSO logins
         uses: actions/cache@v5
         with:
           path: ${{ github.workspace }}/.garminconnect
@@ -40,7 +40,7 @@ jobs:
           restore-keys: |
             garmin-tokens-
 
-      - name: Prepare Garmin token directory
+      - name: Prepare the Garmin Connecttoken directory
         run: mkdir -p .garminconnect
 
       - name: Run the Garmin Connect script # Execute main script
