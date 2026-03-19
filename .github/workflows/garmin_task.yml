@@ -5,10 +5,6 @@ on:
     - cron: "0 6-21/3 * * *" # Run workflow every three hours between 06:00 and 21:00 daily
   workflow_dispatch: # Allow manual trigger
 
-concurrency:
-  group: garmin-connect-task
-  cancel-in-progress: false
-
 jobs:
   garmin-connect-task:
     runs-on: ubuntu-latest
