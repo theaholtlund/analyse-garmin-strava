@@ -15,9 +15,8 @@ from todoist_integration import create_todoist_task
 from task_tracker import init_db, task_exists, mark_task_created
 from utils import ensure_dir
 
-# Define global variable for API
+# Define global variable for API logic
 API = None
-
 GARMIN_LOGIN_MAX_ATTEMPTS = int(os.getenv("GARMIN_LOGIN_MAX_ATTEMPTS", "6"))
 GARMIN_LOGIN_BACKOFF_SECONDS = int(os.getenv("GARMIN_LOGIN_BACKOFF_SECONDS", "30"))
 GARMIN_LOGIN_MAX_BACKOFF_SECONDS = int(os.getenv("GARMIN_LOGIN_MAX_BACKOFF_SECONDS", "900"))
