@@ -45,7 +45,7 @@ def get_api(creds=None):
             return api
         except GarminConnectTooManyRequestsError:
             sleep_time = 2 ** i
-            logger.warning("Rate limited. Sleeping %s seconds...", sleep_time)
+            logger.warning("Rate limited, sleeping %s seconds", sleep_time)
             time.sleep(sleep_time)
 
     raise Exception("Failed to login after retries")
