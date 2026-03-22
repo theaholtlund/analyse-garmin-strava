@@ -4,15 +4,9 @@ import types
 
 # Define lightweight, fake Garmin class instead of calling real Garmin Connect API
 # Simulate login, fetch activities and upload files in a predictable, testable way
-class MockGarth:
-    def dump(self, path):
-        return path
-
-
 class MockGarmin:
     def __init__(self, user, pw):
         self.user, self.pw = user, pw
-        self.garth = MockGarth()
 
     def login(self):
         # Simulate successful login without contacting Garmin
