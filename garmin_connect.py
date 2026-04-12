@@ -37,18 +37,10 @@ def get_api(creds=None):
 
     api = Garmin(creds["GARMIN_USER"], creds["GARMIN_PASS"])
 
-    for i in range(5):
-        try:
-            api.login()
-            logger.info("Authenticated as %s", creds["GARMIN_USER"])
-            API = api
-            return api
-        except GarminConnectTooManyRequestsError:
-            sleep_time = 2 ** i
-            logger.warning("Rate limited, sleeping %s seconds", sleep_time)
-            time.sleep(sleep_time)
-
-    raise Exception("Failed to login after retries")
+    api.login()
+    logger.info("Authenticated as %s", creds["GARMIN_USER"])
+    API = api
+    return api
 
 
 def fetch_data(start_date, end_date, creds=None):
