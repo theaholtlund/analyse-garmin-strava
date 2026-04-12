@@ -96,5 +96,5 @@ pytest -v tests/test_todoist_integration.py
 
 ## Useful External Resources
 
-- [Problems with Garmin Connect Authentication](https://github.com/cyberjunky/python-garminconnect/issues/332): Discussion related to problems authenticating with Garmi Connect
 - [Garmin API Integration for Developers](https://help.validic.com/space/VCS/1681490020/Garmin+API+Integration+for+Developers): Contains list with the names of all Garmon Connect activities
+- [Previous problem with Garmin Connect Authentication](https://github.com/cyberjunky/python-garminconnect/issues/332): Discussion related to problems authenticating with Garmi Connect
