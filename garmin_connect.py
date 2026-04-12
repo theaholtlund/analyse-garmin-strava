@@ -49,7 +49,6 @@ def fetch_data(start_date, end_date, creds=None):
         if creds is None:
             creds = check_garmin_credentials()
         api = get_api(creds)
-        logger.info("Authenticated as %s", creds["GARMIN_USER"])
 
         activities = api.get_activities_by_date(start_date.isoformat(), end_date.isoformat())
         df = pd.DataFrame(activities)
