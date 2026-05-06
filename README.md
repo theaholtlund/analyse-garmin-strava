@@ -27,12 +27,6 @@ python3.12 -m venv .venv
 source .venv/bin/activate
 ```
 
-## Install the Requirements
-
-```bash
-pip install -r requirements.txt
-```
-
 ## Garmin MFA and GitHub Actions
 
 Garmin MFA cannot be completed inside a scheduled GitHub Actions run. Log in once locally, save the Garmin token file, and let the workflow restore that token file from a GitHub secret.

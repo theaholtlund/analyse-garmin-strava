@@ -1,5 +1,4 @@
 # Import required libraries
-import time
 import datetime
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -7,15 +6,7 @@ import matplotlib.image as mpimg
 from garminconnect import Garmin, GarminConnectAuthenticationError, GarminConnectConnectionError, GarminConnectTooManyRequestsError
 
 # Import shared configuration and functions from other scripts
-from config import (
-    logger,
-    check_garmin_credentials,
-    ACTIVITY_DAYS_RANGE,
-    ACTIVITY_TYPE_TRANSLATIONS,
-    RUNNING_THROUGH_GITHUB,
-    LOGO_PATH,
-    GARMIN_TOKENSTORE,
-)
+from config import logger, check_garmin_credentials, ACTIVITY_DAYS_RANGE, ACTIVITY_TYPE_TRANSLATIONS, RUNNING_THROUGH_GITHUB, LOGO_PATH, GARMIN_TOKENSTORE
 from todoist_integration import create_todoist_task
 from task_tracker import init_db, task_exists, mark_task_created
 from utils import ensure_dir
@@ -34,7 +25,7 @@ def translate_activity_type(type_key):
 
 
 def prompt_garmin_mfa():
-    """Prompt for a Garmin MFA code locally, but fail clearly in GitHub Actions."""
+    """Prompt for a Garmin Connect MFA code locally, but fail clearly in GitHub Actions."""
     if RUNNING_THROUGH_GITHUB:
         raise GarminConnectAuthenticationError(
             "Garmin MFA is required, but GitHub Actions cannot answer MFA prompts. "
@@ -45,7 +36,7 @@ def prompt_garmin_mfa():
 
 
 def get_api(creds=None):
-    """Return a cached Garmin API instance, to only login once per run."""
+    """Return a cached Garmin Connect API instance, to only login once per run."""
     global API
 
     if API is not None:

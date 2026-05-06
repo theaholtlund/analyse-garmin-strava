@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
-"""Create a Garmin Connect token file for local and GitHub Actions use."""
 
+# Import required libraries
 import argparse
 import os
 from getpass import getpass
 from pathlib import Path
-
 from dotenv import load_dotenv
 from garminconnect import Garmin
 

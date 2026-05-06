@@ -30,8 +30,8 @@ logger = logging.getLogger(__name__)
 # Detect whether running inside GitHub Actions
 RUNNING_THROUGH_GITHUB = os.getenv("GITHUB_ACTIONS", "").lower() == "true"
 
-# Garmin Connect token store directory. The garminconnect library also reads
-# GARMINTOKENS itself, but keeping this in config makes our login path explicit.
+# Garmin Connect token store directory
+# The library also reads GARMINTOKENS itself, but this in config makes login path explicit
 GARMIN_TOKENSTORE = os.getenv(
     "GARMINTOKENS",
     os.getenv("GARMIN_TOKENSTORE", "~/.garminconnect"),
