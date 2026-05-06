@@ -16,7 +16,7 @@ jobs:
       - name: Set up Python # Make sure Python is available in GitHub runner environment
         uses: actions/setup-python@v6
         with:
-          python-version: "3.11"
+          python-version: "3.12"
 
       - name: Install project dependencies # Install required packages for script to run
         run: |
