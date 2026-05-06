@@ -7,7 +7,15 @@ import matplotlib.image as mpimg
 from garminconnect import Garmin, GarminConnectAuthenticationError, GarminConnectConnectionError, GarminConnectTooManyRequestsError
 
 # Import shared configuration and functions from other scripts
-from config import logger, check_garmin_credentials, ACTIVITY_DAYS_RANGE, ACTIVITY_TYPE_TRANSLATIONS, RUNNING_THROUGH_GITHUB, LOGO_PATH
+from config import (
+    logger,
+    check_garmin_credentials,
+    ACTIVITY_DAYS_RANGE,
+    ACTIVITY_TYPE_TRANSLATIONS,
+    RUNNING_THROUGH_GITHUB,
+    LOGO_PATH,
+    GARMIN_TOKENSTORE,
+)
 from todoist_integration import create_todoist_task
 from task_tracker import init_db, task_exists, mark_task_created
 from utils import ensure_dir
@@ -25,6 +33,17 @@ def translate_activity_type(type_key):
     return ACTIVITY_TYPE_TRANSLATIONS.get(type_key.lower(), "annet")
 
 
+def prompt_garmin_mfa():
+    """Prompt for a Garmin MFA code locally, but fail clearly in GitHub Actions."""
+    if RUNNING_THROUGH_GITHUB:
+        raise GarminConnectAuthenticationError(
+            "Garmin MFA is required, but GitHub Actions cannot answer MFA prompts. "
+            "Run scripts/create_garmin_tokens.py locally, then save "
+            "~/.garminconnect/garmin_tokens.json as the GARMIN_TOKENS_JSON secret."
+        )
+    return input("Garmin MFA code: ").strip()
+
+
 def get_api(creds=None):
     """Return a cached Garmin API instance, to only login once per run."""
     global API
@@ -35,10 +54,18 @@ def get_api(creds=None):
     if creds is None:
         creds = check_garmin_credentials()
 
-    api = Garmin(creds["GARMIN_USER"], creds["GARMIN_PASS"])
+    api = Garmin(
+        email=creds["GARMIN_USER"],
+        password=creds["GARMIN_PASS"],
+        prompt_mfa=prompt_garmin_mfa,
+    )
 
-    api.login()
-    logger.info("Authenticated as %s", creds["GARMIN_USER"])
+    api.login(GARMIN_TOKENSTORE)
+    logger.info(
+        "Authenticated as %s using Garmin token store %s",
+        creds["GARMIN_USER"],
+        GARMIN_TOKENSTORE,
+    )
     API = api
     return api
 
@@ -156,9 +183,7 @@ def upload_activity_file_to_garmin(file_path, creds=None):
     if creds is None:
         creds = check_garmin_credentials()
     try:
-        api = Garmin(creds["GARMIN_USER"], creds["GARMIN_PASS"])
-        api.login()
-        logger.info("Authenticated for Garmin Connect API")
+        api = get_api(creds)
         success = api.upload_activity(file_path)
         if success:
             logger.info("Successfully uploaded activity file: %s", file_path)

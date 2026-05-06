@@ -28,14 +28,29 @@ jobs:
         with:
           path: sync_tracker.db
           key: garmin-tasks-db-${{ github.run_id }} # Use unique cache key per run to force saving updated database
-          restore-keys:
-            | # Restore most recent database between runs to prevent duplicate task creation
+          # Restore most recent database between runs to prevent duplicate task creation
+          restore-keys: |
             garmin-tasks-db-
+
+      - name: Restore Garmin Connect tokens
+        env:
+          GARMIN_TOKENS_JSON: ${{ secrets.GARMIN_TOKENS_JSON }}
+        run: |
+          set -euo pipefail
+          if [ -z "${GARMIN_TOKENS_JSON:-}" ]; then
+            echo "Missing GARMIN_TOKENS_JSON secret. Run scripts/create_garmin_tokens.py locally and add ~/.garminconnect/garmin_tokens.json as a GitHub secret."
+            exit 1
+          fi
+          mkdir -p "$HOME/.garminconnect"
+          umask 077
+          printf '%s' "$GARMIN_TOKENS_JSON" > "$HOME/.garminconnect/garmin_tokens.json"
+          chmod 600 "$HOME/.garminconnect/garmin_tokens.json"
 
       - name: Run the Garmin Connect script # Execute main script
         env:
           GARMIN_USER: ${{ secrets.GARMIN_USER }}
           GARMIN_PASS: ${{ secrets.GARMIN_PASS }}
+          GARMINTOKENS: ~/.garminconnect
           TODOIST_SECTION_ID: ${{ secrets.TODOIST_SECTION_ID }}
           TODOIST_PROJECT_ID: ${{ secrets.TODOIST_PROJECT_ID }}
           TODOIST_API_TOKEN: ${{ secrets.TODOIST_API_TOKEN }}

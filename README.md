@@ -33,6 +33,38 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
+## Garmin MFA and GitHub Actions
+
+Garmin MFA cannot be completed inside a scheduled GitHub Actions run. Log in once locally, save the Garmin token file, and let the workflow restore that token file from a GitHub secret.
+
+1. Install the requirements locally:
+
+```bash
+pip install -r requirements.txt
+```
+
+2. Create the Garmin token file locally and enter the MFA code from your email when prompted:
+
+```bash
+python scripts/create_garmin_tokens.py
+```
+
+3. Add a GitHub Actions repository secret named `GARMIN_TOKENS_JSON` with the contents of:
+
+```bash
+~/.garminconnect/garmin_tokens.json
+```
+
+On macOS, this copies the token JSON to your clipboard:
+
+```bash
+pbcopy < ~/.garminconnect/garmin_tokens.json
+```
+
+4. Keep these existing GitHub secrets configured too: `GARMIN_USER`, `GARMIN_PASS`, `TODOIST_SECTION_ID`, `TODOIST_PROJECT_ID`, and `TODOIST_API_TOKEN`.
+
+After that, the scheduled workflow writes the token JSON back to `~/.garminconnect/garmin_tokens.json`, sets `GARMINTOKENS=~/.garminconnect`, and the `garminconnect` library refreshes the session automatically. If Garmin later revokes or expires the refresh token, rerun `python scripts/create_garmin_tokens.py` and update `GARMIN_TOKENS_JSON`.
+
 ## Configure Environment Variables
 
 Copy the environment template to an environment file, and fill in the variables needed to run the project scripts:
