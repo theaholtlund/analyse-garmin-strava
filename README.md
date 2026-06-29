@@ -10,7 +10,7 @@ Work in progress. Project working with Strava and Garmin Connect data in various
 - Add to task in Todoist if one already exists, instead of creating new one?
 - Implement working functionality in GitHub workflow to upload cycling activities to Garmin Connect?
 - Remove default gear when uploading virtual ride activities to Garmin Connect?
-- Implement functionality to update calendar notes using AppleScript?
+- Implement functionality to update calendar notes with calories using AppleScript?
 - Implement functionality to create Todoist task suggesting updating gear in Garmin Connect if calendar description contains certain words, such as for a speed run?
 
 ## Requirements
