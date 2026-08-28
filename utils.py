@@ -39,7 +39,7 @@ def save_debug_screenshot(driver, logger, DEBUG_SCREENSHOTS, label="screenshot")
         return None
 
     try:
-        filename = f"{label}_{int(time.time())}.png"
+        filename = f"{label}_{time.time_ns()}.png"
         path = os.path.join(os.getcwd(), filename)
         driver.save_screenshot(path)
         logger.info("Saved screenshot: %s", path)
