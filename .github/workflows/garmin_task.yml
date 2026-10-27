@@ -1,3 +1,4 @@
+
 name: Garmin Connect to Todoist Task
 
 on:
@@ -8,6 +9,8 @@ on:
 jobs:
   garmin-connect-task:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
 
     steps:
       - name: Checkout the repo # Ensure the workflow has access to the code
@@ -55,3 +58,12 @@ jobs:
           TODOIST_PROJECT_ID: ${{ secrets.TODOIST_PROJECT_ID }}
           TODOIST_API_TOKEN: ${{ secrets.TODOIST_API_TOKEN }}
         run: python garmin_connect.py
+
+  keep-scheduled-workflow-activity:
+    runs-on: ubuntu-slim
+    permissions:
+      actions: write
+
+    steps:
+      - name: Keep scheduled workflow activity
+        uses: WaterLemons2k/scheduled-workflow-activity-action@v2
