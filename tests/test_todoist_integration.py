@@ -21,6 +21,7 @@ class MockTodoistAPI:
 @pytest.fixture
 def mock_todoist(monkeypatch):
     monkeypatch.setattr("todoist_integration.TodoistAPI", MockTodoistAPI)
+    monkeypatch.setattr("todoist_integration.TODOIST_API_TOKEN", "test-token")
 
 def test_create_task(mock_todoist):
     task = create_todoist_task("Test task for Garmin Connect")

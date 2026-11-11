@@ -112,12 +112,10 @@ python dashboard.py
 ```
 
 Testing:
-The project has a tests directory. It uses pytest with mocked APIs, so no there are no real API calls.
+The project has a tests directory and uses pytest with mocked APIs.
 
 ```bash
-pytest -v tests/test_garmin_connect.py
-pytest -v tests/test_task_tracker.py
-pytest -v tests/test_todoist_integration.py
+pytest -v
 ```
 
 ## Useful External Resources

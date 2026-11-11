@@ -2,6 +2,7 @@
 import smtplib
 from email.message import EmailMessage
 from config import logger, load_env
+from dashboard import generate_weekly_running_status
 
 
 def send_email(subject, body):
