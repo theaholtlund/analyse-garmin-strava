@@ -108,7 +108,12 @@ def prepare_dataframe(df):
         if column not in df.columns:
             df[column] = None
 
-    df['activityTypeKey'] = df['activityType'].apply(lambda x: (x or {}).get('typeKey', 'unknown') if isinstance(x, dict) else (str(x) or 'annet'))
+    activity_types = df['activityType'].apply(
+        lambda x: x.get('typeKey') if isinstance(x, dict) else x
+    )
+    if 'activityTypeKey' in df.columns:
+        activity_types = activity_types.fillna(df['activityTypeKey'])
+    df['activityTypeKey'] = activity_types.fillna('unknown')
     df['activityTypeNameNo'] = df['activityTypeKey'].apply(translate_activity_type)
     df['startTimeLocal'] = pd.to_datetime(df['startTimeLocal'], errors="coerce", utc=True).dt.tz_convert(None)
     df['duration_hr'] = df['duration'].fillna(0) / 3600

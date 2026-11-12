@@ -77,7 +77,9 @@ def filter_running_activities(df):
     df_running = df[df['activityTypeKey'].isin(running_keys)].copy()
 
     # Some rows might miss distance, ensure column exists
-    df_running['distance'] = df_running.get('distance', 0).fillna(0)
+    if 'distance' not in df_running:
+        df_running['distance'] = 0
+    df_running['distance'] = pd.to_numeric(df_running['distance'], errors='coerce').fillna(0)
     df_running['distance_km'] = df_running['distance'] / 1000
 
     # Defensive parse of startTimeLocal to month
@@ -110,14 +112,12 @@ def generate_weekly_running_status(goal_km=3650):
         return None
 
     df_running = filter_running_activities(df_all)
-    if df_running.empty:
-        logger.warning("No running activities found for weekly report")
-        return None
+    total_km = df_running['distance_km'].sum() if not df_running.empty else 0
 
-    total_km = df_running['distance_km'].sum()
-
-    weeks_passed = max(today.isocalendar().week, 1)
-    expected_km_by_now = (goal_km / 52) * weeks_passed
+    days_passed = (today - start_of_year).days + 1
+    days_in_year = (datetime.date(today.year + 1, 1, 1) - start_of_year).days
+    weeks_passed = days_passed // 7
+    expected_km_by_now = goal_km * days_passed / days_in_year
     delta_km = total_km - expected_km_by_now
 
     status = {
