@@ -9,3 +9,6 @@ todoist-api-python==3.2.1
 dataclass-wizard==0.39.1
 pytest
 seaborn
+fitdecode==0.11.0
+fit-tool==0.10.0
+cryptography>=44,<47

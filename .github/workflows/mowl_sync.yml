@@ -1,0 +1,66 @@
+name: MOWL to Garmin sync
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [mowl-actions-migration]
+  schedule:
+    - cron: '17 * * * *'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: mowl-garmin-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    if: github.event_name != 'schedule' || vars.MOWL_CLOUD_READY == '1'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      GARMIN_USER: ${{ secrets.GARMIN_USER }}
+      GARMIN_PASS: ${{ secrets.GARMIN_PASS }}
+      GARMIN_TOKENS_JSON: ${{ secrets.GARMIN_TOKENS_JSON }}
+      STRAVA_SESSION_COOKIES: ${{ secrets.MOWL_STRAVA_SESSION }}
+      MOWL_STATE_KEY: ${{ secrets.MOWL_STATE_KEY }}
+      GH_TOKEN: ${{ github.token }}
+      MOWL_START_AFTER: ${{ vars.MOWL_SYNC_AFTER }}
+      MOWL_STRAVA_MARKER: MOWL
+      TZ: Europe/Oslo
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Restore Strava session
+        run: |
+          set -euo pipefail
+          test -n "$STRAVA_SESSION_COOKIES"
+          mkdir -p outputs
+          umask 077
+          session_file="$(mktemp)"
+          trap 'rm -f "$session_file"' EXIT
+          printf '%s' "$STRAVA_SESSION_COOKIES" > "$session_file"
+          python scripts/strava_browser_cookies.py restore outputs/strava-browser-profile "$session_file"
+      - name: Run synchronization
+        run: |
+          set -euo pipefail
+          if [ "$GITHUB_EVENT_NAME" = schedule ]; then
+            test -n "$MOWL_STATE_KEY"
+            test -n "$MOWL_START_AFTER"
+            export MOWL_CLOUD_STATE=1
+            export GARMINTOKENS="$GITHUB_WORKSPACE/outputs/mowl-sync/garmin-tokens"
+            python mowl_sync.py --source browser --days 7 --settle-minutes 120 --after "$MOWL_START_AFTER" --apply
+          else
+            test -n "$GARMIN_TOKENS_JSON"
+            token_dir="$(mktemp -d)"
+            trap 'rm -rf "$token_dir"' EXIT
+            umask 077
+            printf '%s' "$GARMIN_TOKENS_JSON" > "$token_dir/garmin_tokens.json"
+            export GARMINTOKENS="$token_dir"
+            python mowl_sync.py --source browser --days 2
+          fi

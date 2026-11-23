@@ -145,6 +145,20 @@ def get_latest_activities(days=ACTIVITY_DAYS_RANGE):
     return pd.DataFrame(activities)
 
 
+def get_activity_details(activity_id):
+    """Fetch source metadata and the complete activity record for matching."""
+    token = load_tokens()
+    if token.get("expires_at", 0) < datetime.datetime.now(datetime.timezone.utc).timestamp():
+        token = refresh_access(token)
+    response = requests.get(
+        f"https://www.strava.com/api/v3/activities/{int(activity_id)}",
+        headers={"Authorization": f"Bearer {token['access_token']}"},
+        timeout=30,
+    )
+    response.raise_for_status()
+    return response.json()
+
+
 def get_stream(activity_id, types=("heartrate", "cadence", "distance", "time")):
     """Fetch detailed data streams for a given Strava activity."""
     token = load_tokens()
@@ -164,8 +178,10 @@ def get_stream(activity_id, types=("heartrate", "cadence", "distance", "time")):
 
 def download_multiple_activities(activities_df, download_dir=None):
     """Download multiple FIT files from Strava using Selenium with a single login session."""
-    if not STRAVA_USER or not STRAVA_PASS:
-        raise RuntimeError("Strava username and password must be set in config.py")
+    profile = Path(os.getenv("STRAVA_CHROME_PROFILE", "outputs/strava-browser-profile")).expanduser().resolve()
+    use_saved_session = profile.is_dir()
+    if not use_saved_session and (not STRAVA_USER or not STRAVA_PASS):
+        raise RuntimeError("Set up the Strava browser session first: python scripts/strava_session_setup.py")
 
     options = Options()
     options.add_argument("--headless=new")
@@ -174,7 +190,7 @@ def download_multiple_activities(activities_df, download_dir=None):
     options.add_argument("--disable-dev-shm-usage")
 
     # Ensure a unique Chrome user data directory for each run
-    user_data_dir = tempfile.mkdtemp()
+    user_data_dir = str(profile) if use_saved_session else tempfile.mkdtemp()
     options.add_argument(f"--user-data-dir={user_data_dir}")
 
     # Mobile user agent to get mobile Strava pages
@@ -204,66 +220,72 @@ def download_multiple_activities(activities_df, download_dir=None):
     downloaded_files = []
 
     try:
-        # Log in to Strava profile
-        logger.info("Opening the Strava login page")
-        driver.get("https://www.strava.com/login")
+        if use_saved_session:
+            logger.info("Checking saved Strava browser session")
+            driver.get("https://www.strava.com/dashboard")
+            if not driver.current_url.startswith("https://www.strava.com/dashboard"):
+                raise RuntimeError("Strava session unavailable; run python scripts/strava_session_setup.py again")
+        else:
+            # Log in to Strava profile
+            logger.info("Opening the Strava login page")
+            driver.get("https://www.strava.com/login")
 
-        # Handle cookie banner if present
-        try:
-            logger.info("Checking for cookie banner")
-            save_debug_screenshot(driver, logger, DEBUG_SCREENSHOTS, "before_cookie_banner")
-            cookie_accept = WebDriverWait(driver, 5).until(
-                EC.element_to_be_clickable((By.CSS_SELECTOR, "button[data-cy='accept-cookies'], .CookieBanner button, button[id*='cookie'], button[class*='cookie']"))
+            # Handle cookie banner if present
+            try:
+                logger.info("Checking for cookie banner")
+                save_debug_screenshot(driver, logger, DEBUG_SCREENSHOTS, "before_cookie_banner")
+                cookie_accept = WebDriverWait(driver, 5).until(
+                    EC.element_to_be_clickable((By.CSS_SELECTOR, "button[data-cy='accept-cookies'], .CookieBanner button, button[id*='cookie'], button[class*='cookie']"))
+                )
+                cookie_accept.click()
+                logger.info("Cookie banner accepted")
+                time.sleep(2)
+            except Exception:
+                logger.debug("No cookie banner found or already accepted")
+
+            # Enter e-mail for the login page
+            logger.info("Entering e-mail on Strava login page")
+            email_field = WebDriverWait(driver, 20).until(
+                EC.presence_of_element_located((By.ID, "mobile-email"))
             )
-            cookie_accept.click()
-            logger.info("Cookie banner accepted")
-            time.sleep(2)
-        except Exception:
-            logger.debug("No cookie banner found or already accepted")
+            email_field.clear()
+            email_field.send_keys(STRAVA_USER)
 
-        # Enter e-mail for the login page
-        logger.info("Entering e-mail on Strava login page")
-        email_field = WebDriverWait(driver, 20).until(
-            EC.presence_of_element_located((By.ID, "mobile-email"))
-        )
-        email_field.clear()
-        email_field.send_keys(STRAVA_USER)
+            # Click the login button to proceed to password stage
+            logger.info("Sending e-mail on Strava login page")
+            save_debug_screenshot(driver, logger, DEBUG_SCREENSHOTS, "before_username_submit")
+            login_button_email_stage = WebDriverWait(driver, 20).until(
+                EC.element_to_be_clickable((By.ID, "mobile-login-button"))
+            )
+            driver.execute_script("arguments[0].click();", login_button_email_stage)
 
-        # Click the login button to proceed to password stage
-        logger.info("Sending e-mail on Strava login page")
-        save_debug_screenshot(driver, logger, DEBUG_SCREENSHOTS, "before_username_submit")
-        login_button_email_stage = WebDriverWait(driver, 20).until(
-            EC.element_to_be_clickable((By.ID, "mobile-login-button"))
-        )
-        driver.execute_script("arguments[0].click();", login_button_email_stage)
+            # Wait for the OTP page to load and click button to use password instead
+            logger.info("Waiting for OTP page and clicking button to use password instead")
+            save_debug_screenshot(driver, logger, DEBUG_SCREENSHOTS, "before_use_password")
+            use_password_btn = WebDriverWait(driver, 20).until(
+                EC.element_to_be_clickable((By.CSS_SELECTOR, "[data-testid='use-password-cta'] button"))
+            )
+            driver.execute_script("arguments[0].click();", use_password_btn)
 
-        # Wait for the OTP page to load and click button to use password instead
-        logger.info("Waiting for OTP page and clicking button to use password instead")
-        save_debug_screenshot(driver, logger, DEBUG_SCREENSHOTS, "before_use_password")
-        use_password_btn = WebDriverWait(driver, 20).until(
-            EC.element_to_be_clickable((By.CSS_SELECTOR, "[data-testid='use-password-cta'] button"))
-        )
-        driver.execute_script("arguments[0].click();", use_password_btn)
+            # Enter the password to log in to Strava
+            logger.info("Entering password on login page")
+            password_field = WebDriverWait(driver, 20).until(
+                EC.presence_of_element_located((By.CSS_SELECTOR, "input[data-cy='password']"))
+            )
+            password_field.clear()
+            password_field.send_keys(STRAVA_PASS)
 
-        # Enter the password to log in to Strava
-        logger.info("Entering password on login page")
-        password_field = WebDriverWait(driver, 20).until(
-            EC.presence_of_element_located((By.CSS_SELECTOR, "input[data-cy='password']"))
-        )
-        password_field.clear()
-        password_field.send_keys(STRAVA_PASS)
+            # Click the final login button
+            logger.info("Clicking final login button")
+            login_button_password_stage = WebDriverWait(driver, 20).until(
+                EC.element_to_be_clickable((By.CSS_SELECTOR, "button[type='submit'].Button_primary___8ywh"))
+            )
+            driver.execute_script("arguments[0].click();", login_button_password_stage)
 
-        # Click the final login button
-        logger.info("Clicking final login button")
-        login_button_password_stage = WebDriverWait(driver, 20).until(
-            EC.element_to_be_clickable((By.CSS_SELECTOR, "button[type='submit'].Button_primary___8ywh"))
-        )
-        driver.execute_script("arguments[0].click();", login_button_password_stage)
-
-        # Wait for the login to complete
-        logger.info("Waiting for login to complete")
-        WebDriverWait(driver, 30).until(EC.url_contains("dashboard"))
-        logger.info("Login successful, starting activity downloads")
+            # Wait for the login to complete
+            logger.info("Waiting for login to complete")
+            WebDriverWait(driver, 30).until(EC.url_contains("dashboard"))
+            logger.info("Login successful, starting activity downloads")
 
         # Download each relevant activity file
         for index, row in activities_df.iterrows():
@@ -289,16 +311,18 @@ def download_multiple_activities(activities_df, download_dir=None):
                         (By.XPATH, f"//a[contains(@href, '/activities/{activity_id}/export_original')]")
                     )
                 )
+                existing_files = set(os.listdir(download_dir))
+                download_start_time = time.time()
                 ActionChains(driver).move_to_element(export_link).click().perform()
 
-                # Wait for file to download
-                download_start_time = time.time()
+                # Wait for a new completed download, not Chrome’s partial file.
                 file_path = None
                 while True:
                     files = [f for f in os.listdir(download_dir) if os.path.isfile(os.path.join(download_dir, f))]
                     for filename in files:
                         full_path = os.path.join(download_dir, filename)
-                        if os.path.getctime(full_path) > download_start_time:
+                        if (filename not in existing_files and not filename.startswith('.')
+                                and not filename.endswith(('.crdownload', '.tmp'))):
                             file_path = full_path
                             break
                     if file_path or time.time() - download_start_time > 60:
@@ -324,7 +348,8 @@ def download_multiple_activities(activities_df, download_dir=None):
     finally:
         driver.quit()
         try:
-            shutil.rmtree(user_data_dir, ignore_errors=True)
+            if not use_saved_session:
+                shutil.rmtree(user_data_dir, ignore_errors=True)
         except Exception as e:
             logger.warning("Could not remove temp Chrome profile: %s", e)
         if cleanup_download_dir:
