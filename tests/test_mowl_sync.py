@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pytest
 
-from mowl_sync import Journal, find_garmin_match, is_mowl, process, uploaded_activity_id
+from mowl_sync import Journal, find_garmin_match, process, uploaded_activity_id
 from test_merge_cycling_fit import make_fit
 
 
@@ -17,8 +17,6 @@ def row(ident=55, start='2026-11-23T05:54:44', kind='indoor_cycling'):
 
 
 def test_match_requires_source_and_unambiguous_overlap(activity):
-    assert is_mowl(activity, 'MOWL')
-    assert not is_mowl({'name': 'Morning ride'}, 'MOWL')
     assert find_garmin_match(activity, [row()])['activityId'] == 55
     assert find_garmin_match(activity, [row(start='2026-11-23T08:00:00')]) is None
     assert find_garmin_match(activity, [row(kind='running')]) is None

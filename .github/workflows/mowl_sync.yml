@@ -5,7 +5,7 @@ on:
   push:
     branches: [mowl-actions-migration]
   schedule:
-    - cron: '17 * * * *'
+    - cron: '*/15 * * * *'
 
 permissions:
   contents: write
@@ -46,6 +46,18 @@ jobs:
           trap 'rm -f "$session_file"' EXIT
           printf '%s' "$STRAVA_SESSION_COOKIES" > "$session_file"
           python scripts/strava_browser_cookies.py restore outputs/strava-browser-profile "$session_file"
+      - name: Verify encrypted journal
+        if: github.event_name == 'push'
+        run: |
+          set -euo pipefail
+          python - <<'PYCODE'
+          import os
+          from cloud_sync_state import CloudState
+          state = CloudState('outputs/mowl-sync', os.environ['GITHUB_REPOSITORY'], os.environ['GH_TOKEN'], os.environ['MOWL_STATE_KEY'])
+          state.restore()
+          state.checkpoint()
+          print('Encrypted journal can be read and updated.')
+          PYCODE
       - name: Run synchronization
         run: |
           set -euo pipefail
@@ -54,7 +66,7 @@ jobs:
             test -n "$MOWL_START_AFTER"
             export MOWL_CLOUD_STATE=1
             export GARMINTOKENS="$GITHUB_WORKSPACE/outputs/mowl-sync/garmin-tokens"
-            python mowl_sync.py --source browser --days 7 --settle-minutes 120 --after "$MOWL_START_AFTER" --apply
+            python mowl_sync.py --days 7 --settle-minutes 30 --after "$MOWL_START_AFTER" --apply > "$RUNNER_TEMP/mowl-sync.log" 2>&1 || { echo "Synchronization failed; original activities are retained when verification fails."; exit 1; }
           else
             test -n "$GARMIN_TOKENS_JSON"
             token_dir="$(mktemp -d)"
@@ -62,5 +74,5 @@ jobs:
             umask 077
             printf '%s' "$GARMIN_TOKENS_JSON" > "$token_dir/garmin_tokens.json"
             export GARMINTOKENS="$token_dir"
-            python mowl_sync.py --source browser --days 2
+            python mowl_sync.py --days 2 > "$RUNNER_TEMP/mowl-sync.log" 2>&1 || { echo "Dry run failed; check the Strava and Garmin sessions."; exit 1; }
           fi

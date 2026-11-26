@@ -1,8 +1,7 @@
-"""Conservative MOWL -> Garmin sync. Uploads only with --apply; never deletes."""
+"""Synchronize MOWL rides to Garmin, with verified duplicate cleanup."""
 import argparse
 import datetime as dt
 import gzip
-import fcntl
 import io
 import zipfile
 import fitdecode
@@ -36,14 +35,6 @@ def activity_interval(activity):
     if not isinstance(duration, (int, float)) or duration <= 0:
         raise ValueError('Missing activity elapsed time')
     return start, start + dt.timedelta(seconds=duration)
-
-
-def is_mowl(activity, marker):
-    # Never infer a source from VirtualRide alone. A configured marker has to be
-    # present in source metadata or the activity name/description.
-    fields = ('name', 'description', 'external_id', 'device_name')
-    text = ' '.join(str(activity.get(key) or '') for key in fields).casefold()
-    return bool(marker and marker.casefold() in text)
 
 
 def find_garmin_match(activity, garmin_activities):
@@ -344,37 +335,27 @@ def cleanup_uploaded(activity, api, journal, root, days, marker):
 def main(argv=None):
     load_dotenv()
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--apply', action='store_true', help='Actually upload; default is dry run')
-    parser.add_argument('--days', type=int, default=2)
-    parser.add_argument('--source', choices=('auto', 'browser'), default='auto')
+    parser.add_argument('--apply', action='store_true', help='Upload and clean up; default is dry run')
+    parser.add_argument('--days', type=int, default=7)
     parser.add_argument('--after', help='Only activities starting at or after this UTC timestamp')
-    parser.add_argument('--activity-id', type=int, help='Explicitly select one Strava activity as MOWL')
-    parser.add_argument('--marker', default=os.getenv('MOWL_STRAVA_MARKER', 'MOWL'), help='Source/name marker used for automatic discovery')
-    parser.add_argument('--settle-minutes', type=int, default=60, help='Wait after the activity ends for Garmin to sync')
-    parser.add_argument('--directory', default='outputs/mowl-sync')
+    parser.add_argument('--settle-minutes', type=int, default=30)
     args = parser.parse_args(argv)
     if args.days <= 0 or args.settle_minutes < 0:
-        parser.error('--days must be positive and --settle-minutes non-negative')
-    if not args.marker.strip():
-        parser.error('--marker must not be empty')
-    if args.apply and os.getenv('GITHUB_ACTIONS') == 'true' and os.getenv('MOWL_CLOUD_STATE') != '1':
-        parser.error('GitHub apply requires durable cloud state')
+        parser.error('Invalid days or waiting time')
+    if args.apply and os.getenv('MOWL_CLOUD_STATE') != '1':
+        parser.error('Uploading requires the encrypted GitHub journal')
     logging.basicConfig(level=logging.INFO, format='%(levelname)s %(message)s')
     log.setLevel(logging.INFO)
+    marker = os.getenv('MOWL_STRAVA_MARKER', 'MOWL').strip()
+    if not marker:
+        raise ValueError('MOWL activity marker must not be empty')
     after = timestamp(args.after) if args.after else None
-    root = Path(args.directory)
+    root = Path('outputs/mowl-sync')
     root.mkdir(parents=True, exist_ok=True, mode=0o700)
-    lock_file = (root / 'sync.lock').open('a')
-    os.chmod(root / 'sync.lock', 0o600)
-    try:
-        fcntl.flock(lock_file, fcntl.LOCK_EX | fcntl.LOCK_NB)
-    except BlockingIOError:
-        log.warning('Another sync is running; skipping this run')
-        return 0
     cloud = None
     token_file = None
     prior_token = None
-    if os.getenv('MOWL_CLOUD_STATE') == '1':
+    if args.apply:
         from cloud_sync_state import CloudState
         cloud = CloudState(root, os.environ['GITHUB_REPOSITORY'], os.environ['GH_TOKEN'], os.environ['MOWL_STATE_KEY'])
         cloud.restore()
@@ -382,30 +363,12 @@ def main(argv=None):
         if not token_file.is_file():
             raise RuntimeError('Encrypted state does not contain Garmin tokens')
         prior_token = token_file.read_bytes()
-    from strava import get_latest_activities, get_activity_details, download_multiple_activities
+    from strava import download_multiple_activities
+    from strava_browser import recent_rides
     from garmin_connect import get_api
-    import requests
-    use_browser = False
-    try:
-        if args.source == 'browser':
-            from strava_browser import recent_rides
-            activities = recent_rides(args.days, args.marker, args.activity_id)
-            use_browser = True
-        else:
-            activities = get_latest_activities(days=args.days).to_dict('records')
-    except requests.HTTPError as exc:
-        response = exc.response
-        try:
-            errors = response.json().get('errors', []) if response is not None else []
-        except ValueError:
-            errors = []
-        inactive = any(e.get('resource') == 'Application' and e.get('code') == 'Inactive' for e in errors)
-        if not inactive:
-            raise
-        from strava_browser import recent_rides
-        log.warning('Strava API application is inactive; using signed-in website session')
-        activities = recent_rides(args.days, args.marker, args.activity_id)
-        use_browser = True
+    import pandas as pd
+
+    activities = recent_rides(args.days, marker)
     api = get_api()
     if cloud and token_file.read_bytes() != prior_token:
         cloud.checkpoint()
@@ -413,77 +376,36 @@ def main(argv=None):
     rows = api.get_activities_by_date((now.date() - dt.timedelta(days=args.days + 1)).isoformat(), (now.date() + dt.timedelta(days=1)).isoformat())
     journal = Journal(root / 'journal.sqlite3', checkpoint=cloud.checkpoint if cloud else None)
     failures = 0
-    selected = 0
     for activity in activities:
-        if not use_browser and str(activity.get('sport_type') or activity.get('type')) not in ('VirtualRide', 'Ride'):
-            continue
-        if args.activity_id and int(activity['id']) != args.activity_id:
-            continue
         try:
-            if use_browser:
-                previous = journal.get(activity['id'])
-                if previous:
-                    selected += 1
-                    if args.apply and previous[0] in ('uploaded', 'awaiting_strava'):
-                        cleanup_uploaded(activity, api, journal, root, args.days, args.marker)
-                    else:
-                        log.info('Strava %s: already recorded as %s', activity['id'], previous[0])
-                    continue
-                import pandas as pd
-                staged = root / 'discovery'
-                staged.mkdir(parents=True, exist_ok=True, mode=0o700)
-                with tempfile.TemporaryDirectory(dir=staged) as tmp:
-                    files = download_multiple_activities(pd.DataFrame([activity]), download_dir=tmp)
-                    if not files or not files[0]:
-                        raise RuntimeError('Could not download MOWL original')
-                    fit = Path(tmp) / 'validated.fit'
-                    fit.write_bytes(fit_bytes(files[0]))
-                    records, _ = read_fit(fit)
-                    begin, finish = min(records), max(records)
-                    detail = dict(activity, start_date=begin.isoformat(), elapsed_time=(finish - begin).total_seconds())
-                    if now - begin > dt.timedelta(days=args.days) or (after and begin < after):
-                        continue
-                    selected += 1
-                    if now < finish + dt.timedelta(minutes=args.settle_minutes):
-                        log.info('Strava %s: waiting for Garmin synchronization', activity['id'])
-                        continue
-                    match = find_garmin_match(detail, rows)
-                    outcome = process(detail, match, api, lambda *_: fit, journal, root, args.apply)
-                    if outcome == 'uploaded':
-                        cleanup_uploaded(detail, api, journal, root, args.days, args.marker)
-                continue
-            detail = get_activity_details(activity['id'])
-            if not args.activity_id and not is_mowl(detail, args.marker):
-                continue
-            selected += 1
-            previous = journal.get(detail['id'])
+            previous = journal.get(activity['id'])
             if previous:
                 if args.apply and previous[0] in ('uploaded', 'awaiting_strava'):
-                    cleanup_uploaded(detail, api, journal, root, args.days, args.marker)
+                    cleanup_uploaded(activity, api, journal, root, args.days, marker)
                 else:
-                    log.info('Strava %s: already recorded as %s', detail['id'], previous[0])
+                    log.info('Activity is already recorded as %s', previous[0])
                 continue
-            begin, end = activity_interval(detail)
-            if after and begin < after:
-                continue
-            if now < end + dt.timedelta(minutes=args.settle_minutes):
-                log.info('Strava %s: waiting for Garmin synchronization', activity['id'])
-                continue
-            match = find_garmin_match(detail, rows)
-            def downloader(value, folder):
-                import pandas as pd
-                result = download_multiple_activities(pd.DataFrame([value]), download_dir=str(folder.resolve()))
-                return result[0] if result else None
-            outcome = process(detail, match, api, downloader, journal, root, args.apply)
-            if outcome == 'uploaded':
-                cleanup_uploaded(detail, api, journal, root, args.days, args.marker)
+            with tempfile.TemporaryDirectory(dir=root) as tmp:
+                files = download_multiple_activities(pd.DataFrame([activity]), download_dir=tmp)
+                if not files or not files[0]:
+                    raise RuntimeError('Could not download MOWL original')
+                fit = Path(tmp) / 'validated.fit'
+                fit.write_bytes(fit_bytes(files[0]))
+                records, _ = read_fit(fit)
+                begin, finish = min(records), max(records)
+                if now - begin > dt.timedelta(days=args.days) or (after and begin < after):
+                    continue
+                if now < finish + dt.timedelta(minutes=args.settle_minutes):
+                    log.info('Waiting for Garmin synchronization')
+                    continue
+                detail = dict(activity, start_date=begin.isoformat(), elapsed_time=(finish - begin).total_seconds())
+                match = find_garmin_match(detail, rows)
+                outcome = process(detail, match, api, lambda *_: fit, journal, root, args.apply)
+                if outcome == 'uploaded':
+                    cleanup_uploaded(detail, api, journal, root, args.days, marker)
         except Exception:
             failures += 1
-            log.exception('Could not process Strava activity %s', activity.get('id'))
-    if selected == 0:
-        log.warning('No matching MOWL activities found; check the marker or activity ID and date range')
-        if args.activity_id:
-            return 1
+            log.exception('Could not process activity')
     return 1 if failures else 0
 
 

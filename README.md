@@ -151,49 +151,23 @@ activity based on this file without checking the imported result.
 
 ## Automatic MOWL to Garmin sync
 
-On the configured Mac, the user LaunchAgent `no.theaholtlund.mowl-garmin-sync`
-runs hourly, only for sessions starting after installation. It waits two hours
-after the MOWL activity ends to allow the watch to sync. macOS must be running
-and the user must be logged in; an expired Strava browser session or Garmin
-authentication will stop sync until reauthenticated. The launchd log and local
-journal are in `outputs/mowl-sync`. Keep this ignored folder: the journal prevents
-repeat uploads, and it also contains original and merged backups.
+A GitHub Actions job checks for MOWL activities every 15 minutes and waits at
+least 30 minutes after an activity ends for the Garmin watch to synchronize.
+It uses the saved Strava session and the existing Garmin credentials. The Strava
+API application is inactive, so the job uses the Strava website session. An
+expired browser session requires renewing the `MOWL_STRAVA_SESSION` secret.
 
-The sync uses the logged-in Strava website because the user's Strava API
-application currently reports `Inactive`. It identifies MOWL rides using
-`MOWL_STRAVA_MARKER` in the activity name. It matches at most one Garmin cycling
-activity using timestamps and duration. If there is no match after the waiting
-period, it uploads the original MOWL FIT; if a matching Garmin activity arrives
-later, it cannot retroactively merge that activity automatically. Change the
-waiting period in the LaunchAgent if Garmin regularly syncs late.
+The job combines matching activities using MOWL heart rate first and Garmin as
+fallback, or imports MOWL alone if no Garmin activity has appeared. If Garmin
+arrives later than the waiting period, it will not be merged automatically.
+After checking the imported Garmin metrics and verifying the duplicate's device
+and session against the original FIT, it deletes the watch copy from Strava and
+replaces the original Garmin activity. The MOWL Strava activity is protected.
+Ambiguous matches, missing data or uncertain uploads stop automatic cleanup.
 
-When there is a match, the Garmin original is downloaded and combined with MOWL.
-MOWL heart rate is preferred, with Garmin as fallback. After uploading, key
-metrics are compared with Garmin's imported activity. The program locates Strava
-watch copies by comparing the Garmin FIT's device ID and session timestamps to
-the Strava original FIT. Once a matching Strava copy is found and the checks
-pass, it deletes that copy and the original Garmin activity. The MOWL activity
-is protected. If verification fails, the original Garmin activity is kept. If
-an upload or cleanup result is uncertain, the journal blocks automatic retries
-until reviewed. A missing Strava watch copy leaves the original Garmin activity
-in place and will be retried while the activity remains in the lookback window.
-Web selectors, exports and Garmin's unofficial API can change or stop working.
-
-Useful commands (run from the project directory):
-
-```bash
-# Check without uploading or deleting anything:
-.venv/bin/python mowl_sync.py --source browser --days 2
-# Check the scheduled run's logs:
-tail -n 100 outputs/mowl-sync/launchd.log
-# Stop the scheduled job:
-launchctl bootout gui/$(id -u)/no.theaholtlund.mowl-garmin-sync
-```
-
-To re-enable after stopping, use `launchctl bootstrap gui/$(id -u)
-~/Library/LaunchAgents/no.theaholtlund.mowl-garmin-sync.plist`. To install on
-another Mac after setup, run `.venv/bin/python scripts/install_mowl_sync.py`.
-To restore an expired Strava session, run
-`.venv/bin/python scripts/strava_session_setup.py` and log in in the Chrome
-window. The dedicated profile `outputs/strava-browser-profile` grants access to
-the account and must remain private. Never commit credentials or token files.
+The journal and original FIT backups are encrypted with `MOWL_STATE_KEY` and
+stored on the `mowl-sync-state` branch. This repository is public: the branch
+contains ciphertext, not readable training data. Do not delete or rotate the
+key without migrating that state. GitHub Actions secrets must never be printed
+or committed. Jobs can fail if Strava changes its website, sessions expire or
+Garmin changes its unofficial API; check GitHub Actions for failures.
