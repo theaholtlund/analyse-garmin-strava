@@ -145,20 +145,6 @@ def get_latest_activities(days=ACTIVITY_DAYS_RANGE):
     return pd.DataFrame(activities)
 
 
-def get_activity_details(activity_id):
-    """Fetch source metadata and the complete activity record for matching."""
-    token = load_tokens()
-    if token.get("expires_at", 0) < datetime.datetime.now(datetime.timezone.utc).timestamp():
-        token = refresh_access(token)
-    response = requests.get(
-        f"https://www.strava.com/api/v3/activities/{int(activity_id)}",
-        headers={"Authorization": f"Bearer {token['access_token']}"},
-        timeout=30,
-    )
-    response.raise_for_status()
-    return response.json()
-
-
 def get_stream(activity_id, types=("heartrate", "cadence", "distance", "time")):
     """Fetch detailed data streams for a given Strava activity."""
     token = load_tokens()

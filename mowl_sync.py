@@ -372,6 +372,7 @@ def main(argv=None):
     api = get_api()
     if cloud and token_file.read_bytes() != prior_token:
         cloud.checkpoint()
+        prior_token = token_file.read_bytes()
     now = dt.datetime.now(UTC)
     rows = api.get_activities_by_date((now.date() - dt.timedelta(days=args.days + 1)).isoformat(), (now.date() + dt.timedelta(days=1)).isoformat())
     journal = Journal(root / 'journal.sqlite3', checkpoint=cloud.checkpoint if cloud else None)
@@ -406,6 +407,8 @@ def main(argv=None):
         except Exception:
             failures += 1
             log.exception('Could not process activity')
+    if cloud and token_file.read_bytes() != prior_token:
+        cloud.checkpoint()
     return 1 if failures else 0
 
 

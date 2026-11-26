@@ -51,12 +51,21 @@ jobs:
         run: |
           set -euo pipefail
           python - <<'PYCODE'
-          import os
+          import logging, os, sys
+          from pathlib import Path
           from cloud_sync_state import CloudState
-          state = CloudState('outputs/mowl-sync', os.environ['GITHUB_REPOSITORY'], os.environ['GH_TOKEN'], os.environ['MOWL_STATE_KEY'])
-          state.restore()
-          state.checkpoint()
-          print('Encrypted journal can be read and updated.')
+          logging.disable(logging.CRITICAL)
+          try:
+              state = CloudState('outputs/mowl-sync', os.environ['GITHUB_REPOSITORY'], os.environ['GH_TOKEN'], os.environ['MOWL_STATE_KEY'])
+              state.restore()
+              os.environ['GARMINTOKENS'] = str(Path('outputs/mowl-sync/garmin-tokens').resolve())
+              from garmin_connect import get_api
+              get_api()
+              state.checkpoint()
+          except Exception:
+              print('Could not verify the encrypted journal or Garmin session.')
+              sys.exit(1)
+          print('Encrypted journal and Garmin session verified.')
           PYCODE
       - name: Run synchronization
         run: |
